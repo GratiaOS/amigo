@@ -1,0 +1,12 @@
+.DS_Store
+node_modules
+.next
+npm-debug.log*
+
+/apps/api/target
+/apps/api/*.db
+/apps/api/*.db-journal
+*.db
+*.db-journal
+
+.env
