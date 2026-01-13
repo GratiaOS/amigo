@@ -22,6 +22,7 @@ mod slug;
 struct AppState {
     pool: SqlitePool,
     base_url: String,
+    web_base_url: String,
 }
 
 #[derive(Deserialize)]
@@ -66,6 +67,28 @@ fn parse_ttl(ttl: Option<&str>) -> Option<i64> {
         "m" => Some(n * 60),
         _ => None,
     }
+}
+
+fn is_cli_request(headers: &HeaderMap) -> bool {
+    let ua = headers
+        .get(header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_lowercase();
+
+    // Common CLI clients
+    if ua.contains("curl") || ua.contains("wget") || ua.contains("httpie") {
+        return true;
+    }
+
+    // If Accept explicitly asks for text/plain, treat as CLI
+    let accept = headers
+        .get(header::ACCEPT)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_lowercase();
+
+    accept.contains("text/plain")
 }
 
 async fn dispatch_link(
@@ -152,7 +175,19 @@ async fn dispatch_link(
 async fn resolve_slug(
     State(state): State<Arc<AppState>>,
     Path(slug): Path<String>,
+    headers: HeaderMap,
 ) -> impl IntoResponse {
+    // Browser: redirect to Room page on Web (3001)
+    if !is_cli_request(&headers) {
+        let room = format!(
+            "{}/r/{}",
+            state.web_base_url.trim_end_matches('/'),
+            slug
+        );
+        return Redirect::temporary(&room).into_response();
+    }
+
+    // CLI: skip Room, redirect directly to final URL
     let now = now_unix();
     match db::get_link(&state.pool, &slug, now).await {
         Ok(Some(row)) => Redirect::temporary(&row.url).into_response(),
@@ -183,6 +218,19 @@ async fn health() -> impl IntoResponse {
     (StatusCode::OK, "ok\n")
 }
 
+// Proof of Breath: User commits to journey (increment views)
+async fn commence_handler(
+    State(state): State<Arc<AppState>>,
+    Path(slug): Path<String>,
+) -> impl IntoResponse {
+    let now = now_unix();
+    match db::commence_journey(&state.pool, &slug, now).await {
+        Ok(true) => StatusCode::OK,
+        Ok(false) => StatusCode::NOT_FOUND, // Link doesn't exist or expired
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+    }
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::registry()
@@ -193,9 +241,10 @@ async fn main() -> anyhow::Result<()> {
     let database_url =
         std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite:/data/amigo.db".to_string());
     let base_url = std::env::var("BASE_URL").unwrap_or_else(|_| "http://localhost:3000".to_string());
+    let web_base_url = std::env::var("WEB_BASE_URL").unwrap_or_else(|_| "http://localhost:3001".to_string());
 
     let pool = db::connect(&database_url).await?;
-    let state = Arc::new(AppState { pool, base_url });
+    let state = Arc::new(AppState { pool, base_url, web_base_url });
 
     let cors = CorsLayer::new()
         .allow_origin(Any)
@@ -206,6 +255,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/healthz", get(health))
         .route("/api/dispatch", post(dispatch_link))
         .route("/api/resolve/:slug", get(resolve_json))
+        .route("/api/commence/:slug", post(commence_handler))
         .route("/:slug", get(resolve_slug))
         .layer(TraceLayer::new_for_http())
         .layer(cors)

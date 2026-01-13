@@ -14,8 +14,10 @@ pub async fn connect(database_url: &str) -> Result<SqlitePool> {
           url TEXT NOT NULL,
           note TEXT,
           created_at INTEGER NOT NULL,
-          expires_at INTEGER
+          expires_at INTEGER,
+          views INTEGER DEFAULT 0
         );
+        CREATE INDEX IF NOT EXISTS idx_links_expiry ON links(expires_at);
         "#,
     )
     .execute(&pool)
@@ -55,25 +57,42 @@ pub struct LinkRow {
 }
 
 pub async fn get_link(pool: &SqlitePool, slug: &str, now: i64) -> Result<Option<LinkRow>> {
+    // Atomic expiry check in DB (Toni Capone style: Contract of Truth)
+    // Read-only: No views increment here (moved to commence endpoint)
     let row = sqlx::query_as::<_, (String, Option<String>, Option<i64>)>(
         r#"
         SELECT url, note, expires_at
         FROM links
         WHERE slug = ?1
+          AND (expires_at IS NULL OR expires_at > ?2)
         "#,
     )
     .bind(slug)
+    .bind(now)
     .fetch_optional(pool)
     .await?;
 
     if let Some((url, note, expires_at)) = row {
-        if let Some(exp) = expires_at {
-            if exp <= now {
-                return Ok(None);
-            }
-        }
         return Ok(Some(LinkRow { url, note, expires_at }));
     }
 
     Ok(None)
+}
+
+// Proof of Breath: Increment views when user actually commences journey
+pub async fn commence_journey(pool: &SqlitePool, slug: &str, now: i64) -> Result<bool> {
+    let result = sqlx::query(
+        r#"
+        UPDATE links
+        SET views = views + 1
+        WHERE slug = ?1
+          AND (expires_at IS NULL OR expires_at > ?2)
+        "#,
+    )
+    .bind(slug)
+    .bind(now)
+    .execute(pool)
+    .await?;
+
+    Ok(result.rows_affected() > 0)
 }

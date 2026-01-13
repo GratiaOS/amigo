@@ -1,0 +1,25 @@
+{
+  "home.title": "amigo.sh",
+  "home.subtitle": "Transport de intenție. CLI + Room.",
+  "home.url": "URL",
+  "home.note": "Notă (opțional)",
+  "home.ttl": "TTL (opțional)",
+  "home.ttl.hint": "Exemplu: 7d, 24h, 30m",
+  "home.generate": "Generează link",
+  "home.generating": "Generez...",
+  "home.copy": "Copiază",
+  "home.copied": "✓ Copiat",
+  "home.result.label": "Link generat:",
+  "home.result.cli": "CLI (ritual mode):",
+
+  "room.sender.generic": "Un prieten ți-a trimis asta.",
+  "room.sender.bear": "Ursul ți-a trimis asta.",
+  "room.silence": "(liniște)",
+  "room.breath": "(o respirație)",
+  "room.open": "Deschide",
+
+  "room.gone.title": "Urma s-a șters.",
+  "room.gone.body1": "Link-urile de aici sunt ca vorbele spuse pe jos, la soare.",
+  "room.gone.body2": "Poate îi ceri din nou.",
+  "room.gone.cta": "> fă-ți o urmă nouă_"
+}

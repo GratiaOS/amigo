@@ -1,17 +1,27 @@
-import "./globals.css";
+"use client";
 
-export const metadata = {
-  title: "amigo.sh",
-  description: "Transport de intentie. CLI + Room."
-};
+import "./globals.css";
+import { useTranslation } from "./i18n/useTranslation";
+import { useEffect } from "react";
 
 export default function RootLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
+  const { lang } = useTranslation();
+
+  // Update html lang attribute when language changes
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   return (
-    <html lang="en">
+    <html lang={lang}>
+      <head>
+        <title>amigo.sh</title>
+        <meta name="description" content="Transport de intentie. CLI + Room." />
+      </head>
       <body>{children}</body>
     </html>
   );

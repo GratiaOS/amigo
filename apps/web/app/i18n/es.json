@@ -1,0 +1,25 @@
+{
+  "home.title": "amigo.sh",
+  "home.subtitle": "Transporte de intención. CLI + Sala.",
+  "home.url": "URL",
+  "home.note": "Nota (opcional)",
+  "home.ttl": "TTL (opcional)",
+  "home.ttl.hint": "Ejemplo: 7d, 24h, 30m",
+  "home.generate": "Generar enlace",
+  "home.generating": "Generando...",
+  "home.copy": "Copiar",
+  "home.copied": "✓ Copiado",
+  "home.result.label": "Enlace generado:",
+  "home.result.cli": "CLI (modo ritual):",
+
+  "room.sender.generic": "Un amigo te envió esto.",
+  "room.sender.bear": "El Oso te envió esto.",
+  "room.silence": "(silencio)",
+  "room.breath": "(una respiración)",
+  "room.open": "Abrir",
+
+  "room.gone.title": "El rastro se borró.",
+  "room.gone.body1": "Los enlaces aquí son como palabras dichas sobre piedra tibia.",
+  "room.gone.body2": "Quizás pídelo de nuevo.",
+  "room.gone.cta": "> hacer un nuevo rastro_"
+}

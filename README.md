@@ -24,6 +24,13 @@ curl -sS -X POST http://localhost:3000/api/dispatch \
 amigo() {
   local url=""
   local note=""
+  local auto_mode=0
+
+  # Check for -a flag (ritual/auto mode)
+  if [[ "$1" == "-a" ]]; then
+    auto_mode=1
+    shift
+  fi
 
   if [ ! -t 0 ]; then
     note="$(cat)"
@@ -35,18 +42,39 @@ amigo() {
   fi
 
   if [ -z "$url" ]; then
-    echo "Usage: amigo <url> [note] OR echo 'note' | amigo <url>"
+    echo "Usage: amigo [-a] <url> [note]"
+    echo "       echo 'note' | amigo [-a] <url>"
+    echo ""
+    echo "Flags:"
+    echo "  -a    Ritual mode: Auto-open after breath cycle"
     return 1
   fi
 
   local payload
   payload=$(python3 -c "import sys, json; print(json.dumps({'url': sys.argv[1], 'note': sys.argv[2], 'ttl': '7d'}))" "$url" "$note")
 
-  curl -sS -X POST "http://localhost:3000/api/dispatch" \
+  local short
+  short=$(curl -sS -X POST "http://localhost:3000/api/dispatch" \
     -H 'Content-Type: application/json' \
     -H 'Accept: text/plain' \
     -A 'amigo-cli' \
-    -d "$payload"
+    -d "$payload")
+
+  # Append ?auto=1 for ritual mode
+  if [ "$auto_mode" -eq 1 ]; then
+    short="${short}?auto=1"
+  fi
+
+  echo "$short"
+
+  # Copy to clipboard
+  if command -v pbcopy >/dev/null 2>&1; then
+    echo -n "$short" | pbcopy
+    echo "✨ Copied to clipboard."
+  elif command -v xclip >/dev/null 2>&1; then
+    echo -n "$short" | xclip -selection clipboard
+    echo "✨ Copied to clipboard."
+  fi
 }
 ```
 
