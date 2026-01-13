@@ -1,5 +1,6 @@
 [phases.setup]
-nixPkgs = ["rust", "openssl"]
+nixPkgs = ["rustc", "cargo", "openssl"]
+nixpkgsArchive = "e37cc41c7a7c37b8fbe3fc322e087c49b58c7cb3"
 
 [phases.build]
 cmds = ["cargo build --release"]
