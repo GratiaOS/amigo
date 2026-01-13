@@ -1,9 +1,14 @@
 [phases.setup]
-nixPkgs = ["rustc", "cargo", "openssl"]
-nixpkgsArchive = "e37cc41c7a7c37b8fbe3fc322e087c49b58c7cb3"
+nixPkgs = ["openssl", "pkg-config"]
+
+[phases.install]
+cmds = [
+  "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.82.0",
+  "source $HOME/.cargo/env"
+]
 
 [phases.build]
-cmds = ["cargo build --release"]
+cmds = ["source $HOME/.cargo/env && cargo build --release"]
 
 [start]
-cmd = "cargo run --release"
+cmd = "source $HOME/.cargo/env && cargo run --release"
