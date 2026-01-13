@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_LANG, dictFor, normalizeLang, tFromDict, type Lang } from "./i18n";
-import { useSearchParams } from "next/navigation";
 
 const LS_KEY = "amigo:lang";
 
@@ -30,14 +29,14 @@ function writeStoredLang(lang: Lang) {
 }
 
 export function useTranslation() {
-  const sp = useSearchParams();
-
   // RO-first initial (safe SSR/hydration)
   const [lang, setLang] = useState<Lang>(DEFAULT_LANG);
 
   useEffect(() => {
     // Precedence: query -> storage -> navigator -> default
-    const q = normalizeLang(sp.get("lang"));
+    // Get query param from URL client-side only (avoids useSearchParams SSR issue)
+    const params = new URLSearchParams(window.location.search);
+    const q = normalizeLang(params.get("lang"));
     if (q) {
       setLang(q);
       writeStoredLang(q);
@@ -53,7 +52,7 @@ export function useTranslation() {
     const browser = detectBrowserLang();
     setLang(browser);
     writeStoredLang(browser);
-  }, [sp]);
+  }, []);
 
   const dict = useMemo(() => dictFor(lang), [lang]);
 
