@@ -1,9 +1,10 @@
 # ---- build
-FROM rust:1.79 as builder
+FROM rust:1.85 as builder
 WORKDIR /app
 COPY Cargo.toml ./
+COPY Cargo.lock ./
 COPY src ./src
-RUN cargo build --release
+RUN cargo build --release --locked
 
 # ---- run
 FROM debian:bookworm-slim
