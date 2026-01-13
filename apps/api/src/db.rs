@@ -1,7 +1,15 @@
 use anyhow::Result;
 use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
+use std::path::Path;
 
 pub async fn connect(database_url: &str) -> Result<SqlitePool> {
+    // Ensure parent directory exists for file-based SQLite
+    if let Some(file_path) = database_url.strip_prefix("sqlite:") {
+        if let Some(parent) = Path::new(file_path).parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+    }
+
     let pool = SqlitePoolOptions::new()
         .max_connections(5)
         .connect(database_url)
