@@ -117,7 +117,12 @@ export default function Room({ params }: Props) {
           {senderText}
         </p>
 
-        <div style={{ ...styles.ring, animationDuration: `${ms}ms` }} />
+        <div style={{ position: "relative", width: 96, height: 96, margin: "0 auto" }}>
+          <div style={styles.breathCore} />
+          <div style={{ ...styles.breathRing, animationDuration: `${ms}ms` }} />
+          <div style={{ ...styles.breathRing, animationDuration: `${ms}ms`, animationDelay: `${ms / 2}ms` }} />
+          <div style={styles.mark}>🌸</div>
+        </div>
 
         {data?.note ? (
           <p style={{
@@ -173,10 +178,23 @@ export default function Room({ params }: Props) {
       </div>
 
       <style>{`
-        @keyframes breathe {
-          0% { transform: scale(0.98); opacity: 0.6; }
-          50% { transform: scale(1.02); opacity: 0.9; }
-          100% { transform: scale(0.98); opacity: 0.6; }
+        @keyframes ringBreathe {
+          0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.8;
+          }
+          70% {
+            transform: translate(-50%, -50%) scale(2.6);
+            opacity: 0;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+        @keyframes markPulse {
+          0% { transform: translate(-50%, -50%) scale(1); }
+          50% { transform: translate(-50%, -50%) scale(1.15); }
+          100% { transform: translate(-50%, -50%) scale(1); }
         }
         @keyframes fadeIn {
           from { opacity: 0; }
@@ -204,15 +222,40 @@ const styles: Record<string, CSSProperties> = {
     background: "var(--bg-overlay)",
     boxShadow: "var(--shadow-card)"
   },
-  ring: {
-    width: 96,
-    height: 96,
-    borderRadius: 999,
+  breathCore: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    width: 16,
+    height: 16,
+    borderRadius: "50%",
+    backgroundColor: "var(--accent)",
+    transform: "translate(-50%, -50%)",
+    boxShadow: "0 0 12px var(--accent)",
+  },
+  breathRing: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    width: 16,
+    height: 16,
+    borderRadius: "50%",
     border: "2px solid var(--accent)",
-    margin: "0 auto",
-    animationName: "breathe",
-    animationTimingFunction: "ease-in-out",
-    animationIterationCount: "1"
+    transform: "translate(-50%, -50%) scale(1)",
+    pointerEvents: "none",
+    opacity: 0,
+    animationName: "ringBreathe",
+    animationTimingFunction: "ease-out",
+    animationIterationCount: "infinite",
+  },
+  mark: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    fontSize: 32,
+    transform: "translate(-50%, -50%)",
+    animation: "markPulse 3600ms ease-in-out infinite",
+    filter: "drop-shadow(0 0 8px currentColor)",
   },
   btn: {
     padding: "12px 18px",
