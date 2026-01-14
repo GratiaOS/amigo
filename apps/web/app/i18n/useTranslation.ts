@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DEFAULT_LANG, dictFor, normalizeLang, tFromDict, type Lang } from "./i18n";
 
 const LS_KEY = "amigo:lang";
@@ -28,31 +29,41 @@ function writeStoredLang(lang: Lang) {
   }
 }
 
-export function useTranslation() {
-  // RO-first initial (safe SSR/hydration)
+type TranslationContextValue = {
+  t: (key: string, vars?: Record<string, string | number>) => string;
+  lang: Lang;
+  setLanguage: (next: Lang) => void;
+};
+
+const TranslationContext = createContext<TranslationContextValue | null>(null);
+
+export function TranslationProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchLang = normalizeLang(searchParams?.get("lang"));
   const [lang, setLang] = useState<Lang>(DEFAULT_LANG);
 
   useEffect(() => {
-    // Precedence: query -> storage -> navigator -> default
-    // Get query param from URL client-side only (avoids useSearchParams SSR issue)
-    const params = new URLSearchParams(window.location.search);
-    const q = normalizeLang(params.get("lang"));
-    if (q) {
-      setLang(q);
-      writeStoredLang(q);
+    if (searchLang) {
+      if (searchLang !== lang) {
+        setLang(searchLang);
+      }
+      writeStoredLang(searchLang);
       return;
     }
 
     const stored = readStoredLang();
     if (stored) {
-      setLang(stored);
+      if (stored !== lang) {
+        setLang(stored);
+      }
       return;
     }
 
     const browser = detectBrowserLang();
     setLang(browser);
     writeStoredLang(browser);
-  }, []);
+  }, [searchLang, lang]);
 
   const dict = useMemo(() => dictFor(lang), [lang]);
 
@@ -61,16 +72,31 @@ export function useTranslation() {
       tFromDict(dict, key, vars);
   }, [dict]);
 
-  // Helper: explicit set (for LangSwitch)
   const setLanguage = (next: Lang) => {
     setLang(next);
     writeStoredLang(next);
 
-    // Update URL query param for shareability
     const url = new URL(window.location.href);
     url.searchParams.set("lang", next);
-    window.history.replaceState({}, "", url.toString());
+    router.replace(`${url.pathname}${url.search}${url.hash}`);
   };
 
-  return { t, lang, setLanguage };
+  const value = useMemo(
+    () => ({
+      t,
+      lang,
+      setLanguage
+    }),
+    [t, lang]
+  );
+
+  return <TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>;
+}
+
+export function useTranslation() {
+  const ctx = useContext(TranslationContext);
+  if (!ctx) {
+    throw new Error("useTranslation must be used within TranslationProvider");
+  }
+  return ctx;
 }

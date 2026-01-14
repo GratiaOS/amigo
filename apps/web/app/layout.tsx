@@ -1,28 +1,35 @@
 "use client";
 
 import "./globals.css";
-import { useTranslation } from "./i18n/useTranslation";
+import { TranslationProvider, useTranslation } from "./i18n/useTranslation";
 import { useEffect } from "react";
+
+function HtmlLangSync({ children }: { children: React.ReactNode }) {
+  const { lang } = useTranslation();
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
+  return <>{children}</>;
+}
 
 export default function RootLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
-  const { lang } = useTranslation();
-
-  // Update html lang attribute when language changes
-  useEffect(() => {
-    document.documentElement.lang = lang;
-  }, [lang]);
-
   return (
-    <html lang={lang}>
+    <html lang="ro">
       <head>
         <title>amigo.sh</title>
         <meta name="description" content="Transport de intentie. CLI + Room." />
       </head>
-      <body>{children}</body>
+      <body>
+        <TranslationProvider>
+          <HtmlLangSync>{children}</HtmlLangSync>
+        </TranslationProvider>
+      </body>
     </html>
   );
 }
