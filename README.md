@@ -9,6 +9,16 @@ docker compose up --build
 - API: http://localhost:3000
 - Web: http://localhost:3001
 
+### Env
+
+API
+- BASE_URL=http://localhost:3000
+- WEB_BASE_URL=http://localhost:3001
+- CORS_ALLOW_ORIGINS=https://amigo.sh,http://localhost:3001,http://localhost:3000
+
+Web
+- NEXT_PUBLIC_API_BASE=http://localhost:3000
+
 ### CLI
 
 ```bash

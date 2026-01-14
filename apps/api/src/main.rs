@@ -1,6 +1,6 @@
 use axum::{
     extract::{Path, State},
-    http::{header, HeaderMap, HeaderValue, StatusCode},
+    http::{header, HeaderMap, HeaderValue, Method, StatusCode},
     response::{IntoResponse, Redirect},
     routing::{get, post},
     Json, Router,
@@ -11,7 +11,7 @@ use std::{
     sync::Arc,
     time::{SystemTime, UNIX_EPOCH},
 };
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::{AllowOrigin, CorsLayer};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -89,6 +89,27 @@ fn is_cli_request(headers: &HeaderMap) -> bool {
         .to_lowercase();
 
     accept.contains("text/plain")
+}
+
+fn cors_layer() -> CorsLayer {
+    let raw = std::env::var("CORS_ALLOW_ORIGINS").unwrap_or_else(|_| {
+        "https://amigo.sh,http://localhost:3001,http://localhost:3000".to_string()
+    });
+    let origins: Vec<HeaderValue> = raw
+        .split(',')
+        .filter_map(|origin| HeaderValue::from_str(origin.trim()).ok())
+        .collect();
+
+    let allow_origin = if origins.is_empty() {
+        AllowOrigin::any()
+    } else {
+        AllowOrigin::list(origins)
+    };
+
+    CorsLayer::new()
+        .allow_origin(allow_origin)
+        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+        .allow_headers([header::CONTENT_TYPE, header::ACCEPT, header::AUTHORIZATION])
 }
 
 async fn dispatch_link(
@@ -246,10 +267,7 @@ async fn main() -> anyhow::Result<()> {
     let pool = db::connect(&database_url).await?;
     let state = Arc::new(AppState { pool, base_url, web_base_url });
 
-    let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods(Any)
-        .allow_headers(Any);
+    let cors = cors_layer();
 
     let app = Router::new()
         .route("/healthz", get(health))
