@@ -1,12 +1,18 @@
 use anyhow::Result;
 use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
+use std::fs::OpenOptions;
 use std::path::Path;
 
 pub async fn connect(database_url: &str) -> Result<SqlitePool> {
     // Ensure parent directory exists for file-based SQLite
     if let Some(file_path) = database_url.strip_prefix("sqlite:") {
-        if let Some(parent) = Path::new(file_path).parent() {
-            std::fs::create_dir_all(parent)?;
+        if file_path != ":memory:" && !file_path.is_empty() {
+            let path = file_path.split('?').next().unwrap_or(file_path);
+            if let Some(parent) = Path::new(path).parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+            // Touch the DB file so SQLite can open it in restrictive envs.
+            OpenOptions::new().create(true).write(true).open(path)?;
         }
     }
 
