@@ -12,6 +12,7 @@ docker compose up --build
 ### Env
 
 API
+- DATABASE_URL=sqlite:/app/data/amigo.db
 - BASE_URL=http://localhost:3000
 - WEB_BASE_URL=http://localhost:3001
 - CORS_ALLOW_ORIGINS=https://amigo.sh,http://localhost:3001,http://localhost:3000

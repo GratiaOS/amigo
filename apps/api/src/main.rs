@@ -260,7 +260,7 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let database_url =
-        std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite:amigo.db".to_string());
+        std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite:/app/data/amigo.db".to_string());
     let base_url = std::env::var("BASE_URL").unwrap_or_else(|_| "http://localhost:3000".to_string());
     let web_base_url = std::env::var("WEB_BASE_URL").unwrap_or_else(|_| "http://localhost:3001".to_string());
 

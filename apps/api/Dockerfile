@@ -12,6 +12,7 @@ WORKDIR /app
 RUN apt-get update \
   && apt-get install -y ca-certificates libsqlite3-0 \
   && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /app/data
 COPY --from=builder /app/target/release/amigo-api /app/amigo-api
 EXPOSE 3000
 ENV RUST_LOG=info

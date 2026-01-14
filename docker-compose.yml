@@ -4,10 +4,10 @@ services:
     env_file:
       - ./apps/api/.env.example
     environment:
-      - DATABASE_URL=sqlite:/data/amigo.db
+      - DATABASE_URL=sqlite:/app/data/amigo.db
       - BASE_URL=http://localhost:3000
     volumes:
-      - amigo_data:/data
+      - amigo_data:/app/data
     ports:
       - "3000:3000"
 
