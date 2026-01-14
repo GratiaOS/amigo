@@ -163,12 +163,12 @@ export default function Home() {
 
         <div style={styles.footer}>
           <a
-            href="https://github.com/gratios/amigo"
+            href="https://github.com/GratiaOS/amigo"
             target="_blank"
             rel="noopener noreferrer"
             style={styles.footerLink}
           >
-            github.com/gratios/amigo
+            github.com/GratiaOS/amigo
           </a>
         </div>
       </div>
