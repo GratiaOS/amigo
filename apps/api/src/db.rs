@@ -37,7 +37,25 @@ pub async fn connect(database_url: &str) -> Result<SqlitePool> {
     .execute(&pool)
     .await?;
 
+    ensure_views_column(&pool).await?;
+
     Ok(pool)
+}
+
+async fn ensure_views_column(pool: &SqlitePool) -> Result<()> {
+    let res = sqlx::query("ALTER TABLE links ADD COLUMN views INTEGER DEFAULT 0")
+        .execute(pool)
+        .await;
+
+    if let Err(err) = res {
+        let msg = err.to_string();
+        if msg.contains("duplicate column") || msg.contains("already exists") {
+            return Ok(());
+        }
+        return Err(err.into());
+    }
+
+    Ok(())
 }
 
 pub async fn insert_link(
