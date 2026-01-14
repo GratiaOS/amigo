@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { DEFAULT_LANG, dictFor, normalizeLang, tFromDict, type Lang } from "./i18n";
 
 const LS_KEY = "amigo:lang";
@@ -38,32 +37,28 @@ type TranslationContextValue = {
 const TranslationContext = createContext<TranslationContextValue | null>(null);
 
 export function TranslationProvider({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const searchLang = normalizeLang(searchParams?.get("lang"));
   const [lang, setLang] = useState<Lang>(DEFAULT_LANG);
 
   useEffect(() => {
-    if (searchLang) {
-      if (searchLang !== lang) {
-        setLang(searchLang);
-      }
-      writeStoredLang(searchLang);
+    // Precedence: query -> storage -> navigator -> default
+    const params = new URLSearchParams(window.location.search);
+    const q = normalizeLang(params.get("lang"));
+    if (q) {
+      setLang(q);
+      writeStoredLang(q);
       return;
     }
 
     const stored = readStoredLang();
     if (stored) {
-      if (stored !== lang) {
-        setLang(stored);
-      }
+      setLang(stored);
       return;
     }
 
     const browser = detectBrowserLang();
     setLang(browser);
     writeStoredLang(browser);
-  }, [searchLang, lang]);
+  }, []);
 
   const dict = useMemo(() => dictFor(lang), [lang]);
 
@@ -78,7 +73,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
 
     const url = new URL(window.location.href);
     url.searchParams.set("lang", next);
-    router.replace(`${url.pathname}${url.search}${url.hash}`);
+    window.history.replaceState({}, "", url.toString());
   };
 
   const value = useMemo(
