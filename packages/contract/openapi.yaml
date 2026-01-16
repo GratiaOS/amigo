@@ -32,6 +32,9 @@ paths:
                 reply_to:
                   type: string
                   nullable: true
+                emoji:
+                  type: string
+                  nullable: true
       responses:
         "200":
           description: Created
@@ -46,6 +49,12 @@ paths:
                     type: string
                     nullable: true
                   note:
+                    type: string
+                    nullable: true
+                  reply_to:
+                    type: string
+                    nullable: true
+                  emoji:
                     type: string
                     nullable: true
             text/plain:

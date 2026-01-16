@@ -34,6 +34,7 @@ struct DispatchPayload {
     burn: Option<bool>,
     max_views: Option<i64>,
     reply_to: Option<String>,
+    emoji: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -48,6 +49,8 @@ struct ResolveResponse {
     url: Option<String>,
     note: Option<String>,
     expires_at: Option<i64>,
+    reply_to: Option<String>,
+    emoji: Option<String>,
 }
 
 fn now_unix() -> i64 {
@@ -82,6 +85,21 @@ fn clean_opt(input: Option<String>) -> Option<String> {
             Some(trimmed.to_string())
         }
     })
+}
+
+fn sanitize_emoji(input: Option<String>) -> Option<String> {
+    let value = input?;
+    let trimmed = value.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+    if trimmed.len() > 32 {
+        return None;
+    }
+    if trimmed.chars().any(|c| c.is_control()) {
+        return None;
+    }
+    Some(trimmed.to_string())
 }
 
 fn is_cli_request(headers: &HeaderMap) -> bool {
@@ -135,6 +153,7 @@ async fn dispatch_link(
     let url = clean_opt(payload.url);
     let note = clean_opt(payload.note).or_else(|| clean_opt(payload.text));
     let reply_to = clean_opt(payload.reply_to);
+    let emoji = sanitize_emoji(payload.emoji);
 
     if url.is_none() && note.is_none() {
         return (StatusCode::BAD_REQUEST, "missing url or note\n").into_response();
@@ -181,6 +200,7 @@ async fn dispatch_link(
             expires_at,
             max_views,
             reply_to.as_deref(),
+            emoji.as_deref(),
         )
         .await
         {
@@ -277,6 +297,8 @@ async fn resolve_json(
                 url: row.url,
                 note: row.note,
                 expires_at: row.expires_at,
+                reply_to: row.reply_to,
+                emoji: row.emoji,
             }),
         )
             .into_response(),
