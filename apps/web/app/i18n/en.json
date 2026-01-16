@@ -3,11 +3,14 @@
   "home.subtitle": "Intention transport. CLI + Room.",
   "home.url": "URL",
   "home.url.optional": "URL (optional)",
-  "home.note": "Note",
-  "home.note.primary": "Note (primary)",
+
+  "home.message": "Message",
+  "home.message.primary": "Write a message...",
+
   "home.signet.label": "Signet (optional)",
   "home.signet.placeholder": "🌸",
   "home.signet.hint": "A single sign, for you.",
+
   "home.ttl": "TTL (optional)",
   "home.ttl.hint": "Example: 7d, 24h, 30m",
   "home.generate.link": "Generate link",

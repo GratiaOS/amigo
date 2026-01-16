@@ -116,11 +116,11 @@ export default function Home() {
           <LangSwitch />
 
           <div style={styles.fieldGroup}>
-            <label style={styles.label}>{t("home.note.primary")}</label>
+            <label style={styles.label}>{t("home.message")}</label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder={t("home.note")}
+              placeholder={t("home.message.primary")}
               style={styles.textarea}
               disabled={loading}
               rows={4}

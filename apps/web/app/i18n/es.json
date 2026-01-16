@@ -3,15 +3,18 @@
   "home.subtitle": "Transporte de intención. CLI + Sala.",
   "home.url": "URL",
   "home.url.optional": "URL (opcional)",
-  "home.note": "Nota",
-  "home.note.primary": "Nota (principal)",
-  "home.signet.label": "Senal (opcional)",
+
+  "home.message": "Mensaje",
+  "home.message.primary": "Escribe un mensaje...",
+
+  "home.signet.label": "Señal (opcional)",
   "home.signet.placeholder": "🌸",
-  "home.signet.hint": "Una sola senal, para ti.",
+  "home.signet.hint": "Una sola señal, para ti.",
+
   "home.ttl": "TTL (opcional)",
   "home.ttl.hint": "Ejemplo: 7d, 24h, 30m",
   "home.generate.link": "Generar enlace",
-  "home.generate.petal": "Generar petalo",
+  "home.generate.petal": "Generar pétalo",
   "home.generating": "Generando...",
   "home.hint.petal": "🌸 se quema tras la primera lectura",
   "home.hint.link": "🔗 va al enlace",
@@ -21,7 +24,7 @@
   "home.result.cli": "CLI (modo ritual):",
 
   "room.sender.generic": "Un amigo te envió esto.",
-  "room.sender.with_signet": "Alguien dejo una senal {signet}.",
+  "room.sender.with_signet": "Alguien dejó una señal {signet}.",
   "room.sender.bear": "El Oso te envió esto.",
   "room.silence": "(silencio)",
   "room.breath": "(una respiración)",
@@ -29,15 +32,15 @@
   "room.link.label": "Enlace",
   "room.burn.cta": "Quemar",
   "room.reply.cta": "Responder ↩︎",
-  "room.reply.hint": "Responder quemara el mensaje original.",
+  "room.reply.hint": "Responder quemará el mensaje original.",
 
   "room.gone.title": "El rastro se borró.",
   "room.gone.body1": "Los enlaces aquí son como palabras dichas sobre piedra tibia.",
   "room.gone.body2": "Quizás pídelo de nuevo.",
   "room.gone.cta": "> hacer un nuevo rastro_",
 
-  "room.burned.title": "El mensaje se consumio.",
+  "room.burned.title": "El mensaje se consumió.",
   "room.burned.body1": "Fue para una sola lectura.",
-  "room.burned.body2": "Si lo necesitas de nuevo, pidelo otra vez.",
+  "room.burned.body2": "Si lo necesitas de nuevo, pídelo otra vez.",
   "room.burned.cta": "> enviar otro_"
 }

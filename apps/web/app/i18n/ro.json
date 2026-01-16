@@ -3,11 +3,14 @@
   "home.subtitle": "Transport de intenție. CLI + Room.",
   "home.url": "URL",
   "home.url.optional": "URL (opțional)",
-  "home.note": "Notă",
-  "home.note.primary": "Notă (principală)",
+
+  "home.message": "Mesaj",
+  "home.message.primary": "Scrie un mesaj...",
+
   "home.signet.label": "Semn (opțional)",
   "home.signet.placeholder": "🌸",
   "home.signet.hint": "Un singur semn, pentru tine.",
+
   "home.ttl": "TTL (opțional)",
   "home.ttl.hint": "Exemplu: 7d, 24h, 30m",
   "home.generate.link": "Generează link",
