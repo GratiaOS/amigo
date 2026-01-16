@@ -101,7 +101,7 @@ export default function Home() {
   };
 
   const bashOneLiner = result
-    ? `curl -sS "${result.short}?auto=1"`
+    ? `curl -sS "${result.short}${result.original ? "?auto=1" : ""}"`
     : "";
 
   return (
