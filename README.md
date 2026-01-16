@@ -21,6 +21,11 @@ CLI vibe:
 
 Quiet tech, warm UX.
 
+## Philosophy
+
+Signets are presence stamps. They declare tone without narrative.
+Sigiliul nu spune o poveste. Deschide o stare.
+
 ## Local
 
 ```bash
