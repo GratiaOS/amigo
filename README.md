@@ -1,5 +1,26 @@
 # amigo
 
+amigo.sh = un link cu o nota mica pentru ai tai.
+Deschizi -> respiri o secunda -> apoi te duce unde trebuie.
+Exemplu: https://amigo.sh/r/abcd12?lang=ro
+(si daca e "petal / one-time", se sterge dupa prima deschidere)
+
+amigo.sh — Transport de intentie.
+Un URL e util. Un URL + o nota e uman.
+
+Amigo iti lasa:
+- sa generezi rapid un link din web sau din terminal (CLI),
+- sa atasezi o nota scurta ("pentru tine", "uita-te la asta", "respira"),
+- sa deschizi linkul intr-o "Room" calma, inainte de redirect.
+
+Bonus (Petal Mode): mesaje/nota cu deschidere unica — dupa ce a fost citit, urma se sterge.
+
+CLI vibe:
+- amigo <url> "nota mea"
+- echo "nota mea" | amigo <url>
+
+Quiet tech, warm UX.
+
 ## Local
 
 ```bash
