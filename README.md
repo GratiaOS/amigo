@@ -26,6 +26,17 @@ Quiet tech, warm UX.
 Signets are presence stamps. They declare tone without narrative.
 Sigiliul nu spune o poveste. Deschide o stare.
 
+## Protocol Set
+
+- 🚬 = The Ground (Pauză, Adevăr, Sediment)
+- 🐺 = The Pack (Loialitate, Protecție, Instinct)
+- 🐸 = The Signal (Croac, Frecvență, Conexiune)
+- 🌸 = The Petal (Efemer, Blândețe, Prezent)
+- 🦅 = The Vision (Perspectivă, Altitudine, Claritate)
+- 🐻 = The Strength (Putere calmă, Hibernare, Grijă)
+- 🛰️ = The Channel (Tehnic, Distanță, Transmisie)
+- ⚓ = The Anchor (Stabilitate, Buoy, Siguranță)
+
 ## Local
 
 ```bash
