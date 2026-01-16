@@ -6,7 +6,24 @@ import { useTranslation } from "../../i18n/useTranslation";
 import { LangSwitch } from "../../i18n/LangSwitch";
 
 type Props = { params: { slug: string } };
-type Resolve = { url?: string | null; note?: string | null; expires_at?: number | null };
+type Resolve = {
+  url?: string | null;
+  note?: string | null;
+  expires_at?: number | null;
+  reply_to?: string | null;
+  emoji?: string | null;
+};
+
+function firstGrapheme(input?: string | null): string | null {
+  if (!input) return null;
+  if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
+    const seg = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+    const it = seg.segment(input)[Symbol.iterator]();
+    const first = it.next().value;
+    return first?.segment ?? null;
+  }
+  return Array.from(input)[0] ?? null;
+}
 
 export default function Room({ params }: Props) {
   const { t, lang } = useTranslation();
@@ -185,8 +202,10 @@ export default function Room({ params }: Props) {
     );
   }
 
-  // VARIANTA 1: Generic (active acum)
-  const senderText = t("room.sender.generic");
+  const signet = firstGrapheme(data?.emoji);
+  const senderText = signet
+    ? t("room.sender.with_signet", { signet })
+    : t("room.sender.generic");
 
   // VARIANTA 2: Personalizat (decomentează linia de jos ca să activezi)
   // const senderText = t("room.sender.bear");

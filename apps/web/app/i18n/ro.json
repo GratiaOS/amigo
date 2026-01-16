@@ -5,6 +5,9 @@
   "home.url.optional": "URL (opțional)",
   "home.note": "Notă",
   "home.note.primary": "Notă (principală)",
+  "home.signet.label": "Semn (opțional)",
+  "home.signet.placeholder": "🌸",
+  "home.signet.hint": "Un singur semn, pentru tine.",
   "home.ttl": "TTL (opțional)",
   "home.ttl.hint": "Exemplu: 7d, 24h, 30m",
   "home.generate.link": "Generează link",
@@ -18,6 +21,7 @@
   "home.result.cli": "CLI (ritual mode):",
 
   "room.sender.generic": "Un prieten ți-a trimis asta.",
+  "room.sender.with_signet": "Cineva ți-a lăsat un semn {signet}.",
   "room.sender.bear": "Ursul ți-a trimis asta.",
   "room.silence": "(liniște)",
   "room.breath": "(o respirație)",

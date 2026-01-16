@@ -5,6 +5,9 @@
   "home.url.optional": "URL (opcional)",
   "home.note": "Nota",
   "home.note.primary": "Nota (principal)",
+  "home.signet.label": "Senal (opcional)",
+  "home.signet.placeholder": "🌸",
+  "home.signet.hint": "Una sola senal, para ti.",
   "home.ttl": "TTL (opcional)",
   "home.ttl.hint": "Ejemplo: 7d, 24h, 30m",
   "home.generate.link": "Generar enlace",
@@ -18,6 +21,7 @@
   "home.result.cli": "CLI (modo ritual):",
 
   "room.sender.generic": "Un amigo te envió esto.",
+  "room.sender.with_signet": "Alguien dejo una senal {signet}.",
   "room.sender.bear": "El Oso te envió esto.",
   "room.silence": "(silencio)",
   "room.breath": "(una respiración)",

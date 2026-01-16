@@ -5,6 +5,9 @@
   "home.url.optional": "URL (optional)",
   "home.note": "Note",
   "home.note.primary": "Note (primary)",
+  "home.signet.label": "Signet (optional)",
+  "home.signet.placeholder": "🌸",
+  "home.signet.hint": "A single sign, for you.",
   "home.ttl": "TTL (optional)",
   "home.ttl.hint": "Example: 7d, 24h, 30m",
   "home.generate.link": "Generate link",
@@ -18,6 +21,7 @@
   "home.result.cli": "CLI (ritual mode):",
 
   "room.sender.generic": "A friend sent you this.",
+  "room.sender.with_signet": "Someone left a sign {signet}.",
   "room.sender.bear": "The Bear sent you this.",
   "room.silence": "(silence)",
   "room.breath": "(one breath)",

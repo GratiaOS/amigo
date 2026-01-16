@@ -7,6 +7,18 @@ import { LangSwitch } from "./i18n/LangSwitch";
 
 type DispatchResponse = { short: string; original?: string | null; note?: string | null };
 
+const SIGNETS = ["🌸", "🫂", "🛰️", "🐺", "🔥", "🌿", "🕯️", "🫧"];
+
+function firstGrapheme(input: string): string {
+  if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
+    const seg = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+    const it = seg.segment(input)[Symbol.iterator]();
+    const first = it.next().value;
+    return first?.segment ?? "";
+  }
+  return Array.from(input)[0] ?? "";
+}
+
 export default function Home() {
   const { t } = useTranslation();
   const base = (process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3000").replace(
@@ -17,6 +29,7 @@ export default function Home() {
   const [url, setUrl] = useState("");
   const [note, setNote] = useState("");
   const [ttl, setTtl] = useState("7d");
+  const [emoji, setEmoji] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DispatchResponse | null>(null);
@@ -25,6 +38,7 @@ export default function Home() {
   const urlValue = url.trim();
   const noteValue = note.trim();
   const replyValue = replyTo?.trim() ?? "";
+  const emojiValue = firstGrapheme(emoji.trim());
   const isPetal = urlValue.length === 0;
   const canSubmit = urlValue.length > 0 || noteValue.length > 0;
 
@@ -35,8 +49,9 @@ export default function Home() {
       ttl: ttl.trim() || null,
       max_views: isPetal ? 1 : null,
       reply_to: replyValue || null,
+      emoji: emojiValue || null,
     }),
-    [isPetal, noteValue, replyValue, ttl, urlValue]
+    [emojiValue, isPetal, noteValue, replyValue, ttl, urlValue]
   );
 
   useEffect(() => {
@@ -110,6 +125,36 @@ export default function Home() {
               disabled={loading}
               rows={4}
             />
+          </div>
+
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>{t("home.signet.label")}</label>
+            <div style={styles.signetRow}>
+              <input
+                type="text"
+                value={emoji}
+                onChange={(e) => setEmoji(firstGrapheme(e.target.value))}
+                placeholder={t("home.signet.placeholder")}
+                style={styles.signetInput}
+                disabled={loading}
+              />
+              <div style={styles.signetChoices}>
+                {SIGNETS.map((signet) => (
+                  <button
+                    key={signet}
+                    type="button"
+                    onClick={() => setEmoji(signet)}
+                    style={{
+                      ...styles.signetBtn,
+                      opacity: emojiValue === signet ? 1 : 0.6,
+                    }}
+                  >
+                    {signet}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p style={styles.signetHint}>{t("home.signet.hint")}</p>
           </div>
 
           <div style={styles.fieldGroup}>
@@ -275,6 +320,46 @@ const styles: Record<string, CSSProperties> = {
     outline: "none",
     transition: "border-color var(--duration-snug) var(--ease-soft)",
     resize: "vertical",
+  },
+  signetRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    flexWrap: "wrap",
+  },
+  signetInput: {
+    width: 56,
+    height: 40,
+    padding: "6px 8px",
+    fontSize: 18,
+    background: "var(--bg)",
+    border: "1px solid var(--border)",
+    borderRadius: 8,
+    color: "var(--text)",
+    fontFamily: "inherit",
+    outline: "none",
+    textAlign: "center",
+  },
+  signetChoices: {
+    display: "flex",
+    gap: 6,
+    flexWrap: "wrap",
+  },
+  signetBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    border: "1px solid var(--border)",
+    background: "var(--bg)",
+    cursor: "pointer",
+    fontSize: 16,
+    transition: "opacity var(--duration-snug) var(--ease-soft)",
+  },
+  signetHint: {
+    fontSize: 11,
+    color: "var(--text-subtle)",
+    marginTop: 6,
+    opacity: 0.7,
   },
   modeHint: {
     fontSize: 12,
