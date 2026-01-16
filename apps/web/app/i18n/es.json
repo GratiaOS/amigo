@@ -6,6 +6,7 @@
 
   "home.message": "Mensaje",
   "home.message.primary": "Escribe un mensaje...",
+  "home.message.hint": "Deja un pensamiento para cuando lo abran.",
 
   "home.signet.label": "Señal (opcional)",
   "home.signet.placeholder": "🌸",

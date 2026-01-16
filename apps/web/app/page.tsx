@@ -125,6 +125,7 @@ export default function Home() {
               disabled={loading}
               rows={4}
             />
+            <p style={styles.hint}>{t("home.message.hint")}</p>
           </div>
 
           <div style={styles.fieldGroup}>
