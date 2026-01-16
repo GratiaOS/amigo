@@ -6,7 +6,7 @@ import { useTranslation } from "../../i18n/useTranslation";
 import { LangSwitch } from "../../i18n/LangSwitch";
 
 type Props = { params: { slug: string } };
-type Resolve = { url: string; note?: string | null; expires_at?: number | null };
+type Resolve = { url?: string | null; note?: string | null; expires_at?: number | null };
 
 export default function Room({ params }: Props) {
   const { t } = useTranslation();
@@ -15,12 +15,12 @@ export default function Room({ params }: Props) {
     ""
   );
   const [data, setData] = useState<Resolve | null>(null);
-  const [status, setStatus] = useState<"loading" | "ready" | "gone">("loading");
+  const [status, setStatus] = useState<"loading" | "ready" | "gone" | "burned">("loading");
   const [auto, setAuto] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const ms = 3600; // Breathing cycle (mai somatic)
-  const redirectTo = data?.url;
+  const redirectTo = data?.url ?? null;
 
   // Detect auto mode after mount (avoids hydration mismatch)
   useEffect(() => {
@@ -52,26 +52,40 @@ export default function Room({ params }: Props) {
 
   // Proof of Breath: Commit journey before redirect
   const commitAndGo = async () => {
-    if (!redirectTo) return;
+    if (!data) return;
 
     // Fire & forget: Ping backend to increment views (keepalive ensures it completes)
     try {
-      await fetch(`${base}/api/commence/${params.slug}`, {
+      const res = await fetch(`${base}/api/commence/${params.slug}`, {
         method: "POST",
         keepalive: true, // Critical: Request survives page navigation
       });
+      if (!res.ok && !data.url) {
+        setStatus("gone");
+        return;
+      }
     } catch (e) {
-      // Silent fail - don't block user for analytics
       console.error("Ghost walk:", e);
+      if (!data.url) {
+        setStatus("gone");
+        return;
+      }
+      window.location.href = data.url;
+      return;
+    }
+
+    if (!data.url) {
+      setStatus("burned");
+      return;
     }
 
     // Journey begins
-    window.location.href = redirectTo;
+    window.location.href = data.url;
   };
 
   // Auto-open after breath cycle (ritual mode) if ?auto=1
   useEffect(() => {
-    if (!auto || status !== "ready" || !redirectTo) return;
+    if (!auto || status !== "ready" || !data) return;
     const timer = setTimeout(() => {
       commitAndGo();
     }, ms);
@@ -96,6 +110,29 @@ export default function Room({ params }: Props) {
           </p>
           <div style={{ marginTop: 20, textAlign: "center" }}>
             <a href="/" style={styles.shellLink}>{t("room.gone.cta")}</a>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (status === "burned") {
+    return (
+      <main style={styles.main}>
+        <div style={{ ...styles.card, position: "relative" }}>
+          <LangSwitch />
+
+          <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: "center" }}>
+            {t("room.burned.title")}
+          </p>
+          <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: "center", color: "var(--text-muted)" }}>
+            {t("room.burned.body1")}
+          </p>
+          <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: "center", color: "var(--text-muted)" }}>
+            {t("room.burned.body2")}
+          </p>
+          <div style={{ marginTop: 20, textAlign: "center" }}>
+            <a href="/" style={styles.shellLink}>{t("room.burned.cta")}</a>
           </div>
         </div>
       </main>
@@ -156,9 +193,9 @@ export default function Room({ params }: Props) {
                 ...styles.btn,
                 animation: `fadeIn 700ms ${ms}ms forwards`,
                 opacity: 0,
-                cursor: (status !== "ready" || !redirectTo) ? "not-allowed" : "pointer"
+                cursor: status !== "ready" ? "not-allowed" : "pointer"
               }}
-              disabled={status !== "ready" || !redirectTo}
+              disabled={status !== "ready"}
               onClick={commitAndGo}
               onMouseEnter={(e) => {
                 if (e.currentTarget.disabled) return;

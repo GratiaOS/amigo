@@ -21,5 +21,10 @@
   "room.gone.title": "El rastro se borró.",
   "room.gone.body1": "Los enlaces aquí son como palabras dichas sobre piedra tibia.",
   "room.gone.body2": "Quizás pídelo de nuevo.",
-  "room.gone.cta": "> hacer un nuevo rastro_"
+  "room.gone.cta": "> hacer un nuevo rastro_",
+
+  "room.burned.title": "El mensaje se consumio.",
+  "room.burned.body1": "Fue para una sola lectura.",
+  "room.burned.body2": "Si lo necesitas de nuevo, pidelo otra vez.",
+  "room.burned.cta": "> enviar otro_"
 }
