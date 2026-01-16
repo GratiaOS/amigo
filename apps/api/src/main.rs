@@ -27,21 +27,24 @@ struct AppState {
 
 #[derive(Deserialize)]
 struct DispatchPayload {
-    url: String,
+    url: Option<String>,
     note: Option<String>,
+    text: Option<String>,
     ttl: Option<String>, // "7d" (optional)
+    burn: Option<bool>,
+    max_views: Option<i64>,
 }
 
 #[derive(Serialize)]
 struct DispatchResponse {
     short: String,
-    original: String,
+    original: Option<String>,
     note: Option<String>,
 }
 
 #[derive(Serialize)]
 struct ResolveResponse {
-    url: String,
+    url: Option<String>,
     note: Option<String>,
     expires_at: Option<i64>,
 }
@@ -67,6 +70,17 @@ fn parse_ttl(ttl: Option<&str>) -> Option<i64> {
         "m" => Some(n * 60),
         _ => None,
     }
+}
+
+fn clean_opt(input: Option<String>) -> Option<String> {
+    input.and_then(|value| {
+        let trimmed = value.trim();
+        if trimmed.is_empty() {
+            None
+        } else {
+            Some(trimmed.to_string())
+        }
+    })
 }
 
 fn is_cli_request(headers: &HeaderMap) -> bool {
@@ -117,13 +131,37 @@ async fn dispatch_link(
     headers: HeaderMap,
     Json(payload): Json<DispatchPayload>,
 ) -> impl IntoResponse {
-    if !(payload.url.starts_with("http://") || payload.url.starts_with("https://")) {
-        return (StatusCode::BAD_REQUEST, "invalid url\n").into_response();
+    let url = clean_opt(payload.url);
+    let note = clean_opt(payload.note).or_else(|| clean_opt(payload.text));
+
+    if url.is_none() && note.is_none() {
+        return (StatusCode::BAD_REQUEST, "missing url or note\n").into_response();
+    }
+
+    if let Some(ref value) = url {
+        if !(value.starts_with("http://") || value.starts_with("https://")) {
+            return (StatusCode::BAD_REQUEST, "invalid url\n").into_response();
+        }
     }
 
     let created_at = now_unix();
     let ttl_secs = parse_ttl(payload.ttl.as_deref()).unwrap_or(7 * 24 * 3600);
     let expires_at = Some(created_at + ttl_secs);
+    let mut max_views = payload.max_views;
+
+    if payload.burn.unwrap_or(false) {
+        max_views = Some(1);
+    }
+
+    if url.is_none() {
+        max_views = Some(1);
+    }
+
+    if let Some(limit) = max_views {
+        if limit <= 0 {
+            max_views = None;
+        }
+    }
 
     let mut slug = String::new();
     let mut inserted = false;
@@ -135,10 +173,11 @@ async fn dispatch_link(
         match db::insert_link(
             &state.pool,
             &slug,
-            &payload.url,
-            payload.note.as_deref(),
+            url.as_deref(),
+            note.as_deref(),
             created_at,
             expires_at,
+            max_views,
         )
         .await
         {
@@ -187,8 +226,8 @@ async fn dispatch_link(
 
     let body = DispatchResponse {
         short: short_link,
-        original: payload.url,
-        note: payload.note,
+        original: url,
+        note,
     };
     (StatusCode::OK, Json(body)).into_response()
 }
@@ -198,20 +237,27 @@ async fn resolve_slug(
     Path(slug): Path<String>,
     headers: HeaderMap,
 ) -> impl IntoResponse {
-    // Browser: redirect to Room page on Web (3001)
-    if !is_cli_request(&headers) {
-        let room = format!(
-            "{}/r/{}",
-            state.web_base_url.trim_end_matches('/'),
-            slug
-        );
-        return Redirect::temporary(&room).into_response();
-    }
-
-    // CLI: skip Room, redirect directly to final URL
     let now = now_unix();
     match db::get_link(&state.pool, &slug, now).await {
-        Ok(Some(row)) => Redirect::temporary(&row.url).into_response(),
+        Ok(Some(row)) => {
+            let room = format!(
+                "{}/r/{}",
+                state.web_base_url.trim_end_matches('/'),
+                slug
+            );
+
+            if row.url.is_none() {
+                return Redirect::temporary(&room).into_response();
+            }
+
+            if is_cli_request(&headers) {
+                if let Some(url) = row.url.as_deref() {
+                    return Redirect::temporary(url).into_response();
+                }
+            }
+
+            Redirect::temporary(&room).into_response()
+        }
         _ => (StatusCode::NOT_FOUND, "Urma s-a sters.\n").into_response(),
     }
 }
