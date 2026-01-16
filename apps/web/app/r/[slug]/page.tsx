@@ -83,15 +83,17 @@ export default function Room({ params }: Props) {
     window.location.href = data.url;
   };
 
+  const shouldAuto = auto || (!data?.url && status === "ready");
+
   // Auto-open after breath cycle (ritual mode) if ?auto=1
   useEffect(() => {
-    if (!auto || status !== "ready" || !data) return;
+    if (!shouldAuto || status !== "ready" || !data) return;
     const timer = setTimeout(() => {
       commitAndGo();
     }, ms);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auto, status, redirectTo, ms]);
+  }, [shouldAuto, status, redirectTo, ms]);
 
   if (status === "gone") {
     return (
@@ -175,18 +177,27 @@ export default function Room({ params }: Props) {
           </p>
         ) : mounted ? (
           <p style={{
-            marginTop: auto ? 10 : 18,
+            marginTop: shouldAuto ? 10 : 18,
             textAlign: "center",
             opacity: 0.5,
-            fontSize: auto ? 12 : 14,
+            fontSize: shouldAuto ? 12 : 14,
             fontStyle: "italic",
             color: "var(--text-subtle)"
           }}>
-            {auto ? t("room.breath") : t("room.silence")}
+            {shouldAuto ? t("room.breath") : t("room.silence")}
           </p>
         ) : null}
 
-        {status === "ready" && !auto && (
+        {data?.url && (
+          <div style={styles.urlRow}>
+            <span style={styles.urlLabel}>{t("room.link.label")}</span>
+            <a href={data.url} style={styles.urlLink}>
+              {data.url}
+            </a>
+          </div>
+        )}
+
+        {status === "ready" && !auto && data?.url && (
           <div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
             <button
               style={{
@@ -304,6 +315,26 @@ const styles: Record<string, CSSProperties> = {
     fontFamily: "inherit",
     fontSize: 15,
     transition: "border-color var(--duration-snug) var(--ease-soft), background var(--duration-snug) var(--ease-soft)"
+  },
+  urlRow: {
+    marginTop: 18,
+    display: "flex",
+    flexDirection: "column",
+    gap: 6,
+    fontSize: 12,
+    textAlign: "center"
+  },
+  urlLabel: {
+    color: "var(--text-subtle)",
+    opacity: 0.7,
+    fontSize: 11
+  },
+  urlLink: {
+    color: "var(--text-muted)",
+    textDecoration: "none",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    fontSize: 12,
+    wordBreak: "break-all"
   },
   shellLink: {
     display: "inline-block",

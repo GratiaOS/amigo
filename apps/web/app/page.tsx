@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { CSSProperties, FormEvent } from "react";
 import { useTranslation } from "./i18n/useTranslation";
 import { LangSwitch } from "./i18n/LangSwitch";
 
-type DispatchResponse = { short: string; original: string; note?: string | null };
+type DispatchResponse = { short: string; original?: string | null; note?: string | null };
 
 export default function Home() {
   const { t } = useTranslation();
@@ -21,9 +21,24 @@ export default function Home() {
   const [result, setResult] = useState<DispatchResponse | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const urlValue = url.trim();
+  const noteValue = note.trim();
+  const isPetal = urlValue.length === 0;
+  const canSubmit = urlValue.length > 0 || noteValue.length > 0;
+
+  const payload = useMemo(
+    () => ({
+      note: noteValue || null,
+      url: isPetal ? null : urlValue,
+      ttl: ttl.trim() || null,
+      max_views: isPetal ? 1 : null,
+    }),
+    [isPetal, noteValue, ttl, urlValue]
+  );
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) return;
+    if (!canSubmit) return;
 
     setLoading(true);
     setResult(null);
@@ -33,11 +48,7 @@ export default function Home() {
       const res = await fetch(`${base}/api/dispatch`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: url.trim(),
-          note: note.trim() || undefined,
-          ttl: ttl || undefined,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error("dispatch failed");
@@ -79,10 +90,21 @@ export default function Home() {
           <LangSwitch />
 
           <div style={styles.fieldGroup}>
-            <label style={styles.label}>{t("home.url")} *</label>
+            <label style={styles.label}>{t("home.note.primary")}</label>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder={t("home.note")}
+              style={styles.textarea}
+              disabled={loading}
+              rows={4}
+            />
+          </div>
+
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>{t("home.url.optional")}</label>
             <input
               type="url"
-              required
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://example.com"
@@ -91,17 +113,9 @@ export default function Home() {
             />
           </div>
 
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>{t("home.note")}</label>
-            <input
-              type="text"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder={t("home.note")}
-              style={styles.input}
-              disabled={loading}
-            />
-          </div>
+          <p style={styles.modeHint}>
+            {isPetal ? t("home.hint.petal") : t("home.hint.link")}
+          </p>
 
           <div style={styles.fieldGroup}>
             <label style={styles.label}>{t("home.ttl")}</label>
@@ -118,14 +132,18 @@ export default function Home() {
 
           <button
             type="submit"
-            disabled={loading || !url.trim()}
+            disabled={loading || !canSubmit}
             style={{
               ...styles.btn,
-              opacity: loading || !url.trim() ? 0.5 : 1,
-              cursor: loading || !url.trim() ? "not-allowed" : "pointer",
+              opacity: loading || !canSubmit ? 0.5 : 1,
+              cursor: loading || !canSubmit ? "not-allowed" : "pointer",
             }}
           >
-            {loading ? t("home.generating") : t("home.generate")}
+            {loading
+              ? t("home.generating")
+              : isPetal
+              ? t("home.generate.petal")
+              : t("home.generate.link")}
           </button>
         </form>
 
@@ -233,6 +251,26 @@ const styles: Record<string, CSSProperties> = {
     fontFamily: "inherit",
     outline: "none",
     transition: "border-color var(--duration-snug) var(--ease-soft)",
+  },
+  textarea: {
+    width: "100%",
+    padding: "10px 12px",
+    fontSize: 14,
+    background: "var(--bg)",
+    border: "1px solid var(--border)",
+    borderRadius: 8,
+    color: "var(--text)",
+    fontFamily: "inherit",
+    outline: "none",
+    transition: "border-color var(--duration-snug) var(--ease-soft)",
+    resize: "vertical",
+  },
+  modeHint: {
+    fontSize: 12,
+    color: "var(--text-subtle)",
+    marginTop: -6,
+    marginBottom: 16,
+    opacity: 0.7,
   },
   hint: {
     fontSize: 12,
