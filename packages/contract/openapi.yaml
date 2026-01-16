@@ -29,6 +29,9 @@ paths:
                   type: boolean
                 max_views:
                   type: integer
+                reply_to:
+                  type: string
+                  nullable: true
       responses:
         "200":
           description: Created

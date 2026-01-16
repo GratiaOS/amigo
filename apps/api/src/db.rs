@@ -39,6 +39,7 @@ async fn ensure_schema(pool: &SqlitePool) -> Result<()> {
     let mut url_notnull = false;
     let mut has_views = false;
     let mut has_max_views = false;
+    let mut has_reply_to = false;
 
     for row in columns {
         let name: String = row.try_get("name")?;
@@ -52,11 +53,17 @@ async fn ensure_schema(pool: &SqlitePool) -> Result<()> {
         if name == "max_views" {
             has_max_views = true;
         }
+        if name == "reply_to" {
+            has_reply_to = true;
+        }
     }
 
     if url_notnull || !has_views || !has_max_views {
-        rebuild_links_table(pool, has_views, has_max_views).await?;
+        rebuild_links_table(pool, has_views, has_max_views, has_reply_to).await?;
     } else {
+        if !has_reply_to {
+            ensure_reply_to_column(pool).await?;
+        }
         sqlx::query("CREATE INDEX IF NOT EXISTS idx_links_expiry ON links(expires_at)")
             .execute(pool)
             .await?;
@@ -75,7 +82,8 @@ async fn create_links_table(pool: &SqlitePool) -> Result<()> {
           created_at INTEGER NOT NULL,
           expires_at INTEGER,
           views INTEGER DEFAULT 0,
-          max_views INTEGER
+          max_views INTEGER,
+          reply_to TEXT
         )
         "#,
     )
@@ -89,12 +97,18 @@ async fn create_links_table(pool: &SqlitePool) -> Result<()> {
     Ok(())
 }
 
-async fn rebuild_links_table(pool: &SqlitePool, has_views: bool, has_max_views: bool) -> Result<()> {
+async fn rebuild_links_table(
+    pool: &SqlitePool,
+    has_views: bool,
+    has_max_views: bool,
+    has_reply_to: bool,
+) -> Result<()> {
     let views_expr = if has_views { "views" } else { "0" };
     let max_views_expr = if has_max_views { "max_views" } else { "NULL" };
+    let reply_expr = if has_reply_to { "reply_to" } else { "NULL" };
     let insert_sql = format!(
-        "INSERT INTO links_new (slug, url, note, created_at, expires_at, views, max_views) \
-         SELECT slug, url, note, created_at, expires_at, {views_expr}, {max_views_expr} \
+        "INSERT INTO links_new (slug, url, note, created_at, expires_at, views, max_views, reply_to) \
+         SELECT slug, url, note, created_at, expires_at, {views_expr}, {max_views_expr}, {reply_expr} \
          FROM links"
     );
 
@@ -108,7 +122,8 @@ async fn rebuild_links_table(pool: &SqlitePool, has_views: bool, has_max_views: 
           created_at INTEGER NOT NULL,
           expires_at INTEGER,
           views INTEGER DEFAULT 0,
-          max_views INTEGER
+          max_views INTEGER,
+          reply_to TEXT
         )
         "#,
     )
@@ -128,6 +143,22 @@ async fn rebuild_links_table(pool: &SqlitePool, has_views: bool, has_max_views: 
     Ok(())
 }
 
+async fn ensure_reply_to_column(pool: &SqlitePool) -> Result<()> {
+    let res = sqlx::query("ALTER TABLE links ADD COLUMN reply_to TEXT")
+        .execute(pool)
+        .await;
+
+    if let Err(err) = res {
+        let msg = err.to_string();
+        if msg.contains("duplicate column") || msg.contains("already exists") {
+            return Ok(());
+        }
+        return Err(err.into());
+    }
+
+    Ok(())
+}
+
 pub async fn insert_link(
     pool: &SqlitePool,
     slug: &str,
@@ -136,11 +167,12 @@ pub async fn insert_link(
     created_at: i64,
     expires_at: Option<i64>,
     max_views: Option<i64>,
+    reply_to: Option<&str>,
 ) -> Result<()> {
     sqlx::query(
         r#"
-        INSERT INTO links (slug, url, note, created_at, expires_at, max_views)
-        VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+        INSERT INTO links (slug, url, note, created_at, expires_at, max_views, reply_to)
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
         "#,
     )
     .bind(slug)
@@ -149,6 +181,7 @@ pub async fn insert_link(
     .bind(created_at)
     .bind(expires_at)
     .bind(max_views)
+    .bind(reply_to)
     .execute(pool)
     .await?;
     Ok(())

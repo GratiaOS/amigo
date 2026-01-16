@@ -33,6 +33,7 @@ struct DispatchPayload {
     ttl: Option<String>, // "7d" (optional)
     burn: Option<bool>,
     max_views: Option<i64>,
+    reply_to: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -133,6 +134,7 @@ async fn dispatch_link(
 ) -> impl IntoResponse {
     let url = clean_opt(payload.url);
     let note = clean_opt(payload.note).or_else(|| clean_opt(payload.text));
+    let reply_to = clean_opt(payload.reply_to);
 
     if url.is_none() && note.is_none() {
         return (StatusCode::BAD_REQUEST, "missing url or note\n").into_response();
@@ -178,6 +180,7 @@ async fn dispatch_link(
             created_at,
             expires_at,
             max_views,
+            reply_to.as_deref(),
         )
         .await
         {
