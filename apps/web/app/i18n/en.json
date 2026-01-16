@@ -23,6 +23,9 @@
   "room.breath": "(one breath)",
   "room.open": "Open",
   "room.link.label": "Link",
+  "room.burn.cta": "Burn",
+  "room.reply.cta": "Reply ↩︎",
+  "room.reply.hint": "Replying will burn the original message.",
 
   "room.gone.title": "The trail faded.",
   "room.gone.body1": "Links here are like words spoken on warm stone.",

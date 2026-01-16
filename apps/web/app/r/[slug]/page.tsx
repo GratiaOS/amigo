@@ -9,7 +9,7 @@ type Props = { params: { slug: string } };
 type Resolve = { url?: string | null; note?: string | null; expires_at?: number | null };
 
 export default function Room({ params }: Props) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const base = (process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3000").replace(
     /\/$/,
     ""
@@ -83,7 +83,51 @@ export default function Room({ params }: Props) {
     window.location.href = data.url;
   };
 
-  const shouldAuto = auto || (!data?.url && status === "ready");
+  const burnNow = async () => {
+    if (!data) return;
+    try {
+      const res = await fetch(`${base}/api/commence/${params.slug}`, {
+        method: "POST",
+        keepalive: true,
+      });
+      if (!res.ok) {
+        setStatus("gone");
+        return;
+      }
+    } catch (e) {
+      console.error("Burn failed:", e);
+      setStatus("gone");
+      return;
+    }
+    setStatus("burned");
+  };
+
+  const replyNow = async () => {
+    if (!data) return;
+    try {
+      const res = await fetch(`${base}/api/commence/${params.slug}`, {
+        method: "POST",
+        keepalive: true,
+      });
+      if (!res.ok) {
+        setStatus("gone");
+        return;
+      }
+    } catch (e) {
+      console.error("Reply burn failed:", e);
+      setStatus("gone");
+      return;
+    }
+
+    const qs = new URLSearchParams();
+    qs.set("reply_to", params.slug);
+    if (lang) {
+      qs.set("lang", lang);
+    }
+    window.location.href = `/?${qs.toString()}`;
+  };
+
+  const shouldAuto = auto;
 
   // Auto-open after breath cycle (ritual mode) if ?auto=1
   useEffect(() => {
@@ -223,6 +267,18 @@ export default function Room({ params }: Props) {
             </button>
           </div>
         )}
+
+        {status === "ready" && !data?.url && (
+          <div style={{ marginTop: 22, display: "grid", gap: 10, justifyItems: "center" }}>
+            <button style={styles.btnGhost} onClick={burnNow}>
+              {t("room.burn.cta")}
+            </button>
+            <button style={styles.btn} onClick={replyNow}>
+              {t("room.reply.cta")}
+            </button>
+            <p style={styles.replyHint}>{t("room.reply.hint")}</p>
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -315,6 +371,23 @@ const styles: Record<string, CSSProperties> = {
     fontFamily: "inherit",
     fontSize: 15,
     transition: "border-color var(--duration-snug) var(--ease-soft), background var(--duration-snug) var(--ease-soft)"
+  },
+  btnGhost: {
+    padding: "10px 16px",
+    borderRadius: 12,
+    border: "1px dashed var(--border)",
+    background: "transparent",
+    color: "var(--text-muted)",
+    cursor: "pointer",
+    fontFamily: "inherit",
+    fontSize: 13
+  },
+  replyHint: {
+    marginTop: -2,
+    fontSize: 11,
+    color: "var(--text-subtle)",
+    opacity: 0.7,
+    textAlign: "center"
   },
   urlRow: {
     marginTop: 18,

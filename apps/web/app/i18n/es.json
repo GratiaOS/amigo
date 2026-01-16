@@ -23,6 +23,9 @@
   "room.breath": "(una respiración)",
   "room.open": "Abrir",
   "room.link.label": "Enlace",
+  "room.burn.cta": "Quemar",
+  "room.reply.cta": "Responder ↩︎",
+  "room.reply.hint": "Responder quemara el mensaje original.",
 
   "room.gone.title": "El rastro se borró.",
   "room.gone.body1": "Los enlaces aquí son como palabras dichas sobre piedra tibia.",

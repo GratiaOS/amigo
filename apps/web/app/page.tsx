@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties, FormEvent } from "react";
 import { useTranslation } from "./i18n/useTranslation";
 import { LangSwitch } from "./i18n/LangSwitch";
@@ -17,12 +17,14 @@ export default function Home() {
   const [url, setUrl] = useState("");
   const [note, setNote] = useState("");
   const [ttl, setTtl] = useState("7d");
+  const [replyTo, setReplyTo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DispatchResponse | null>(null);
   const [copied, setCopied] = useState(false);
 
   const urlValue = url.trim();
   const noteValue = note.trim();
+  const replyValue = replyTo?.trim() ?? "";
   const isPetal = urlValue.length === 0;
   const canSubmit = urlValue.length > 0 || noteValue.length > 0;
 
@@ -32,9 +34,18 @@ export default function Home() {
       url: isPetal ? null : urlValue,
       ttl: ttl.trim() || null,
       max_views: isPetal ? 1 : null,
+      reply_to: replyValue || null,
     }),
-    [isPetal, noteValue, ttl, urlValue]
+    [isPetal, noteValue, replyValue, ttl, urlValue]
   );
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get("reply_to");
+    if (v) {
+      setReplyTo(v);
+    }
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

@@ -23,6 +23,9 @@
   "room.breath": "(o respirație)",
   "room.open": "Deschide",
   "room.link.label": "Link",
+  "room.burn.cta": "Arde",
+  "room.reply.cta": "Răspunde ↩︎",
+  "room.reply.hint": "Răspunsul va arde mesajul original.",
 
   "room.gone.title": "Urma s-a șters.",
   "room.gone.body1": "Link-urile de aici sunt ca vorbele spuse pe jos, la soare.",
