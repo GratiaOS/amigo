@@ -37,6 +37,9 @@ Sigiliul nu spune o poveste. Deschide o stare.
 - 🛰️ = The Channel (Tehnic, Distanță, Transmisie)
 - ⚓ = The Anchor (Stabilitate, Buoy, Siguranță)
 - 🫧 = The Bubbles (Biluțe, Joacă, Aer)
+- 💖 = The Gratia (Grijă, Inimă, Blândețe)
+- 👍 = The Yes (Da, Merge, Confirmare)
+- 🎵 = The Song (Muzică, Ritm, Drum)
 
 ## Local
 

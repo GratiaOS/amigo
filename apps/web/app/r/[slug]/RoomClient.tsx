@@ -379,6 +379,8 @@ const styles: Record<string, CSSProperties> = {
     left: "50%",
     fontSize: 32,
     transform: "translate(-50%, -50%)",
+    fontFamily:
+      "Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, Twemoji Mozilla, var(--font)",
     animation: "markPulse 3600ms ease-in-out infinite",
     filter: "drop-shadow(0 0 8px currentColor)",
   },

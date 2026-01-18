@@ -7,7 +7,8 @@ import { LangSwitch } from "./i18n/LangSwitch";
 
 type DispatchResponse = { short: string; original?: string | null; note?: string | null };
 
-const SIGNETS = ["🚬", "🐺", "🐸", "🌸", "🦅", "🐻", "🛰️", "⚓", "🫧"];
+// TODO: Extend Musical Notes Code for 🎵 signet (align with the 13-month energy calendar).
+const SIGNETS = ["💖", "👍", "🎵", "🚬", "🐺", "🐸", "🌸", "🦅", "🐻", "🛰️", "⚓", "🫧"];
 
 function firstGrapheme(input: string): string {
   if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
@@ -337,7 +338,8 @@ const styles: Record<string, CSSProperties> = {
     border: "1px solid var(--border)",
     borderRadius: 8,
     color: "var(--text)",
-    fontFamily: "inherit",
+    fontFamily:
+      "Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, Twemoji Mozilla, var(--font)",
     outline: "none",
     textAlign: "center",
   },
@@ -354,6 +356,8 @@ const styles: Record<string, CSSProperties> = {
     background: "var(--bg)",
     cursor: "pointer",
     fontSize: 16,
+    fontFamily:
+      "Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, Twemoji Mozilla, var(--font)",
     transition: "opacity var(--duration-snug) var(--ease-soft)",
   },
   signetHint: {
