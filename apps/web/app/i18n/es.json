@@ -5,7 +5,7 @@
   "home.url.optional": "URL (opcional)",
 
   "home.message": "Mensaje",
-  "home.message.primary": "Escribe un mensaje...",
+  "home.message.primary": "Tu mensaje",
   "home.message.hint": "Deja un pensamiento para cuando lo abran.",
 
   "home.signet.label": "Señal (opcional)",

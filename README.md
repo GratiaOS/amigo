@@ -36,6 +36,7 @@ Sigiliul nu spune o poveste. Deschide o stare.
 - 🐻 = The Strength (Putere calmă, Hibernare, Grijă)
 - 🛰️ = The Channel (Tehnic, Distanță, Transmisie)
 - ⚓ = The Anchor (Stabilitate, Buoy, Siguranță)
+- 🫧 = The Bubbles (Biluțe, Joacă, Aer)
 
 ## Local
 

@@ -7,7 +7,7 @@ import { LangSwitch } from "./i18n/LangSwitch";
 
 type DispatchResponse = { short: string; original?: string | null; note?: string | null };
 
-const SIGNETS = ["🚬", "🐺", "🐸", "🌸", "🦅", "🐻", "🛰️", "⚓"];
+const SIGNETS = ["🚬", "🐺", "🐸", "🌸", "🦅", "🐻", "🛰️", "⚓", "🫧"];
 
 function firstGrapheme(input: string): string {
   if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
