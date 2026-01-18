@@ -88,6 +88,32 @@ paths:
                     nullable: true
         "404":
           description: Not found
+  /api/peek/{slug}:
+    get:
+      summary: Peek signet + state (no burn)
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Peek result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exists:
+                    type: boolean
+                  gone:
+                    type: boolean
+                  emoji:
+                    type: string
+                    nullable: true
+                  has_url:
+                    type: boolean
   /{slug}:
     get:
       summary: Resolve + redirect

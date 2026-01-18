@@ -18,6 +18,8 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 mod db;
 mod slug;
 
+const DEFAULT_SIGNET: &str = "💖";
+
 #[derive(Clone)]
 struct AppState {
     pool: SqlitePool,
@@ -51,6 +53,14 @@ struct ResolveResponse {
     expires_at: Option<i64>,
     reply_to: Option<String>,
     emoji: Option<String>,
+}
+
+#[derive(Serialize)]
+struct PeekResponse {
+    exists: bool,
+    gone: bool,
+    emoji: Option<String>,
+    has_url: bool,
 }
 
 fn now_unix() -> i64 {
@@ -100,6 +110,85 @@ fn sanitize_emoji(input: Option<String>) -> Option<String> {
         return None;
     }
     Some(trimmed.to_string())
+}
+
+fn detect_vibe(url: &str) -> String {
+    let u = url.to_lowercase();
+
+    if u.contains("awb")
+        || u.contains("track")
+        || u.contains("tracking")
+        || u.contains("fancourier")
+        || u.contains("sameday")
+        || u.contains("dhl")
+        || u.contains("fedex")
+        || u.contains("ups")
+        || u.contains("gls")
+        || u.contains("dpd")
+    {
+        return "📦".to_string();
+    }
+
+    if u.contains(".pdf")
+        || u.contains("invoice")
+        || u.contains("factura")
+        || u.contains("anaf")
+        || u.contains("contract")
+        || u.contains("docs.google")
+        || u.contains("drive")
+    {
+        return "📜".to_string();
+    }
+
+    if u.contains("spotify")
+        || u.contains("music.youtube")
+        || u.contains("soundcloud")
+        || u.contains("bandcamp")
+    {
+        return "🎵".to_string();
+    }
+
+    if u.contains("maps")
+        || u.contains("goo.gl/maps")
+        || u.contains("waze")
+        || u.contains("openstreetmap")
+    {
+        return "📍".to_string();
+    }
+
+    if u.contains("stripe")
+        || u.contains("checkout")
+        || u.contains("revolut")
+        || u.contains("paypal")
+        || u.contains("wise")
+    {
+        return "💳".to_string();
+    }
+
+    if u.contains("github")
+        || u.contains("gitlab")
+        || u.contains("vercel")
+        || u.contains("railway")
+        || u.contains("docs.")
+    {
+        return "🧑‍💻".to_string();
+    }
+
+    DEFAULT_SIGNET.to_string()
+}
+
+fn resolve_signet(url: Option<&str>, emoji: Option<String>) -> String {
+    if let Some(value) = emoji {
+        if !value.trim().is_empty() {
+            return value;
+        }
+    }
+
+    if let Some(link) = url {
+        return detect_vibe(link);
+    }
+
+    DEFAULT_SIGNET.to_string()
 }
 
 fn is_cli_request(headers: &HeaderMap) -> bool {
@@ -153,7 +242,7 @@ async fn dispatch_link(
     let url = clean_opt(payload.url);
     let note = clean_opt(payload.note).or_else(|| clean_opt(payload.text));
     let reply_to = clean_opt(payload.reply_to);
-    let emoji = sanitize_emoji(payload.emoji);
+    let emoji = resolve_signet(url.as_deref(), sanitize_emoji(payload.emoji));
 
     if url.is_none() && note.is_none() {
         return (StatusCode::BAD_REQUEST, "missing url or note\n").into_response();
@@ -200,7 +289,7 @@ async fn dispatch_link(
             expires_at,
             max_views,
             reply_to.as_deref(),
-            emoji.as_deref(),
+            Some(emoji.as_str()),
         )
         .await
         {
@@ -291,18 +380,63 @@ async fn resolve_json(
 ) -> impl IntoResponse {
     let now = now_unix();
     match db::get_link(&state.pool, &slug, now).await {
-        Ok(Some(row)) => (
+        Ok(Some(row)) => {
+            let db::LinkRow {
+                url,
+                note,
+                expires_at,
+                reply_to,
+                emoji,
+            } = row;
+            let emoji = Some(resolve_signet(url.as_deref(), emoji));
+            (
+                StatusCode::OK,
+                Json(ResolveResponse {
+                    url,
+                    note,
+                    expires_at,
+                    reply_to,
+                    emoji,
+                }),
+            )
+                .into_response()
+        }
+        _ => (StatusCode::NOT_FOUND, "not-found\n").into_response(),
+    }
+}
+
+async fn peek_link(
+    State(state): State<Arc<AppState>>,
+    Path(slug): Path<String>,
+) -> impl IntoResponse {
+    let now = now_unix();
+    match db::get_link(&state.pool, &slug, now).await {
+        Ok(Some(row)) => {
+            let db::LinkRow { url, emoji, .. } = row;
+            let has_url = url.is_some();
+            let emoji = Some(resolve_signet(url.as_deref(), emoji));
+            (
+                StatusCode::OK,
+                Json(PeekResponse {
+                    exists: true,
+                    gone: false,
+                    emoji,
+                    has_url,
+                }),
+            )
+                .into_response()
+        }
+        Ok(None) => (
             StatusCode::OK,
-            Json(ResolveResponse {
-                url: row.url,
-                note: row.note,
-                expires_at: row.expires_at,
-                reply_to: row.reply_to,
-                emoji: row.emoji,
+            Json(PeekResponse {
+                exists: false,
+                gone: true,
+                emoji: None,
+                has_url: false,
             }),
         )
             .into_response(),
-        _ => (StatusCode::NOT_FOUND, "not-found\n").into_response(),
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, "peek failed\n").into_response(),
     }
 }
 
@@ -331,7 +465,7 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let database_url =
-        std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite:/app/data/amigo.db".to_string());
+        std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite:./data/amigo.db".to_string());
     let base_url = std::env::var("BASE_URL").unwrap_or_else(|_| "http://localhost:3000".to_string());
     let web_base_url = std::env::var("WEB_BASE_URL").unwrap_or_else(|_| "http://localhost:3001".to_string());
 
@@ -344,6 +478,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/healthz", get(health))
         .route("/api/dispatch", post(dispatch_link))
         .route("/api/resolve/:slug", get(resolve_json))
+        .route("/api/peek/:slug", get(peek_link))
         .route("/api/commence/:slug", post(commence_handler))
         .route("/:slug", get(resolve_slug))
         .layer(TraceLayer::new_for_http())
