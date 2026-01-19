@@ -15,6 +15,16 @@ type PeekResponse = {
 
 const DEFAULT_SIGNET = "💖";
 
+function resolveSiteUrl(): string {
+  if (process.env.NEXT_PUBLIC_WEB_BASE) {
+    return process.env.NEXT_PUBLIC_WEB_BASE;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "http://localhost:3001";
+}
+
 async function fetchPeek(slug: string): Promise<PeekResponse | null> {
   const base = (process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3000").replace(
     /\/$/,
@@ -35,27 +45,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const emoji = peek?.emoji || DEFAULT_SIGNET;
   const gone = peek?.gone || peek?.exists === false;
   const hasUrl = peek?.has_url ?? false;
+  const siteUrl = resolveSiteUrl().replace(/\/$/, "");
+  const ogUrl = new URL(`/api/og?emoji=${encodeURIComponent(emoji)}`, siteUrl);
 
   const title = gone
     ? "Urma s-a sters."
-    : `${emoji} Un prieten ti-a trimis ceva.`;
+    : `Un prieten ${emoji} ți-a trimis asta.`;
   const description = gone
     ? "Momentul a trecut."
     : hasUrl
-    ? "Respira si intra."
-    : "Mesaj efemer - o singura citire.";
+    ? "Mesaj efemer. O singură deschidere. Respiră și intră."
+    : "Mesaj efemer. O singură deschidere. Respiră și intră.";
 
   return {
     title,
     description,
+    metadataBase: new URL(siteUrl),
     openGraph: {
       title,
       description,
+      images: [
+        {
+          url: ogUrl.toString(),
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
     twitter: {
       card: "summary",
       title,
       description,
+      images: [ogUrl.toString()],
     },
   };
 }

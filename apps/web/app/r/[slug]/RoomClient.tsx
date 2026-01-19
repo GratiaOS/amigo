@@ -203,11 +203,11 @@ export default function RoomClient({ params }: Props) {
   }
 
   const defaultSignet = "💖";
-  const signet = firstGrapheme(data?.emoji) || (data ? defaultSignet : null);
-  const markSignet = signet || defaultSignet;
-  const senderText = signet
-    ? t("room.sender.with_signet", { signet })
-    : t("room.sender.generic");
+  const signet = firstGrapheme(data?.emoji) || defaultSignet;
+  const markSignet = signet;
+  const senderText = t("room.sender.with_signet", { signet });
+  const showOgPreview = process.env.NODE_ENV !== "production";
+  const ogPreviewUrl = `/api/og?emoji=${encodeURIComponent(signet)}`;
 
   // VARIANTA 2: Personalizat (decomentează linia de jos ca să activezi)
   // const senderText = t("room.sender.bear");
@@ -298,6 +298,14 @@ export default function RoomClient({ params }: Props) {
               {t("room.reply.cta")}
             </button>
             <p style={styles.replyHint}>{t("room.reply.hint")}</p>
+          </div>
+        )}
+
+        {showOgPreview && (
+          <div style={{ marginTop: 18, textAlign: "center" }}>
+            <a href={ogPreviewUrl} style={styles.ogLink} target="_blank" rel="noreferrer">
+              OG preview
+            </a>
           </div>
         )}
       </div>
@@ -440,5 +448,13 @@ const styles: Record<string, CSSProperties> = {
     opacity: 0.85,
     textDecoration: "none",
     fontSize: 14
+  },
+  ogLink: {
+    display: "inline-block",
+    fontSize: 12,
+    color: "var(--text-subtle)",
+    opacity: 0.8,
+    textDecoration: "underline",
+    fontFamily: "inherit"
   }
 };
