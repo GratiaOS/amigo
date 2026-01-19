@@ -37,11 +37,11 @@
 
   "room.gone.title": "El rastro se borró.",
   "room.gone.body1": "Los enlaces aquí son como palabras dichas sobre piedra tibia.",
-  "room.gone.body2": "Quizás pídelo de nuevo.",
+  "room.gone.body2": "Si quieres otro, pide que lo envíen de nuevo.",
   "room.gone.cta": "> hacer un nuevo rastro_",
 
   "room.burned.title": "El mensaje se consumió.",
   "room.burned.body1": "Fue para una sola lectura.",
-  "room.burned.body2": "Si lo necesitas de nuevo, pídelo otra vez.",
-  "room.burned.cta": "> enviar otro_"
+  "room.burned.body2": "Si quieres otro, pide un mensaje nuevo.",
+  "room.burned.cta": "> enviar otro mensaje_"
 }

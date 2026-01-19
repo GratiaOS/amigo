@@ -37,11 +37,11 @@
 
   "room.gone.title": "The trail faded.",
   "room.gone.body1": "Links here are like words spoken on warm stone.",
-  "room.gone.body2": "Maybe ask them to send it again.",
+  "room.gone.body2": "If you want a new one, ask them to send it.",
   "room.gone.cta": "> make a new trail_",
 
   "room.burned.title": "Message burned.",
   "room.burned.body1": "It was meant for a single reading.",
-  "room.burned.body2": "If you need it again, ask for another.",
-  "room.burned.cta": "> send another_"
+  "room.burned.body2": "If you want another, ask for a new message.",
+  "room.burned.cta": "> send another message_"
 }

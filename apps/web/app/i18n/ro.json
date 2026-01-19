@@ -37,11 +37,11 @@
 
   "room.gone.title": "Urma s-a șters.",
   "room.gone.body1": "Link-urile de aici sunt ca vorbele spuse pe jos, la soare.",
-  "room.gone.body2": "Poate îi ceri din nou.",
+  "room.gone.body2": "Dacă vrei altul, cere să trimită din nou.",
   "room.gone.cta": "> fă-ți o urmă nouă_",
 
   "room.burned.title": "Mesajul s-a stins.",
   "room.burned.body1": "A fost pentru o singură citire.",
-  "room.burned.body2": "Dacă vrei, cere-l din nou.",
-  "room.burned.cta": "> trimite altul_"
+  "room.burned.body2": "Dacă vrei altul, cere un mesaj nou.",
+  "room.burned.cta": "> trimite alt mesaj_"
 }
