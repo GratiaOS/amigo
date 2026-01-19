@@ -210,41 +210,34 @@ export default function RoomClient({ params }: Props) {
       <div style={{ ...styles.card, position: 'relative' }}>
         <LangSwitch />
 
-        <p style={{ opacity: 0.8, marginBottom: 16, fontSize: 15, textAlign: 'center' }}>{senderText}</p>
+        {/* Sender caption (low priority) */}
+        <p style={styles.senderCaption}>{senderText}</p>
 
-        <div style={{ position: 'relative', width: 96, height: 96, margin: '0 auto' }}>
-          <div style={styles.breathCore} />
-          <div style={{ ...styles.breathRing, animationDuration: `${ms}ms` }} />
-          <div style={{ ...styles.breathRing, animationDuration: `${ms}ms`, animationDelay: `${ms / 2}ms` }} />
-          <div style={styles.mark}>{markSignet}</div>
+        {/* Message bubble (primary) */}
+        <div style={styles.msgBubble}>
+          <div style={styles.msgHeader}>
+            <span style={styles.msgSignet} aria-hidden>
+              {markSignet}
+            </span>
+            <span style={styles.msgHeaderText}>{t('home.title')}</span>
+            <div style={{ flex: 1 }} />
+            <div style={styles.msgRingWrap} aria-hidden>
+              <div style={styles.breathCoreSmall} />
+              <div style={{ ...styles.breathRingSmall, animationDuration: `${ms}ms` }} />
+              <div style={{ ...styles.breathRingSmall, animationDuration: `${ms}ms`, animationDelay: `${ms / 2}ms` }} />
+            </div>
+          </div>
+
+          {data?.note ? (
+            <p style={styles.msgText}>
+              “{data.note}”
+            </p>
+          ) : mounted ? (
+            <p style={styles.msgTextMuted}>
+              {shouldAuto ? t('room.breath') : t('room.silence')}
+            </p>
+          ) : null}
         </div>
-
-        {data?.note ? (
-          <p
-            style={{
-              marginTop: 18,
-              textAlign: 'center',
-              opacity: 0.9,
-              lineHeight: 1.6,
-              fontSize: 15,
-              color: 'var(--text)',
-              fontStyle: 'italic',
-            }}>
-            "{data.note}"
-          </p>
-        ) : mounted ? (
-          <p
-            style={{
-              marginTop: shouldAuto ? 10 : 18,
-              textAlign: 'center',
-              opacity: 0.5,
-              fontSize: shouldAuto ? 12 : 14,
-              fontStyle: 'italic',
-              color: 'var(--text-subtle)',
-            }}>
-            {shouldAuto ? t('room.breath') : t('room.silence')}
-          </p>
-        ) : null}
 
         {data?.url && (
           <div style={styles.urlRow}>
@@ -557,5 +550,100 @@ const styles: Record<string, CSSProperties> = {
     opacity: 0.8,
     textDecoration: 'underline',
     fontFamily: 'inherit',
+  },
+  senderCaption: {
+    opacity: 0.55,
+    marginBottom: 12,
+    fontSize: 12,
+    textAlign: 'center',
+    color: 'var(--text-subtle)',
+    letterSpacing: '0.02em',
+  },
+  msgBubble: {
+    marginTop: 6,
+    borderRadius: 18,
+    border: '1px solid color-mix(in oklab, var(--border) 70%, transparent)',
+    background: 'color-mix(in oklab, var(--card-bg) 70%, transparent)',
+    padding: '16px 16px 18px',
+    boxShadow: '0 18px 40px rgba(0,0,0,0.16)',
+  },
+  msgHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+    opacity: 0.9,
+  },
+  msgSignet: {
+    width: 34,
+    height: 34,
+    borderRadius: 999,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 18,
+    background: 'rgba(255,255,255,0.14)',
+    border: '1px solid rgba(255,255,255,0.24)',
+    boxShadow: '0 10px 22px rgba(0,0,0,0.12)',
+  },
+  msgHeaderText: {
+    fontSize: 12,
+    fontWeight: 650,
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase',
+    color: 'var(--text-muted)',
+  },
+  msgRingWrap: {
+    position: 'relative',
+    width: 20,
+    height: 20,
+    marginLeft: 6,
+    opacity: 0.85,
+  },
+  breathCoreSmall: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: 6,
+    height: 6,
+    borderRadius: '50%',
+    backgroundColor: 'var(--accent)',
+    transform: 'translate(-50%, -50%)',
+    boxShadow: '0 0 10px var(--accent)',
+  },
+  breathRingSmall: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: 6,
+    height: 6,
+    borderRadius: '50%',
+    border: '2px solid var(--accent)',
+    transform: 'translate(-50%, -50%) scale(1)',
+    pointerEvents: 'none',
+    opacity: 0,
+    animationName: 'ringBreathe',
+    animationTimingFunction: 'ease-out',
+    animationIterationCount: 'infinite',
+  },
+  msgText: {
+    marginTop: 4,
+    textAlign: 'center',
+    opacity: 0.92,
+    lineHeight: 1.6,
+    fontSize: 18,
+    color: 'var(--text)',
+    fontStyle: 'italic',
+    padding: '6px 6px 2px',
+  },
+  msgTextMuted: {
+    marginTop: 4,
+    textAlign: 'center',
+    opacity: 0.55,
+    lineHeight: 1.6,
+    fontSize: 16,
+    color: 'var(--text-subtle)',
+    fontStyle: 'italic',
+    padding: '6px 6px 2px',
   },
 };
