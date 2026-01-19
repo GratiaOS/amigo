@@ -3,7 +3,7 @@ import en from "./en.json";
 import es from "./es.json";
 
 export type Lang = "ro" | "en" | "es";
-export const DEFAULT_LANG: Lang = "ro";
+export const DEFAULT_LANG: Lang = "en";
 export const SUPPORTED_LANGS: Lang[] = ["ro", "en", "es"];
 
 const DICTS: Record<Lang, Record<string, string>> = { ro, en, es };
