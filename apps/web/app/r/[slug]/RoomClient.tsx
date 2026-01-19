@@ -116,6 +116,27 @@ export default function RoomClient({ params }: Props) {
     setStatus('burned');
   };
 
+  const copyLink = async () => {
+    const link = data?.url;
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+    } catch {
+      const el = document.createElement('textarea');
+      el.value = link;
+      el.style.position = 'fixed';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      el.focus();
+      el.select();
+      try {
+        document.execCommand('copy');
+      } finally {
+        document.body.removeChild(el);
+      }
+    }
+  };
+
   const replyNow = async () => {
     if (!data) return;
     try {
@@ -198,7 +219,6 @@ export default function RoomClient({ params }: Props) {
   const defaultSignet = '💖';
   const signet = firstGrapheme(data?.emoji) || defaultSignet;
   const markSignet = signet;
-  const senderText = t('room.sender.generic');
   const showOgPreview = process.env.NODE_ENV !== 'production';
   const ogPreviewUrl = `/api/og/${lang}/${encodeURIComponent(signet)}`;
 
@@ -210,8 +230,14 @@ export default function RoomClient({ params }: Props) {
       <div style={{ ...styles.card, position: 'relative' }}>
         <LangSwitch />
 
-        {/* Sender caption (low priority) */}
-        <p style={styles.senderCaption}>{senderText}</p>
+        {/* Diagnostics (low priority) */}
+        <p style={styles.senderCaption}>
+          <span style={styles.diagMono}>CH:</span> <span style={styles.diagValue}>{params.slug.slice(0, 4).toUpperCase()}</span>
+          <span style={styles.diagSep}>•</span>
+          <span style={styles.diagMono}>NET:</span> <span style={styles.diagValue}>SECURE</span>
+          <span style={styles.diagSep}>•</span>
+          <span style={styles.diagMono}>SIG:</span> <span style={styles.diagValue}>{markSignet}</span>
+        </p>
 
         {/* Message bubble (primary) */}
         <div style={styles.msgBubble}>
@@ -234,34 +260,53 @@ export default function RoomClient({ params }: Props) {
             <p style={styles.msgTextMuted}>{shouldAuto ? t('room.breath') : t('room.silence')}</p>
           ) : null}
 
-          {status === 'ready' && !data?.url && (
+          {status === 'ready' && (
             <>
               <div style={styles.msgDivider} aria-hidden />
               <div style={styles.msgFooter}>
-                <div style={styles.wtRow}>
-                  <button style={styles.wtBtnGhost} onClick={burnNow} aria-label={t('room.burn.cta')} data-wt="1">
+                <div style={styles.wtBeep} aria-hidden>
+                  <span style={styles.wtBeepIcon}>📻</span>
+                  <span style={styles.wtBeepDot} />
+                  <span style={styles.wtBeepBar} />
+                  <span style={{ ...styles.wtBeepBar, animationDelay: '120ms' }} />
+                  <span style={{ ...styles.wtBeepBar, animationDelay: '240ms' }} />
+                </div>
+
+                {data?.url ? (
+                  <button style={styles.pttBtn} onClick={commitAndGo} aria-label={t('room.open')} data-wt="1">
+                    <span style={styles.pttIcon} aria-hidden>
+                      ⭕
+                    </span>
+                    <span style={styles.pttLabel}>{t('room.open')}</span>
+                  </button>
+                ) : (
+                  <button style={styles.pttBtn} onClick={replyNow} aria-label={t('room.reply.cta')} data-wt="1">
+                    <span style={styles.pttIcon} aria-hidden>
+                      🎙️
+                    </span>
+                    <span style={styles.pttLabel}>{t('room.reply.cta')}</span>
+                  </button>
+                )}
+
+                <div style={styles.miniRow}>
+                  {data?.url ? (
+                    <button style={styles.miniBtn} onClick={copyLink} aria-label={t('room.link.label')} data-wt="1">
+                      <span style={styles.wtIcon} aria-hidden>
+                        🔗
+                      </span>
+                      <span>{t('home.copy')}</span>
+                    </button>
+                  ) : null}
+
+                  <button style={styles.miniBtnDanger} onClick={burnNow} aria-label={t('room.burn.cta')} data-wt="1">
                     <span style={styles.wtIcon} aria-hidden>
                       🔥
                     </span>
                     <span>{t('room.burn.cta')}</span>
                   </button>
-
-                  <div style={styles.wtBeep} aria-hidden>
-                    <span style={styles.wtBeepIcon}>📻</span>
-                    <span style={styles.wtBeepDot} />
-                    <span style={styles.wtBeepBar} />
-                    <span style={{ ...styles.wtBeepBar, animationDelay: '120ms' }} />
-                    <span style={{ ...styles.wtBeepBar, animationDelay: '240ms' }} />
-                  </div>
-
-                  <button style={styles.wtBtn} onClick={replyNow} aria-label={t('room.reply.cta')} data-wt="1">
-                    <span style={styles.wtIcon} aria-hidden>
-                      ↩︎
-                    </span>
-                    <span>{t('room.reply.cta')}</span>
-                  </button>
                 </div>
-                <p style={styles.replyHint}>{t('room.reply.hint')}</p>
+
+                {!data?.url ? <p style={styles.replyHint}>{t('room.reply.hint')}</p> : null}
               </div>
             </>
           )}
@@ -273,32 +318,6 @@ export default function RoomClient({ params }: Props) {
             <a href={data.url} style={styles.urlLink}>
               {data.url}
             </a>
-          </div>
-        )}
-
-        {status === 'ready' && !auto && data?.url && (
-          <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center' }}>
-            <button
-              style={{
-                ...styles.btn,
-                animation: `fadeIn 700ms ${ms}ms forwards`,
-                opacity: 0,
-                cursor: status !== 'ready' ? 'not-allowed' : 'pointer',
-              }}
-              disabled={status !== 'ready'}
-              onClick={commitAndGo}
-              onMouseEnter={(e) => {
-                if (e.currentTarget.disabled) return;
-                e.currentTarget.style.borderColor = 'var(--accent)';
-                e.currentTarget.style.background = 'color-mix(in oklab, var(--accent) 10%, transparent)';
-              }}
-              onMouseLeave={(e) => {
-                if (e.currentTarget.disabled) return;
-                e.currentTarget.style.borderColor = 'var(--border)';
-                e.currentTarget.style.background = 'transparent';
-              }}>
-              {t('room.open')}
-            </button>
           </div>
         )}
 
@@ -342,6 +361,7 @@ export default function RoomClient({ params }: Props) {
         button[data-wt=1]:active {
           transform: translateY(0px) scale(0.99);
           background: color-mix(in oklab, var(--accent) 22%, transparent);
+          box-shadow: 0 10px 18px rgba(0,0,0,0.16), inset 0 2px 10px rgba(0,0,0,0.28);
         }
         @keyframes wtBeep {
           0% { transform: scaleY(0.35); opacity: 0.45; }
@@ -434,14 +454,6 @@ const styles: Record<string, CSSProperties> = {
     fontFamily: 'inherit',
     fontSize: 13,
   },
-  wtRow: {
-    display: 'flex',
-    gap: 12,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    flexWrap: 'nowrap',
-  },
   wtIcon: {
     display: 'inline-flex',
     alignItems: 'center',
@@ -482,48 +494,6 @@ const styles: Record<string, CSSProperties> = {
     animation: 'wtBeep 720ms ease-in-out infinite',
     boxShadow: '0 10px 18px rgba(0,0,0,0.18)',
   },
-  wtBtn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 10,
-    padding: '14px 16px',
-    borderRadius: 999,
-    border: '2px solid var(--border)',
-    background: 'color-mix(in oklab, var(--card-bg) 78%, transparent)',
-    color: 'var(--text)',
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-    fontSize: 14,
-    fontWeight: 650,
-    letterSpacing: '0.03em',
-    flex: '1 1 0',
-    minWidth: 0,
-    justifyContent: 'center',
-    boxShadow: '0 10px 24px rgba(0,0,0,0.18)',
-    transition:
-      'border-color var(--duration-snug) var(--ease-soft), background var(--duration-snug) var(--ease-soft), transform var(--duration-snug) var(--ease-soft)',
-  },
-  wtBtnGhost: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 10,
-    padding: '14px 16px',
-    borderRadius: 999,
-    border: '2px dashed var(--border)',
-    background: 'color-mix(in oklab, var(--card-bg) 70%, transparent)',
-    color: 'var(--text-muted)',
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-    fontSize: 14,
-    fontWeight: 650,
-    letterSpacing: '0.03em',
-    flex: '1 1 0',
-    minWidth: 0,
-    justifyContent: 'center',
-    boxShadow: '0 10px 24px rgba(0,0,0,0.14)',
-    transition:
-      'border-color var(--duration-snug) var(--ease-soft), background var(--duration-snug) var(--ease-soft), transform var(--duration-snug) var(--ease-soft)',
-  },
   msgDivider: {
     marginTop: 14,
     height: 1,
@@ -532,11 +502,99 @@ const styles: Record<string, CSSProperties> = {
     opacity: 0.8,
   },
   msgFooter: {
-    marginTop: 10,
+    marginTop: 12,
     display: 'grid',
-    gap: 10,
+    gap: 12,
     justifyItems: 'stretch',
     width: '100%',
+  },
+  pttBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    width: '100%',
+    padding: '16px 18px',
+    borderRadius: 22,
+    border: '2px solid color-mix(in oklab, var(--accent) 55%, var(--border))',
+    background: 'color-mix(in oklab, var(--accent) 10%, rgba(0,0,0,0.18))',
+    color: 'var(--text)',
+    cursor: 'pointer',
+    fontFamily: 'inherit',
+    fontSize: 15,
+    fontWeight: 750,
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase',
+    boxShadow: '0 14px 28px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08)',
+    transition:
+      'border-color var(--duration-snug) var(--ease-soft), background var(--duration-snug) var(--ease-soft), transform var(--duration-snug) var(--ease-soft)',
+  },
+  pttIcon: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 34,
+    height: 34,
+    borderRadius: 999,
+    background: 'rgba(255,255,255,0.10)',
+    border: '1px solid rgba(255,255,255,0.22)',
+    boxShadow: '0 10px 22px rgba(0,0,0,0.18)',
+    fontSize: 16,
+  },
+  pttLabel: {
+    lineHeight: 1,
+  },
+  miniRow: {
+    display: 'flex',
+    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    flexWrap: 'nowrap',
+  },
+  miniBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    padding: '10px 12px',
+    borderRadius: 14,
+    border: '1px solid color-mix(in oklab, var(--border) 75%, transparent)',
+    background: 'color-mix(in oklab, var(--card-bg) 62%, transparent)',
+    color: 'var(--text-muted)',
+    cursor: 'pointer',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    fontSize: 12,
+    fontWeight: 650,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+    flex: '1 1 0',
+    minWidth: 0,
+    boxShadow: '0 10px 20px rgba(0,0,0,0.14)',
+    transition:
+      'border-color var(--duration-snug) var(--ease-soft), background var(--duration-snug) var(--ease-soft), transform var(--duration-snug) var(--ease-soft)',
+  },
+  miniBtnDanger: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    padding: '10px 12px',
+    borderRadius: 14,
+    border: '1px solid color-mix(in oklab, #ff6b6b 35%, var(--border))',
+    background: 'color-mix(in oklab, #ff6b6b 10%, rgba(0,0,0,0.18))',
+    color: 'var(--text)',
+    cursor: 'pointer',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    fontSize: 12,
+    fontWeight: 750,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+    flex: '1 1 0',
+    minWidth: 0,
+    boxShadow: '0 10px 20px rgba(0,0,0,0.14)',
+    transition:
+      'border-color var(--duration-snug) var(--ease-soft), background var(--duration-snug) var(--ease-soft), transform var(--duration-snug) var(--ease-soft)',
   },
   replyHint: {
     marginTop: 0,
@@ -583,12 +641,26 @@ const styles: Record<string, CSSProperties> = {
     fontFamily: 'inherit',
   },
   senderCaption: {
-    opacity: 0.55,
+    opacity: 0.72,
     marginBottom: 12,
-    fontSize: 12,
+    fontSize: 11,
     textAlign: 'center',
     color: 'var(--text-subtle)',
-    letterSpacing: '0.02em',
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+  },
+  diagMono: {
+    opacity: 0.7,
+  },
+  diagValue: {
+    opacity: 0.92,
+    color: 'var(--text-muted)',
+  },
+  diagSep: {
+    display: 'inline-block',
+    margin: '0 10px',
+    opacity: 0.35,
   },
   msgBubble: {
     marginTop: 6,
