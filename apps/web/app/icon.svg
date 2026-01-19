@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gratia Mark v0.2 - open calendula -->
+  <!-- Leaves (Grajd / Garden) -->
+  <g transform="translate(0,6)">
+    <ellipse cx="40" cy="78" rx="10" ry="5" fill="#4C8F4A" />
+    <ellipse cx="60" cy="78" rx="10" ry="5" fill="#4C8F4A" />
+  </g>
+
+  <!-- Petals (Sun / Calendula) -->
+  <g>
+    <g transform="translate(50,42)">
+      <ellipse cx="0" cy="-18" rx="8" ry="16" fill="#F4A261" />
+    </g>
+    <g transform="rotate(45 50 42)">
+      <ellipse cx="50" cy="24" rx="8" ry="16" fill="#FB8C00" />
+    </g>
+    <g transform="rotate(90 50 42)">
+      <ellipse cx="50" cy="24" rx="8" ry="16" fill="#F4A261" />
+    </g>
+    <g transform="rotate(135 50 42)">
+      <ellipse cx="50" cy="24" rx="8" ry="16" fill="#FB8C00" />
+    </g>
+    <g transform="rotate(180 50 42)">
+      <ellipse cx="50" cy="24" rx="8" ry="16" fill="#F4A261" />
+    </g>
+    <g transform="rotate(225 50 42)">
+      <ellipse cx="50" cy="24" rx="8" ry="16" fill="#FB8C00" />
+    </g>
+    <g transform="rotate(270 50 42)">
+      <ellipse cx="50" cy="24" rx="8" ry="16" fill="#F4A261" />
+    </g>
+    <g transform="rotate(315 50 42)">
+      <ellipse cx="50" cy="24" rx="8" ry="16" fill="#FB8C00" />
+    </g>
+  </g>
+
+  <!-- Core (Kernel / Honey) -->
+  <circle cx="50" cy="42" r="12" fill="#E3A742" />
+  <circle cx="50" cy="42" r="7" fill="#FFF8EE" fill-opacity="0.9" />
+
+  <!-- Soft shadow -->
+  <ellipse cx="50" cy="86" rx="18" ry="4" fill="#000000" fill-opacity="0.08" />
+</svg>
