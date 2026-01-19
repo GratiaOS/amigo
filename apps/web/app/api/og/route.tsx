@@ -3,9 +3,36 @@ import { getPalette } from "../../lib/signets/palettes";
 
 export const runtime = "edge";
 
+type OgLang = "en" | "ro" | "es";
+
+const OG_COPY: Record<OgLang, { title: string; footer: string }> = {
+  en: {
+    title: "A friend sent you this",
+    footer: "ephemeral message",
+  },
+  ro: {
+    title: "Un prieten ți-a trimis asta",
+    footer: "mesaj efemer",
+  },
+  es: {
+    title: "Un amigo te envió esto",
+    footer: "mensaje efímero",
+  },
+};
+
+function detectLang(input?: string | null): OgLang {
+  const raw = (input || "").toLowerCase();
+  if (raw.includes("ro")) return "ro";
+  if (raw.includes("es")) return "es";
+  if (raw.includes("en")) return "en";
+  return "en";
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const emoji = searchParams.get("emoji") || "💖";
+  const lang = detectLang(searchParams.get("lang") || request.headers.get("accept-language"));
+  const copy = OG_COPY[lang];
 
   const palette = getPalette(emoji);
 
@@ -122,7 +149,7 @@ export async function GET(request: Request) {
             zIndex: 5,
           }}
         >
-          Un prieten ți-a trimis asta
+          {copy.title}
         </div>
 
         <div
@@ -154,7 +181,7 @@ export async function GET(request: Request) {
               color: palette.ink,
             }}
           >
-            mesaj efemer
+            {copy.footer}
           </div>
         </div>
       </div>
