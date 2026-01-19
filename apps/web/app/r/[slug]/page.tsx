@@ -47,6 +47,11 @@ function detectLang(input?: string | null): OgLang {
   return "en";
 }
 
+function pickParam(value?: string | string[]): string | undefined {
+  if (Array.isArray(value)) return value[0];
+  return value;
+}
+
 function resolveSiteUrl(): string {
   if (process.env.NEXT_PUBLIC_WEB_BASE) {
     return process.env.NEXT_PUBLIC_WEB_BASE;
@@ -72,13 +77,14 @@ async function fetchPeek(slug: string): Promise<PeekResponse | null> {
   }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const peek = await fetchPeek(params.slug);
   const emoji = peek?.emoji || DEFAULT_SIGNET;
   const gone = peek?.gone || peek?.exists === false;
   const hasUrl = peek?.has_url ?? false;
   const siteUrl = resolveSiteUrl().replace(/\/$/, "");
-  const lang = detectLang(headers().get("accept-language"));
+  const langParam = pickParam(searchParams?.lang);
+  const lang = detectLang(langParam || headers().get("accept-language"));
   const copy = OG_COPY[lang];
   const ogUrl = new URL(`/api/og?emoji=${encodeURIComponent(emoji)}`, siteUrl);
   ogUrl.searchParams.set("lang", lang);
