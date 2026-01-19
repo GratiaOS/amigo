@@ -200,7 +200,7 @@ export default function RoomClient({ params }: Props) {
   const markSignet = signet;
   const senderText = t('room.sender.generic');
   const showOgPreview = process.env.NODE_ENV !== 'production';
-  const ogPreviewUrl = `/api/og?emoji=${encodeURIComponent(signet)}`;
+  const ogPreviewUrl = `/api/og/${lang}/${encodeURIComponent(signet)}`;
 
   // VARIANTA 2: Personalizat (decomentează linia de jos ca să activezi)
   // const senderText = t("room.sender.bear");

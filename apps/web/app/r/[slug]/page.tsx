@@ -86,8 +86,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const langParam = pickParam(searchParams?.lang);
   const lang = detectLang(langParam || headers().get("accept-language"));
   const copy = OG_COPY[lang];
-  const ogUrl = new URL(`/api/og?emoji=${encodeURIComponent(emoji)}`, siteUrl);
-  ogUrl.searchParams.set("lang", lang);
+  const ogPath = `/api/og/${lang}/${encodeURIComponent(emoji)}`;
+  const ogUrl = new URL(ogPath, siteUrl);
 
   const title = gone
     ? copy.goneTitle
