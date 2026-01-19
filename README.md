@@ -21,6 +21,10 @@ CLI vibe:
 
 Quiet tech, warm UX.
 
+## License
+
+AGPL-3.0-only.
+
 ## Philosophy
 
 Signets are presence stamps. They declare tone without narrative.

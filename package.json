@@ -1,6 +1,7 @@
 {
   "name": "amigo",
   "private": true,
+  "license": "AGPL-3.0-only",
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "dev:api": "cargo run --manifest-path apps/api/Cargo.toml",
