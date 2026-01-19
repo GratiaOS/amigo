@@ -20,7 +20,7 @@ type OgLang = "en" | "ro" | "es";
 
 const OG_COPY: Record<OgLang, { title: (emoji: string) => string; description: string; goneTitle: string; goneDescription: string; }> = {
   en: {
-    title: (emoji) => `A friend sent you this ${emoji}.`,
+    title: (emoji) => `A friend ${emoji} sent you this.`,
     description: "Ephemeral message. One opening. Breathe and enter.",
     goneTitle: "The trail faded.",
     goneDescription: "This moment passed.",
@@ -32,7 +32,7 @@ const OG_COPY: Record<OgLang, { title: (emoji: string) => string; description: s
     goneDescription: "Momentul a trecut.",
   },
   es: {
-    title: (emoji) => `Un amigo te envió esto ${emoji}.`,
+    title: (emoji) => `Un amigo ${emoji} te envió esto.`,
     description: "Mensaje efímero. Una sola apertura. Respira y entra.",
     goneTitle: "El rastro se borró.",
     goneDescription: "Este momento pasó.",
