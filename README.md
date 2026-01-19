@@ -77,12 +77,23 @@ amigo() {
   local url=""
   local note=""
   local auto_mode=0
+  local lang=""
+  local emoji=""
+  local ttl="7d"
 
-  # Check for -a flag (ritual/auto mode)
-  if [[ "$1" == "-a" ]]; then
-    auto_mode=1
-    shift
-  fi
+  while getopts ":al:e:t:" opt; do
+    case "$opt" in
+      a) auto_mode=1 ;;
+      l) lang="$OPTARG" ;;
+      e) emoji="$OPTARG" ;;
+      t) ttl="$OPTARG" ;;
+      *)
+        echo "Usage: amigo [-a] [-l lang] [-e emoji] [-t ttl] <url> [note]"
+        return 1
+        ;;
+    esac
+  done
+  shift $((OPTIND-1))
 
   if [ ! -t 0 ]; then
     note="$(cat)"
@@ -94,16 +105,34 @@ amigo() {
   fi
 
   if [ -z "$url" ]; then
-    echo "Usage: amigo [-a] <url> [note]"
-    echo "       echo 'note' | amigo [-a] <url>"
+    echo "Usage: amigo [-a] [-l lang] [-e emoji] [-t ttl] <url> [note]"
+    echo "       echo 'note' | amigo [-a] [-l lang] [-e emoji] [-t ttl] <url>"
     echo ""
     echo "Flags:"
     echo "  -a    Ritual mode: Auto-open after breath cycle"
+    echo "  -l    Language for share link (en|ro|es)"
+    echo "  -e    Override signet emoji"
+    echo "  -t    TTL override (default 7d)"
     return 1
   fi
 
   local payload
-  payload=$(python3 -c "import sys, json; print(json.dumps({'url': sys.argv[1], 'note': sys.argv[2], 'ttl': '7d'}))" "$url" "$note")
+  payload=$(python3 - <<'PY' "$url" "$note" "$ttl" "$emoji"
+import json,sys
+url=sys.argv[1]
+note=sys.argv[2].strip()
+ttl=sys.argv[3].strip()
+emoji=sys.argv[4].strip()
+data={"url":url}
+if note:
+  data["note"]=note
+if ttl:
+  data["ttl"]=ttl
+if emoji:
+  data["emoji"]=emoji
+print(json.dumps(data))
+PY
+  )
 
   local short
   short=$(curl -sS -X POST "http://localhost:3000/api/dispatch" \
@@ -112,9 +141,20 @@ amigo() {
     -A 'amigo-cli' \
     -d "$payload")
 
-  # Append ?auto=1 for ritual mode
+  short="$(printf "%s" "$short" | tr -d '\n')"
+  local qs=""
   if [ "$auto_mode" -eq 1 ]; then
-    short="${short}?auto=1"
+    qs="auto=1"
+  fi
+  if [ -n "$lang" ]; then
+    if [ -n "$qs" ]; then
+      qs="${qs}&lang=${lang}"
+    else
+      qs="lang=${lang}"
+    fi
+  fi
+  if [ -n "$qs" ]; then
+    short="${short}?${qs}"
   fi
 
   echo "$short"
