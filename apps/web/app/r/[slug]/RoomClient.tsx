@@ -229,14 +229,42 @@ export default function RoomClient({ params }: Props) {
           </div>
 
           {data?.note ? (
-            <p style={styles.msgText}>
-              “{data.note}”
-            </p>
+            <p style={styles.msgText}>“{data.note}”</p>
           ) : mounted ? (
-            <p style={styles.msgTextMuted}>
-              {shouldAuto ? t('room.breath') : t('room.silence')}
-            </p>
+            <p style={styles.msgTextMuted}>{shouldAuto ? t('room.breath') : t('room.silence')}</p>
           ) : null}
+
+          {status === 'ready' && !data?.url && (
+            <>
+              <div style={styles.msgDivider} aria-hidden />
+              <div style={styles.msgFooter}>
+                <div style={styles.wtRow}>
+                  <button style={styles.wtBtnGhost} onClick={burnNow} aria-label={t('room.burn.cta')} data-wt="1">
+                    <span style={styles.wtIcon} aria-hidden>
+                      🔥
+                    </span>
+                    <span>{t('room.burn.cta')}</span>
+                  </button>
+
+                  <div style={styles.wtBeep} aria-hidden>
+                    <span style={styles.wtBeepIcon}>📻</span>
+                    <span style={styles.wtBeepDot} />
+                    <span style={styles.wtBeepBar} />
+                    <span style={{ ...styles.wtBeepBar, animationDelay: '120ms' }} />
+                    <span style={{ ...styles.wtBeepBar, animationDelay: '240ms' }} />
+                  </div>
+
+                  <button style={styles.wtBtn} onClick={replyNow} aria-label={t('room.reply.cta')} data-wt="1">
+                    <span style={styles.wtIcon} aria-hidden>
+                      ↩︎
+                    </span>
+                    <span>{t('room.reply.cta')}</span>
+                  </button>
+                </div>
+                <p style={styles.replyHint}>{t('room.reply.hint')}</p>
+              </div>
+            </>
+          )}
         </div>
 
         {data?.url && (
@@ -271,34 +299,6 @@ export default function RoomClient({ params }: Props) {
               }}>
               {t('room.open')}
             </button>
-          </div>
-        )}
-
-        {status === 'ready' && !data?.url && (
-          <div style={{ marginTop: 22, display: 'grid', gap: 10, justifyItems: 'center' }}>
-            <div style={styles.wtRow}>
-              <button style={styles.wtBtnGhost} onClick={burnNow} aria-label={t('room.burn.cta')} data-wt="1">
-                <span style={styles.wtIcon} aria-hidden>
-                  🔥
-                </span>
-                <span>{t('room.burn.cta')}</span>
-              </button>
-
-              <div style={styles.wtBeep} aria-hidden>
-                <span style={styles.wtBeepDot} />
-                <span style={styles.wtBeepBar} />
-                <span style={{ ...styles.wtBeepBar, animationDelay: '120ms' }} />
-                <span style={{ ...styles.wtBeepBar, animationDelay: '240ms' }} />
-              </div>
-
-              <button style={styles.wtBtn} onClick={replyNow} aria-label={t('room.reply.cta')} data-wt="1">
-                <span style={styles.wtIcon} aria-hidden>
-                  ↩︎
-                </span>
-                <span>{t('room.reply.cta')}</span>
-              </button>
-            </div>
-            <p style={styles.replyHint}>{t('room.reply.hint')}</p>
           </div>
         )}
 
@@ -366,9 +366,11 @@ const styles: Record<string, CSSProperties> = {
     background: 'var(--page-bg)',
     color: 'var(--text)',
     fontFamily: 'inherit',
+    padding: 'var(--page-padding)',
+    overflowX: 'hidden',
   },
   card: {
-    width: 420,
+    width: 'min(420px, 100%)',
     padding: 'var(--card-padding)',
     borderRadius: 'var(--card-radius)',
     border: 'var(--card-border)',
@@ -436,8 +438,9 @@ const styles: Record<string, CSSProperties> = {
     display: 'flex',
     gap: 12,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     width: '100%',
+    flexWrap: 'nowrap',
   },
   wtIcon: {
     display: 'inline-flex',
@@ -451,8 +454,16 @@ const styles: Record<string, CSSProperties> = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 6,
-    padding: '0 2px',
-    opacity: 0.9,
+    padding: '0 4px',
+    opacity: 0.92,
+    justifySelf: 'center',
+    flex: '0 0 auto',
+  },
+  wtBeepIcon: {
+    fontSize: 14,
+    lineHeight: 1,
+    opacity: 0.85,
+    filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.28))',
   },
   wtBeepDot: {
     width: 7,
@@ -475,7 +486,7 @@ const styles: Record<string, CSSProperties> = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 10,
-    padding: '14px 18px',
+    padding: '14px 16px',
     borderRadius: 999,
     border: '2px solid var(--border)',
     background: 'color-mix(in oklab, var(--card-bg) 78%, transparent)',
@@ -485,6 +496,9 @@ const styles: Record<string, CSSProperties> = {
     fontSize: 14,
     fontWeight: 650,
     letterSpacing: '0.03em',
+    flex: '1 1 0',
+    minWidth: 0,
+    justifyContent: 'center',
     boxShadow: '0 10px 24px rgba(0,0,0,0.18)',
     transition:
       'border-color var(--duration-snug) var(--ease-soft), background var(--duration-snug) var(--ease-soft), transform var(--duration-snug) var(--ease-soft)',
@@ -493,7 +507,7 @@ const styles: Record<string, CSSProperties> = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 10,
-    padding: '14px 18px',
+    padding: '14px 16px',
     borderRadius: 999,
     border: '2px dashed var(--border)',
     background: 'color-mix(in oklab, var(--card-bg) 70%, transparent)',
@@ -503,15 +517,32 @@ const styles: Record<string, CSSProperties> = {
     fontSize: 14,
     fontWeight: 650,
     letterSpacing: '0.03em',
+    flex: '1 1 0',
+    minWidth: 0,
+    justifyContent: 'center',
     boxShadow: '0 10px 24px rgba(0,0,0,0.14)',
     transition:
       'border-color var(--duration-snug) var(--ease-soft), background var(--duration-snug) var(--ease-soft), transform var(--duration-snug) var(--ease-soft)',
   },
+  msgDivider: {
+    marginTop: 14,
+    height: 1,
+    width: '100%',
+    background: 'color-mix(in oklab, var(--border) 65%, transparent)',
+    opacity: 0.8,
+  },
+  msgFooter: {
+    marginTop: 10,
+    display: 'grid',
+    gap: 10,
+    justifyItems: 'stretch',
+    width: '100%',
+  },
   replyHint: {
-    marginTop: -2,
+    marginTop: 0,
     fontSize: 11,
     color: 'var(--text-subtle)',
-    opacity: 0.7,
+    opacity: 0.72,
     textAlign: 'center',
   },
   urlRow: {

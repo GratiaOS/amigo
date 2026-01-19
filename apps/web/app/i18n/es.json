@@ -44,7 +44,7 @@
   "room.open": "Abrir",
   "room.link.label": "Enlace",
   "room.burn.cta": "Quemar",
-  "room.reply.cta": "Responder ↩︎",
+  "room.reply.cta": "Responder",
   "room.reply.hint": "Responder quemará el mensaje original.",
 
   "room.gone.title": "El rastro se borró.",
