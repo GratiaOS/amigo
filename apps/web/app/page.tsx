@@ -9,6 +9,20 @@ type DispatchResponse = { short: string; original?: string | null; note?: string
 
 // TODO: Extend Musical Notes Code for 🎵 signet (align with the 13-month energy calendar).
 const SIGNETS = ["💖", "👍", "🎵", "🚬", "🐺", "🐸", "🌸", "🦅", "🐻", "🛰️", "⚓", "🫧"];
+const SIGNET_HINT_KEYS: Record<string, string> = {
+  "💖": "home.signet.desc.gratia",
+  "👍": "home.signet.desc.yes",
+  "🎵": "home.signet.desc.song",
+  "🚬": "home.signet.desc.ground",
+  "🐺": "home.signet.desc.pack",
+  "🐸": "home.signet.desc.signal",
+  "🌸": "home.signet.desc.petal",
+  "🦅": "home.signet.desc.vision",
+  "🐻": "home.signet.desc.strength",
+  "🛰️": "home.signet.desc.channel",
+  "⚓": "home.signet.desc.anchor",
+  "🫧": "home.signet.desc.bubbles",
+};
 
 function firstGrapheme(input: string): string {
   if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
@@ -31,6 +45,7 @@ export default function Home() {
   const [note, setNote] = useState("");
   const [ttl, setTtl] = useState("7d");
   const [emoji, setEmoji] = useState("");
+  const [hoveredSignet, setHoveredSignet] = useState<string | null>(null);
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DispatchResponse | null>(null);
@@ -40,6 +55,9 @@ export default function Home() {
   const noteValue = note.trim();
   const replyValue = replyTo?.trim() ?? "";
   const emojiValue = firstGrapheme(emoji.trim());
+  const activeSignet = hoveredSignet || emojiValue;
+  const signetHintKey =
+    (activeSignet && SIGNET_HINT_KEYS[activeSignet]) || "home.signet.hint";
   const isPetal = urlValue.length === 0;
   const canSubmit = urlValue.length > 0 || noteValue.length > 0;
 
@@ -146,6 +164,10 @@ export default function Home() {
                     key={signet}
                     type="button"
                     onClick={() => setEmoji(signet)}
+                    onMouseEnter={() => setHoveredSignet(signet)}
+                    onMouseLeave={() => setHoveredSignet(null)}
+                    onFocus={() => setHoveredSignet(signet)}
+                    onBlur={() => setHoveredSignet(null)}
                     style={{
                       ...styles.signetBtn,
                       opacity: emojiValue === signet ? 1 : 0.6,
@@ -156,7 +178,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <p style={styles.signetHint}>{t("home.signet.hint")}</p>
+            <p style={styles.signetHint}>{t(signetHintKey)}</p>
           </div>
 
           <div style={styles.fieldGroup}>
