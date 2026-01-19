@@ -1,74 +1,105 @@
 import { ImageResponse } from "next/og";
-import { resolvePalette } from "../../lib/resolvePalette";
+import { getPalette } from "../../lib/signets/palettes";
 
 export const runtime = "edge";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const emoji = searchParams.get("emoji") || "💖";
-  const palette = resolvePalette(emoji);
+
+  const palette = getPalette(emoji);
+
+  const bgGradient = `radial-gradient(circle at 30% 25%, ${palette.glow} 0%, ${palette.paper} 35%, ${palette.bg} 70%, ${palette.bg} 100%)`;
 
   return new ImageResponse(
     (
       <div
         style={{
-          height: "100%",
           width: "100%",
+          height: "100%",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundImage: palette.gradient,
-          color: palette.text,
-          fontFamily: "ui-monospace, 'JetBrains Mono', 'IBM Plex Mono', monospace",
+          backgroundImage: bgGradient,
           position: "relative",
+          overflow: "hidden",
+          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
         }}
       >
         <div
           style={{
             position: "absolute",
             inset: 0,
+            opacity: 0.18,
             backgroundImage:
-              "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 60%), radial-gradient(circle at 80% 30%, rgba(255,255,255,0.06), transparent 55%)",
-            opacity: 0.9,
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            mixBlendMode: "overlay",
           }}
         />
 
         <div
           style={{
-            width: 220,
-            height: 220,
+            position: "absolute",
+            width: 520,
+            height: 520,
+            borderRadius: "50%",
+            background: palette.glow,
+            filter: "blur(120px)",
+            top: -120,
+            left: -80,
+            opacity: 0.35,
+          }}
+        />
+
+        <div
+          style={{
+            position: "absolute",
+            width: 420,
+            height: 420,
+            borderRadius: "50%",
+            background: palette.glow,
+            filter: "blur(140px)",
+            bottom: -120,
+            right: -80,
+            opacity: 0.25,
+          }}
+        />
+
+        <div
+          style={{
+            width: 260,
+            height: 260,
             borderRadius: 999,
-            background: "rgba(255, 255, 255, 0.22)",
-            border: "6px solid rgba(255, 255, 255, 0.85)",
+            background: "rgba(255,255,255,0.25)",
+            border: "6px solid rgba(255,255,255,0.9)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: 24,
-            zIndex: 2,
-            boxShadow: `0 16px 28px ${palette.shadow}, 0 0 60px ${palette.glow}`,
+            zIndex: 5,
+            boxShadow: `0 22px 40px ${palette.shadow}`,
+            filter: `drop-shadow(0 18px 34px ${palette.shadow})`,
+            backdropFilter: "blur(6px)",
             position: "relative",
           }}
         >
           <div
             style={{
               position: "absolute",
-              top: 18,
-              left: 22,
-              width: 90,
-              height: 60,
-              borderRadius: 999,
-              background:
-                "radial-gradient(circle, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.1) 70%, transparent 100%)",
-              opacity: 0.7,
+              fontSize: 170,
+              filter: `drop-shadow(0 10px 18px ${palette.shadow})`,
+              opacity: 0.35,
             }}
-          />
+          >
+            {emoji}
+          </div>
+
           <div
             style={{
               fontSize: 150,
               lineHeight: 1,
               textShadow:
-                "3px 3px 0 rgba(255,255,255,0.9), -3px 3px 0 rgba(255,255,255,0.9), 3px -3px 0 rgba(255,255,255,0.9), -3px -3px 0 rgba(255,255,255,0.9)",
+                "3px 3px 0 rgba(255,255,255,0.95), -3px 3px 0 rgba(255,255,255,0.95), 3px -3px 0 rgba(255,255,255,0.95), -3px -3px 0 rgba(255,255,255,0.95)",
+              zIndex: 2,
             }}
           >
             {emoji}
@@ -77,17 +108,18 @@ export async function GET(request: Request) {
 
         <div
           style={{
+            position: "absolute",
+            bottom: 120,
+            padding: "12px 26px",
+            borderRadius: 999,
+            background: "rgba(255,255,255,0.22)",
+            border: "3px solid rgba(255,255,255,0.9)",
             fontSize: 42,
             fontWeight: 700,
-            textAlign: "center",
-            maxWidth: "80%",
-            zIndex: 2,
-            padding: "10px 20px",
-            borderRadius: 999,
-            border: "3px solid rgba(255, 255, 255, 0.85)",
-            background: "rgba(255, 255, 255, 0.12)",
+            color: palette.ink,
             textShadow:
               "2px 2px 0 rgba(255,255,255,0.85), -2px 2px 0 rgba(255,255,255,0.85), 2px -2px 0 rgba(255,255,255,0.85), -2px -2px 0 rgba(255,255,255,0.85)",
+            zIndex: 5,
           }}
         >
           Un prieten ți-a trimis asta
@@ -95,15 +127,35 @@ export async function GET(request: Request) {
 
         <div
           style={{
-            fontSize: 18,
-            marginTop: 18,
-            opacity: 0.85,
-            zIndex: 2,
-            letterSpacing: 1.5,
-            textTransform: "uppercase",
+            position: "absolute",
+            bottom: 40,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            opacity: 0.75,
           }}
         >
-          amigo.sh • mesaj efemer
+          <div
+            style={{
+              fontSize: 28,
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+              color: palette.ink,
+            }}
+          >
+            amigo.sh
+          </div>
+          <div
+            style={{
+              fontSize: 14,
+              marginTop: 6,
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              color: palette.ink,
+            }}
+          >
+            mesaj efemer
+          </div>
         </div>
       </div>
     ),
