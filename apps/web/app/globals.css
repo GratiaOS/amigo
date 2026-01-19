@@ -6,15 +6,27 @@
 
 :root {
   /* Vedere (postcard) */
-  --bg: #1a1815;
-  --bg-overlay: #221f1b;
-  --text: #e8dcc8;
-  --text-muted: #b5a88c;
-  --text-subtle: #9c8f74;
-  --accent: #d4c5a9;
+  --bg: #141210;
+  --bg-overlay: #1d1916;
+  --page-bg: #141210;
+  --text: #efe3cf;
+  --text-muted: #c4b493;
+  --text-subtle: #a69578;
+  --accent: #e2cfad;
   --accent-on: #1a1815;
-  --border: #8b7355;
-  --font: ui-monospace, "JetBrains Mono", "IBM Plex Mono", monospace;
+  --border: #a08158;
+  --font: ui-monospace, 'JetBrains Mono', 'IBM Plex Mono', monospace;
+  --input-font-size: 14px;
+  --page-padding: 24px;
+  --card-bg: var(--bg-overlay);
+  --card-border: 1px solid var(--border);
+  --card-padding: 24px;
+  --card-radius: 16px;
+  --card-shadow: var(--shadow-card);
+  --input-bg: var(--bg);
+  --input-border: 1px solid var(--border);
+  --input-radius: 8px;
+  --input-padding: 10px 12px;
 
   --positive: #8bc7a2;
   --warning: #e4b96a;
@@ -32,19 +44,31 @@
 @media (max-width: 768px) {
   :root {
     /* MS-DOS */
-    --bg: #050606;
-    --bg-overlay: #0a0b0b;
-    --text: #33ff66;
-    --text-muted: #1fb554;
-    --text-subtle: #177c3b;
-    --accent: #ffd27a;
-    --accent-on: #050606;
-    --border: #0e3b1f;
-    --font: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --bg: #020403;
+    --bg-overlay: #050807;
+    --page-bg: #020403;
+    --text: #28ff5a;
+    --text-muted: #14b84a;
+    --text-subtle: #0a7a2d;
+    --accent: #ffcc6b;
+    --accent-on: #020403;
+    --border: #08301a;
+    --font: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    --input-font-size: 16px;
+    --page-padding: 12px;
+    --card-bg: transparent;
+    --card-border: none;
+    --card-padding: 0px;
+    --card-radius: 0px;
+    --card-shadow: none;
+    --input-bg: var(--bg);
+    --input-border: none;
+    --input-radius: 0px;
+    --input-padding: 6px 0px;
 
-    --positive: #33ff66;
-    --warning: #ffd27a;
-    --danger: #ff6b6b;
+    --positive: #28ff5a;
+    --warning: #ffcc6b;
+    --danger: #ff5d5d;
 
     --shadow-card: none;
     --shadow-depth-1: none;
@@ -63,15 +87,29 @@ body {
   height: 100%;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
-  background: var(--bg);
+  background: var(--page-bg);
   color: var(--text);
   font-family: var(--font);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background var(--duration-slow) var(--ease-soft),
-              color var(--duration-slow) var(--ease-soft);
+  transition: background var(--duration-slow) var(--ease-soft), color var(--duration-slow) var(--ease-soft);
+}
+
+/* MS-DOS vibra: CRT phosphor + scanlines (mobile) */
+@media (max-width: 768px) {
+  body {
+    background: linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)),
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 2px, rgba(0, 0, 0, 0.18) 3px, rgba(0, 0, 0, 0.18) 4px),
+      radial-gradient(circle at 50% 0%, rgba(255, 204, 107, 0.1) 0%, rgba(0, 0, 0, 0) 55%), var(--page-bg);
+    text-shadow: 0 0 10px rgba(40, 255, 90, 0.14);
+  }
 }
 
 a {
@@ -84,11 +122,26 @@ button {
   border: none;
   background: none;
   cursor: pointer;
+  letter-spacing: 0.02em;
 }
 
 input,
 textarea {
   caret-color: var(--text);
+  font-size: var(--input-font-size);
+  line-height: 1.4;
+  padding: var(--input-padding);
+  background: var(--input-bg);
+  border: var(--input-border);
+  border-radius: var(--input-radius);
+  outline-color: var(--accent);
+}
+
+@media (max-width: 768px) {
+  input,
+  textarea {
+    caret-shape: block;
+  }
 }
 
 @media (max-width: 768px) {
