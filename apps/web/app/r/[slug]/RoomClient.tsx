@@ -5,6 +5,11 @@ import type { CSSProperties } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
 import { LangSwitch } from '../../i18n/LangSwitch';
 
+const SCRAMBLE_CHARS = '█▓▒░<>--=+~'.split('');
+const SCRAMBLE_FRAMES = 16;
+const SCRAMBLE_INTERVAL_MS = 50;
+const KEEP_ORIGINAL_PROBABILITY = 0.45;
+
 type Props = { params: { slug: string } };
 type Resolve = {
   url?: string | null;
@@ -34,10 +39,6 @@ export default function RoomClient({ params }: Props) {
   const [mounted, setMounted] = useState(false);
   const [view, setView] = useState<'sealed' | 'tuning' | 'open'>('sealed');
   const [displayContent, setDisplayContent] = useState('');
-  const SCRAMBLE_FRAMES = 16;
-  const SCRAMBLE_INTERVAL_MS = 50;
-  const SCRAMBLE_PROBABILITY = 0.55;
-  const SCRAMBLE_CHARS = '█▓▒░<>--=+~';
 
   const ms = 3600; // Breathing cycle (mai somatic)
   const redirectTo = data?.url ?? null;
@@ -202,7 +203,7 @@ export default function RoomClient({ params }: Props) {
       const scrambled = source
         .split('')
         .map((ch) =>
-          Math.random() > SCRAMBLE_PROBABILITY
+          Math.random() > KEEP_ORIGINAL_PROBABILITY
             ? SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
             : ch
         )
