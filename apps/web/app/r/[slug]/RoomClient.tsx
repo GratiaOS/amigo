@@ -216,7 +216,7 @@ export default function RoomClient({ params }: Props) {
       }
     }, SCRAMBLE_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, [view, data, t, shouldAuto]);
+  }, [view, data, data?.url, t, shouldAuto]);
 
   if (status === 'gone') {
     return (
