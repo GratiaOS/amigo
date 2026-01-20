@@ -34,6 +34,10 @@ export default function RoomClient({ params }: Props) {
   const [mounted, setMounted] = useState(false);
   const [view, setView] = useState<'sealed' | 'tuning' | 'open'>('sealed');
   const [displayContent, setDisplayContent] = useState('');
+  const SCRAMBLE_FRAMES = 16;
+  const SCRAMBLE_INTERVAL_MS = 50;
+  const SCRAMBLE_PROBABILITY = 0.55;
+  const SCRAMBLE_CHARS = '█▓▒░<>--=+~';
 
   const ms = 3600; // Breathing cycle (mai somatic)
   const redirectTo = data?.url ?? null;
@@ -191,21 +195,24 @@ export default function RoomClient({ params }: Props) {
     const source =
       data.note?.trim() ||
       (data.url ? t('room.open') : shouldAuto ? t('room.breath') : t('room.silence'));
-    const chars = '█▓▒░<>--=+~';
     let frame = 0;
     const interval = setInterval(() => {
       const scrambled = source
         .split('')
-        .map((ch) => (Math.random() > 0.55 ? chars[Math.floor(Math.random() * chars.length)] : ch))
+        .map((ch) =>
+          Math.random() > SCRAMBLE_PROBABILITY
+            ? SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
+            : ch
+        )
         .join('');
       setDisplayContent(scrambled);
       frame += 1;
-      if (frame > 16) {
+      if (frame > SCRAMBLE_FRAMES) {
         clearInterval(interval);
         setDisplayContent(source);
         setView('open');
       }
-    }, 50);
+    }, SCRAMBLE_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [view, data, t, shouldAuto]);
 
