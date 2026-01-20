@@ -210,7 +210,7 @@ export default function RoomClient({ params }: Props) {
         .join('');
       setDisplayContent(scrambled);
       frame += 1;
-      if (frame > SCRAMBLE_FRAMES) {
+      if (frame >= SCRAMBLE_FRAMES) {
         clearInterval(interval);
         setDisplayContent(source);
         setView('open');
