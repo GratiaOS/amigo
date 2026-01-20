@@ -32,6 +32,8 @@ export default function RoomClient({ params }: Props) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'gone' | 'burned'>('loading');
   const [auto, setAuto] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [view, setView] = useState<'sealed' | 'tuning' | 'open'>('sealed');
+  const [displayContent, setDisplayContent] = useState('');
 
   const ms = 3600; // Breathing cycle (mai somatic)
   const redirectTo = data?.url ?? null;
@@ -164,15 +166,48 @@ export default function RoomClient({ params }: Props) {
 
   const shouldAuto = auto;
 
+  const openSeal = () => {
+    if (view !== 'sealed') return;
+    setView('tuning');
+  };
+
   // Auto-open after breath cycle (ritual mode) if ?auto=1
   useEffect(() => {
     if (!shouldAuto || status !== 'ready' || !data) return;
+    if (view === 'sealed') {
+      setView('tuning');
+      return;
+    }
+    if (view !== 'open') return;
     const timer = setTimeout(() => {
       commitAndGo();
     }, ms);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldAuto, status, redirectTo, ms]);
+  }, [shouldAuto, status, redirectTo, ms, view]);
+
+  useEffect(() => {
+    if (view !== 'tuning' || !data) return;
+    const source =
+      data.note?.trim() ||
+      (data.url ? t('room.open') : shouldAuto ? t('room.breath') : t('room.silence'));
+    const chars = '█▓▒░<>--=+~';
+    let frame = 0;
+    const interval = setInterval(() => {
+      const scrambled = source
+        .split('')
+        .map((ch) => (Math.random() > 0.55 ? chars[Math.floor(Math.random() * chars.length)] : ch))
+        .join('');
+      setDisplayContent(scrambled);
+      frame += 1;
+      if (frame > 16) {
+        clearInterval(interval);
+        setDisplayContent(source);
+        setView('open');
+      }
+    }, 50);
+    return () => clearInterval(interval);
+  }, [view, data, t, shouldAuto]);
 
   if (status === 'gone') {
     return (
@@ -254,7 +289,17 @@ export default function RoomClient({ params }: Props) {
             </div>
           </div>
 
-          {data?.note ? (
+          {view === 'sealed' ? (
+            <div style={styles.sealWrap}>
+              <div style={styles.sealSignet} aria-hidden>
+                {markSignet}
+              </div>
+              <p style={styles.sealTitle}>{t('room.seal.title')}</p>
+              <p style={styles.sealSubtitle}>{t('room.seal.subtitle')}</p>
+            </div>
+          ) : view === 'tuning' ? (
+            <p style={styles.msgText}>{displayContent}</p>
+          ) : data?.note ? (
             <p style={styles.msgText}>“{data.note}”</p>
           ) : mounted ? (
             <p style={styles.msgTextMuted}>{shouldAuto ? t('room.breath') : t('room.silence')}</p>
@@ -272,7 +317,14 @@ export default function RoomClient({ params }: Props) {
                   <span style={{ ...styles.wtBeepBar, animationDelay: '240ms' }} />
                 </div>
 
-                {data?.url ? (
+                {view === 'sealed' ? (
+                  <button style={styles.pttBtn} onClick={openSeal} aria-label={t('room.seal.cta')} data-wt="1">
+                    <span style={styles.pttIcon} aria-hidden>
+                      ✴️
+                    </span>
+                    <span style={styles.pttLabel}>{t('room.seal.cta')}</span>
+                  </button>
+                ) : data?.url ? (
                   <button style={styles.pttBtn} onClick={commitAndGo} aria-label={t('room.open')} data-wt="1">
                     <span style={styles.pttIcon} aria-hidden>
                       ⭕
@@ -288,31 +340,35 @@ export default function RoomClient({ params }: Props) {
                   </button>
                 )}
 
-                <div style={styles.miniRow}>
-                  {data?.url ? (
-                    <button style={styles.miniBtn} onClick={copyLink} aria-label={t('room.link.label')} data-wt="1">
-                      <span style={styles.wtIcon} aria-hidden>
-                        🔗
-                      </span>
-                      <span>{t('home.copy')}</span>
-                    </button>
-                  ) : null}
+                {view === 'sealed' ? null : (
+                  <>
+                    <div style={styles.miniRow}>
+                      {data?.url ? (
+                        <button style={styles.miniBtn} onClick={copyLink} aria-label={t('room.link.label')} data-wt="1">
+                          <span style={styles.wtIcon} aria-hidden>
+                            🔗
+                          </span>
+                          <span>{t('home.copy')}</span>
+                        </button>
+                      ) : null}
 
-                  <button style={styles.miniBtnDanger} onClick={burnNow} aria-label={t('room.burn.cta')} data-wt="1">
-                    <span style={styles.wtIcon} aria-hidden>
-                      🔥
-                    </span>
-                    <span>{t('room.burn.cta')}</span>
-                  </button>
-                </div>
+                      <button style={styles.miniBtnDanger} onClick={burnNow} aria-label={t('room.burn.cta')} data-wt="1">
+                        <span style={styles.wtIcon} aria-hidden>
+                          🔥
+                        </span>
+                        <span>{t('room.burn.cta')}</span>
+                      </button>
+                    </div>
 
-                {!data?.url ? <p style={styles.replyHint}>{t('room.reply.hint')}</p> : null}
+                    {!data?.url ? <p style={styles.replyHint}>{t('room.reply.hint')}</p> : null}
+                  </>
+                )}
               </div>
             </>
           )}
         </div>
 
-        {data?.url && (
+        {view === 'open' && data?.url && (
           <div style={styles.urlRow}>
             <span style={styles.urlLabel}>{t('room.link.label')}</span>
             <a href={data.url} style={styles.urlLink}>
@@ -748,5 +804,40 @@ const styles: Record<string, CSSProperties> = {
     color: 'var(--text-subtle)',
     fontStyle: 'italic',
     padding: '6px 6px 2px',
+  },
+  sealWrap: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 10,
+    padding: '10px 6px 6px',
+  },
+  sealSignet: {
+    width: 84,
+    height: 84,
+    borderRadius: 999,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 38,
+    background: 'rgba(0,0,0,0.22)',
+    border: '2px solid color-mix(in oklab, var(--accent) 40%, var(--border))',
+    boxShadow: '0 18px 34px rgba(0,0,0,0.24)',
+  },
+  sealTitle: {
+    fontSize: 14,
+    fontWeight: 700,
+    letterSpacing: '0.18em',
+    textTransform: 'uppercase',
+    color: 'var(--text)',
+    textAlign: 'center',
+  },
+  sealSubtitle: {
+    fontSize: 11,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: 'var(--text-muted)',
+    opacity: 0.85,
+    textAlign: 'center',
   },
 };

@@ -46,6 +46,9 @@
   "room.burn.cta": "Quemar",
   "room.reply.cta": "Responder",
   "room.reply.hint": "Responder quemará el mensaje original.",
+  "room.seal.title": "Transmisión entrante",
+  "room.seal.subtitle": "Paquete seguro • una sola lectura",
+  "room.seal.cta": "Romper sello",
 
   "room.gone.title": "El rastro se borró.",
   "room.gone.body1": "Los enlaces aquí son como palabras dichas sobre piedra tibia.",

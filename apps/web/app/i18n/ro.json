@@ -46,6 +46,9 @@
   "room.burn.cta": "Arde",
   "room.reply.cta": "Răspunde",
   "room.reply.hint": "Răspunsul va arde mesajul original.",
+  "room.seal.title": "Transmisie primită",
+  "room.seal.subtitle": "Pachet securizat • o singură citire",
+  "room.seal.cta": "Desigilează",
 
   "room.gone.title": "Urma s-a șters.",
   "room.gone.body1": "Link-urile de aici sunt ca vorbele spuse pe jos, la soare.",

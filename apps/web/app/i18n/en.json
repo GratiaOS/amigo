@@ -46,6 +46,9 @@
   "room.burn.cta": "Burn",
   "room.reply.cta": "Reply",
   "room.reply.hint": "Replying will burn the original message.",
+  "room.seal.title": "Incoming transmission",
+  "room.seal.subtitle": "Secure package • one-time read",
+  "room.seal.cta": "Break seal",
 
   "room.gone.title": "The trail faded.",
   "room.gone.body1": "Links here are like words spoken on warm stone.",
