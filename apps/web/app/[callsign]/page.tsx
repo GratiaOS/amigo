@@ -13,7 +13,7 @@ function pickParam(v: string | string[] | undefined): string | undefined {
 }
 
 export default function CallsignEntry({ params, searchParams }: Props) {
-  const segment = params.callsign;
+  const segment = decodeURIComponent(params.callsign);
 
   if (segment.startsWith("@")) {
     redirect("/");
