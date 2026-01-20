@@ -10,7 +10,7 @@ const SCRAMBLE_FRAMES = 16;
 const SCRAMBLE_INTERVAL_MS = 50;
 const KEEP_ORIGINAL_PROBABILITY = 0.45;
 
-type Props = { params: { slug: string } };
+type Props = { params: { slug: string; callsign?: string } };
 type Resolve = {
   url?: string | null;
   note?: string | null;
@@ -266,6 +266,8 @@ export default function RoomClient({ params }: Props) {
   const defaultSignet = '💖';
   const signet = firstGrapheme(data?.emoji) || defaultSignet;
   const markSignet = signet;
+  const callsignRaw = params.callsign || '@garden';
+  const callsign = callsignRaw.startsWith('@') ? callsignRaw : `@${callsignRaw}`;
   const showOgPreview = process.env.NODE_ENV !== 'production';
   const ogPreviewUrl = `/api/og/${lang}/${encodeURIComponent(signet)}`;
 
@@ -279,11 +281,11 @@ export default function RoomClient({ params }: Props) {
 
         {/* Diagnostics (low priority) */}
         <p style={styles.senderCaption}>
-          <span style={styles.diagMono}>CH:</span> <span style={styles.diagValue}>{params.slug.slice(0, 4).toUpperCase()}</span>
+          <span style={styles.diagMono}>FREQ:</span> <span style={styles.diagValue}>{callsign}</span>
           <span style={styles.diagSep}>•</span>
-          <span style={styles.diagMono}>NET:</span> <span style={styles.diagValue}>SECURE</span>
+          <span style={styles.diagMono}>CHANNEL:</span> <span style={styles.diagValue}>{params.slug.slice(0, 4).toUpperCase()}</span>
           <span style={styles.diagSep}>•</span>
-          <span style={styles.diagMono}>SIG:</span> <span style={styles.diagValue}>{markSignet}</span>
+          <span style={styles.diagMono}>STATUS:</span> <span style={styles.diagValue}>ONE-TIME</span>
         </p>
 
         {/* Message bubble (primary) */}

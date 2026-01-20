@@ -114,5 +114,5 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 }
 
 export default function CallsignRoomPage({ params }: Props) {
-  return <RoomClient params={{ slug: params.slug }} />;
+  return <RoomClient params={{ slug: params.slug, callsign: params.callsign }} />;
 }
