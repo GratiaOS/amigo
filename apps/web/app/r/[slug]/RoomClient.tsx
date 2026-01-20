@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
 import { LangSwitch } from '../../i18n/LangSwitch';
@@ -39,6 +39,8 @@ export default function RoomClient({ params }: Props) {
   const [mounted, setMounted] = useState(false);
   const [view, setView] = useState<'sealed' | 'tuning' | 'open'>('sealed');
   const [displayContent, setDisplayContent] = useState('');
+  const frameRef = useRef(0);
+  const charArrayRef = useRef<string[]>([]);
 
   const ms = 3600; // Breathing cycle (mai somatic)
   const redirectTo = data?.url ?? null;
@@ -198,19 +200,19 @@ export default function RoomClient({ params }: Props) {
     const source =
       data.note?.trim() ||
       (data.url ? t('room.open') : shouldAuto ? t('room.breath') : t('room.silence'));
-    let frame = 0;
+    charArrayRef.current = source.split('');
+    frameRef.current = 0;
+    setDisplayContent(source);
     const interval = setInterval(() => {
-      const scrambled = source
-        .split('')
-        .map((ch) =>
-          Math.random() > KEEP_ORIGINAL_PROBABILITY
-            ? SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
-            : ch
-        )
-        .join('');
-      setDisplayContent(scrambled);
-      frame += 1;
-      if (frame >= SCRAMBLE_FRAMES) {
+      const chars = charArrayRef.current;
+      for (let i = 0; i < chars.length; i += 1) {
+        if (Math.random() > KEEP_ORIGINAL_PROBABILITY) {
+          chars[i] = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+        }
+      }
+      setDisplayContent(chars.join(''));
+      frameRef.current += 1;
+      if (frameRef.current >= SCRAMBLE_FRAMES) {
         clearInterval(interval);
         setDisplayContent(source);
         setView('open');
