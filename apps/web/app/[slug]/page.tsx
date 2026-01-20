@@ -12,6 +12,7 @@ function pickParam(v: string | string[] | undefined): string | undefined {
 
 export default function ShortLinkEntry({ params, searchParams }: Props) {
   const slug = params.slug;
+  const callsign = "@garden";
 
   const auto = pickParam(searchParams?.auto);
   const lang = pickParam(searchParams?.lang);
@@ -21,5 +22,5 @@ export default function ShortLinkEntry({ params, searchParams }: Props) {
   if (lang) qs.set("lang", lang);
 
   const suffix = qs.toString() ? `?${qs.toString()}` : "";
-  redirect(`/r/${slug}${suffix}`);
+  redirect(`/${callsign}/${slug}${suffix}`);
 }
