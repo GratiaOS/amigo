@@ -180,9 +180,11 @@ export default function RoomClient({ params }: Props) {
     if (!shouldAuto || status !== 'ready' || !data) return;
     if (view === 'sealed') {
       setView('tuning');
-      return;
     }
-    if (view !== 'open') return;
+  }, [shouldAuto, status, data, view]);
+
+  useEffect(() => {
+    if (!shouldAuto || status !== 'ready' || !data || view !== 'open') return;
     const timer = setTimeout(() => {
       commitAndGo();
     }, ms);
