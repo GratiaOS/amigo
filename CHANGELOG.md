@@ -17,6 +17,25 @@ _Status: Hardening & Tuning_
 
 ---
 
+## 2026-01-21 — Jungle Radio Protocol 📻
+
+_Status: Receiver Core Stabilized_
+
+### 📡 Room / Receiver
+
+- **Break Seal Flow:** Trei stări clare — _sealed → tuning → open_ — cu CTA unic în buclă.
+- **Tuning Scramble:** Efect de decriptare cu performanță optimizată (refs + mutate in place).
+- **Auto-Open Fix:** Ritual mode pornește după tuning, fără dead-ends.
+- **Diagnostics Header:** FREQ / CHANNEL / STATUS în loc de caption (radio feel).
+
+### 🧭 Routing & Identity
+
+- **Canonical Callsign Route:** `/:callsign/:slug` (default `@garden`).
+- **Legacy Redirects:** `/r/:slug` și `/:slug` trimit către `@garden`.
+- **Docs Poster Stub:** `/docs/room/:slug` — artefact printabil (MVP).
+
+---
+
 ## 2026-01-20 — The Beguer Era & Wolf's Shield 🛡️
 
 _Status: Structural Shift / Ethical Foundation_

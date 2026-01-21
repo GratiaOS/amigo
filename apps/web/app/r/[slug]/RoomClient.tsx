@@ -1,11 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useTranslation } from '../../i18n/useTranslation';
 import { LangSwitch } from '../../i18n/LangSwitch';
 
-type Props = { params: { slug: string } };
+const SCRAMBLE_CHARS = '█▓▒░<>--=+~'.split('');
+const SCRAMBLE_FRAMES = 16;
+const SCRAMBLE_INTERVAL_MS = 50;
+const KEEP_ORIGINAL_PROBABILITY = 0.45;
+
+type Props = { params: { slug: string; callsign?: string } };
 type Resolve = {
   url?: string | null;
   note?: string | null;
@@ -32,6 +37,10 @@ export default function RoomClient({ params }: Props) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'gone' | 'burned'>('loading');
   const [auto, setAuto] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [view, setView] = useState<'sealed' | 'tuning' | 'open'>('sealed');
+  const [displayContent, setDisplayContent] = useState('');
+  const frameRef = useRef(0);
+  const charArrayRef = useRef<string[]>([]);
 
   const ms = 3600; // Breathing cycle (mai somatic)
   const redirectTo = data?.url ?? null;
@@ -164,31 +173,72 @@ export default function RoomClient({ params }: Props) {
 
   const shouldAuto = auto;
 
+  const openSeal = () => {
+    if (view !== 'sealed') return;
+    setView('tuning');
+  };
+
   // Auto-open after breath cycle (ritual mode) if ?auto=1
   useEffect(() => {
     if (!shouldAuto || status !== 'ready' || !data) return;
+    if (view === 'sealed') {
+      setView('tuning');
+    }
+  }, [shouldAuto, status, data, view]);
+
+  useEffect(() => {
+    if (!shouldAuto || status !== 'ready' || !data || view !== 'open') return;
     const timer = setTimeout(() => {
       commitAndGo();
     }, ms);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldAuto, status, redirectTo, ms]);
+  }, [shouldAuto, status, redirectTo, ms, view]);
+
+  useEffect(() => {
+    if (view !== 'tuning' || !data) return;
+    const source =
+      data.note?.trim() ||
+      (data.url ? t('room.open') : shouldAuto ? t('room.breath') : t('room.silence'));
+    charArrayRef.current = source.split('');
+    frameRef.current = 0;
+    setDisplayContent(source);
+    const interval = setInterval(() => {
+      const chars = charArrayRef.current;
+      for (let i = 0; i < chars.length; i += 1) {
+        if (Math.random() > KEEP_ORIGINAL_PROBABILITY) {
+          chars[i] = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+        }
+      }
+      setDisplayContent(chars.join(''));
+      frameRef.current += 1;
+      if (frameRef.current >= SCRAMBLE_FRAMES) {
+        clearInterval(interval);
+        setDisplayContent(source);
+        setView('open');
+      }
+    }, SCRAMBLE_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [view, data, t, shouldAuto]);
 
   if (status === 'gone') {
     return (
       <main style={styles.main}>
-        <div style={{ ...styles.card, position: 'relative' }}>
-          <LangSwitch />
-
-          <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.gone.title')}</p>
-          <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.gone.body1')}</p>
-          <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
-            {t('room.gone.body2')}
-          </p>
-          <div style={{ marginTop: 20, textAlign: 'center' }}>
-            <a href="/" style={styles.shellLink}>
-              {t('room.gone.cta')}
-            </a>
+        <div style={styles.woodPlate}>
+          <div style={{ ...styles.card, position: 'relative' }}>
+            <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.gone.title')}</p>
+            <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.gone.body1')}</p>
+            <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
+              {t('room.gone.body2')}
+            </p>
+            <div style={{ marginTop: 20, textAlign: 'center' }}>
+              <a href="/" style={styles.shellLink}>
+                {t('room.gone.cta')}
+              </a>
+            </div>
+            <div style={styles.langWrap}>
+              <LangSwitch />
+            </div>
           </div>
         </div>
       </main>
@@ -198,18 +248,21 @@ export default function RoomClient({ params }: Props) {
   if (status === 'burned') {
     return (
       <main style={styles.main}>
-        <div style={{ ...styles.card, position: 'relative' }}>
-          <LangSwitch />
-
-          <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.burned.title')}</p>
-          <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.burned.body1')}</p>
-          <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
-            {t('room.burned.body2')}
-          </p>
-          <div style={{ marginTop: 20, textAlign: 'center' }}>
-            <a href="/" style={styles.shellLink}>
-              {t('room.burned.cta')}
-            </a>
+        <div style={styles.woodPlate}>
+          <div style={{ ...styles.card, position: 'relative' }}>
+            <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.burned.title')}</p>
+            <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.burned.body1')}</p>
+            <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
+              {t('room.burned.body2')}
+            </p>
+            <div style={{ marginTop: 20, textAlign: 'center' }}>
+              <a href="/" style={styles.shellLink}>
+                {t('room.burned.cta')}
+              </a>
+            </div>
+            <div style={styles.langWrap}>
+              <LangSwitch />
+            </div>
           </div>
         </div>
       </main>
@@ -219,6 +272,8 @@ export default function RoomClient({ params }: Props) {
   const defaultSignet = '💖';
   const signet = firstGrapheme(data?.emoji) || defaultSignet;
   const markSignet = signet;
+  const callsignRaw = params.callsign || '@garden';
+  const callsign = callsignRaw.startsWith('@') ? callsignRaw : `@${callsignRaw}`;
   const showOgPreview = process.env.NODE_ENV !== 'production';
   const ogPreviewUrl = `/api/og/${lang}/${encodeURIComponent(signet)}`;
 
@@ -227,20 +282,19 @@ export default function RoomClient({ params }: Props) {
 
   return (
     <main style={styles.main}>
-      <div style={{ ...styles.card, position: 'relative' }}>
-        <LangSwitch />
+      <div style={styles.woodPlate}>
+        <div style={{ ...styles.card, position: 'relative' }}>
+          {/* Diagnostics (low priority) */}
+          <p style={styles.senderCaption}>
+            <span style={styles.diagMono}>FREQ:</span> <span style={styles.diagValue}>{callsign}</span>
+            <span style={styles.diagSep}>•</span>
+            <span style={styles.diagMono}>CHANNEL:</span> <span style={styles.diagValue}>{params.slug.slice(0, 4).toUpperCase()}</span>
+            <span style={styles.diagSep}>•</span>
+            <span style={styles.diagMono}>STATUS:</span> <span style={styles.diagValue}>ONE-TIME</span>
+          </p>
 
-        {/* Diagnostics (low priority) */}
-        <p style={styles.senderCaption}>
-          <span style={styles.diagMono}>CH:</span> <span style={styles.diagValue}>{params.slug.slice(0, 4).toUpperCase()}</span>
-          <span style={styles.diagSep}>•</span>
-          <span style={styles.diagMono}>NET:</span> <span style={styles.diagValue}>SECURE</span>
-          <span style={styles.diagSep}>•</span>
-          <span style={styles.diagMono}>SIG:</span> <span style={styles.diagValue}>{markSignet}</span>
-        </p>
-
-        {/* Message bubble (primary) */}
-        <div style={styles.msgBubble}>
+          {/* Message bubble (primary) */}
+          <div style={styles.msgBubble}>
           <div style={styles.msgHeader}>
             <span style={styles.msgSignet} aria-hidden>
               {markSignet}
@@ -254,7 +308,17 @@ export default function RoomClient({ params }: Props) {
             </div>
           </div>
 
-          {data?.note ? (
+          {view === 'sealed' ? (
+            <div style={styles.sealWrap}>
+              <div style={styles.sealSignet} aria-hidden>
+                {markSignet}
+              </div>
+              <p style={styles.sealTitle}>{t('room.seal.title')}</p>
+              <p style={styles.sealSubtitle}>{t('room.seal.subtitle')}</p>
+            </div>
+          ) : view === 'tuning' ? (
+            <p style={styles.msgText}>{displayContent}</p>
+          ) : data?.note ? (
             <p style={styles.msgText}>“{data.note}”</p>
           ) : mounted ? (
             <p style={styles.msgTextMuted}>{shouldAuto ? t('room.breath') : t('room.silence')}</p>
@@ -272,47 +336,58 @@ export default function RoomClient({ params }: Props) {
                   <span style={{ ...styles.wtBeepBar, animationDelay: '240ms' }} />
                 </div>
 
-                {data?.url ? (
+                {view === 'sealed' ? (
+                  <button style={styles.pttBtn} onClick={openSeal} aria-label={t('room.seal.cta')} data-wt="1">
+                    <span style={styles.pttIcon} aria-hidden>
+                      🔓
+                    </span>
+                    <span style={styles.pttLabel}>{t('room.seal.cta')}</span>
+                  </button>
+                ) : data?.url ? (
                   <button style={styles.pttBtn} onClick={commitAndGo} aria-label={t('room.open')} data-wt="1">
                     <span style={styles.pttIcon} aria-hidden>
-                      ⭕
+                      ↗
                     </span>
                     <span style={styles.pttLabel}>{t('room.open')}</span>
                   </button>
                 ) : (
                   <button style={styles.pttBtn} onClick={replyNow} aria-label={t('room.reply.cta')} data-wt="1">
                     <span style={styles.pttIcon} aria-hidden>
-                      🎙️
+                      ↩
                     </span>
                     <span style={styles.pttLabel}>{t('room.reply.cta')}</span>
                   </button>
                 )}
 
-                <div style={styles.miniRow}>
-                  {data?.url ? (
-                    <button style={styles.miniBtn} onClick={copyLink} aria-label={t('room.link.label')} data-wt="1">
-                      <span style={styles.wtIcon} aria-hidden>
-                        🔗
-                      </span>
-                      <span>{t('home.copy')}</span>
-                    </button>
-                  ) : null}
+                {view === 'sealed' ? null : (
+                  <>
+                    <div style={styles.miniRow}>
+                      {data?.url ? (
+                        <button style={styles.miniBtn} onClick={copyLink} aria-label={t('room.link.label')} data-wt="1">
+                          <span style={styles.wtIcon} aria-hidden>
+                            🔗
+                          </span>
+                          <span>{t('home.copy')}</span>
+                        </button>
+                      ) : null}
 
-                  <button style={styles.miniBtnDanger} onClick={burnNow} aria-label={t('room.burn.cta')} data-wt="1">
-                    <span style={styles.wtIcon} aria-hidden>
-                      🔥
-                    </span>
-                    <span>{t('room.burn.cta')}</span>
-                  </button>
-                </div>
+                      <button style={styles.miniBtnDanger} onClick={burnNow} aria-label={t('room.burn.cta')} data-wt="1">
+                        <span style={styles.wtIcon} aria-hidden>
+                          🔥
+                        </span>
+                        <span>{t('room.burn.cta')}</span>
+                      </button>
+                    </div>
 
-                {!data?.url ? <p style={styles.replyHint}>{t('room.reply.hint')}</p> : null}
+                    {!data?.url ? <p style={styles.replyHint}>{t('room.reply.hint')}</p> : null}
+                  </>
+                )}
               </div>
             </>
           )}
         </div>
 
-        {data?.url && (
+          {view === 'open' && data?.url && (
           <div style={styles.urlRow}>
             <span style={styles.urlLabel}>{t('room.link.label')}</span>
             <a href={data.url} style={styles.urlLink}>
@@ -321,13 +396,17 @@ export default function RoomClient({ params }: Props) {
           </div>
         )}
 
-        {showOgPreview && (
+          {showOgPreview && (
           <div style={{ marginTop: 18, textAlign: 'center' }}>
             <a href={ogPreviewUrl} style={styles.ogLink} target="_blank" rel="noreferrer">
               OG preview
             </a>
           </div>
         )}
+          <div style={styles.langWrap}>
+            <LangSwitch />
+          </div>
+        </div>
       </div>
 
       <style>{`
@@ -389,13 +468,19 @@ const styles: Record<string, CSSProperties> = {
     padding: 'var(--page-padding)',
     overflowX: 'hidden',
   },
+  woodPlate: {
+    padding: 'var(--plate-padding)',
+    borderRadius: 'var(--plate-radius)',
+    background: 'var(--plate-bg)',
+    boxShadow: 'var(--plate-shadow)',
+  },
   card: {
     width: 'min(420px, 100%)',
     padding: 'var(--card-padding)',
-    borderRadius: 'var(--card-radius)',
-    border: 'var(--card-border)',
-    background: 'var(--card-bg)',
-    boxShadow: 'var(--card-shadow)',
+    borderRadius: 'var(--device-radius)',
+    border: 'var(--device-border)',
+    background: 'var(--device-bg)',
+    boxShadow: 'var(--device-shadow)',
   },
   breathCore: {
     position: 'absolute',
@@ -404,9 +489,9 @@ const styles: Record<string, CSSProperties> = {
     width: 16,
     height: 16,
     borderRadius: '50%',
-    backgroundColor: 'var(--accent)',
+    backgroundColor: 'var(--signal)',
     transform: 'translate(-50%, -50%)',
-    boxShadow: '0 0 12px var(--accent)',
+    boxShadow: '0 0 12px var(--signal-glow)',
   },
   breathRing: {
     position: 'absolute',
@@ -415,7 +500,7 @@ const styles: Record<string, CSSProperties> = {
     width: 16,
     height: 16,
     borderRadius: '50%',
-    border: '2px solid var(--accent)',
+    border: '2px solid var(--signal)',
     transform: 'translate(-50%, -50%) scale(1)',
     pointerEvents: 'none',
     opacity: 0,
@@ -481,18 +566,18 @@ const styles: Record<string, CSSProperties> = {
     width: 7,
     height: 7,
     borderRadius: 999,
-    background: 'color-mix(in oklab, var(--accent) 70%, white)',
-    boxShadow: '0 0 0 3px rgba(255,255,255,0.45), 0 10px 22px rgba(0,0,0,0.22)',
+    background: 'color-mix(in oklab, var(--signal) 70%, white)',
+    boxShadow: '0 0 0 3px rgba(255,255,255,0.45), 0 0 12px var(--signal-glow)',
     animation: 'wtDot 900ms ease-in-out infinite',
   },
   wtBeepBar: {
     width: 4,
     height: 14,
     borderRadius: 99,
-    background: 'color-mix(in oklab, var(--accent) 55%, white)',
+    background: 'color-mix(in oklab, var(--signal) 55%, white)',
     transformOrigin: 'bottom',
     animation: 'wtBeep 720ms ease-in-out infinite',
-    boxShadow: '0 10px 18px rgba(0,0,0,0.18)',
+    boxShadow: '0 6px 14px rgba(0,0,0,0.18)',
   },
   msgDivider: {
     marginTop: 14,
@@ -536,9 +621,9 @@ const styles: Record<string, CSSProperties> = {
     width: 34,
     height: 34,
     borderRadius: 999,
-    background: 'rgba(255,255,255,0.10)',
-    border: '1px solid rgba(255,255,255,0.22)',
-    boxShadow: '0 10px 22px rgba(0,0,0,0.18)',
+    background: 'transparent',
+    border: 'none',
+    boxShadow: 'none',
     fontSize: 16,
   },
   pttLabel: {
@@ -662,13 +747,21 @@ const styles: Record<string, CSSProperties> = {
     margin: '0 10px',
     opacity: 0.35,
   },
+  langWrap: {
+    marginTop: 18,
+    paddingTop: 12,
+    borderTop: '1px solid color-mix(in oklab, var(--border) 55%, transparent)',
+    display: 'flex',
+    justifyContent: 'center',
+    opacity: 0.8,
+  },
   msgBubble: {
     marginTop: 6,
-    borderRadius: 18,
-    border: '1px solid color-mix(in oklab, var(--border) 70%, transparent)',
-    background: 'color-mix(in oklab, var(--card-bg) 70%, transparent)',
+    borderRadius: 16,
+    border: '2px solid var(--glass-border)',
+    background: 'var(--glass-bg)',
     padding: '16px 16px 18px',
-    boxShadow: '0 18px 40px rgba(0,0,0,0.16)',
+    boxShadow: 'inset 0 0 30px rgba(0,0,0,0.55)',
   },
   msgHeader: {
     display: 'flex',
@@ -710,9 +803,9 @@ const styles: Record<string, CSSProperties> = {
     width: 6,
     height: 6,
     borderRadius: '50%',
-    backgroundColor: 'var(--accent)',
+    backgroundColor: 'var(--signal)',
     transform: 'translate(-50%, -50%)',
-    boxShadow: '0 0 10px var(--accent)',
+    boxShadow: '0 0 10px var(--signal-glow)',
   },
   breathRingSmall: {
     position: 'absolute',
@@ -721,7 +814,7 @@ const styles: Record<string, CSSProperties> = {
     width: 6,
     height: 6,
     borderRadius: '50%',
-    border: '2px solid var(--accent)',
+    border: '2px solid var(--signal)',
     transform: 'translate(-50%, -50%) scale(1)',
     pointerEvents: 'none',
     opacity: 0,
@@ -735,7 +828,7 @@ const styles: Record<string, CSSProperties> = {
     opacity: 0.92,
     lineHeight: 1.6,
     fontSize: 18,
-    color: 'var(--text)',
+    color: 'var(--ink-olive)',
     fontStyle: 'italic',
     padding: '6px 6px 2px',
   },
@@ -745,8 +838,43 @@ const styles: Record<string, CSSProperties> = {
     opacity: 0.55,
     lineHeight: 1.6,
     fontSize: 16,
-    color: 'var(--text-subtle)',
+    color: 'var(--ink-olive-muted)',
     fontStyle: 'italic',
     padding: '6px 6px 2px',
+  },
+  sealWrap: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 10,
+    padding: '10px 6px 6px',
+  },
+  sealSignet: {
+    width: 84,
+    height: 84,
+    borderRadius: 999,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 38,
+    background: 'rgba(0,0,0,0.22)',
+    border: '2px solid color-mix(in oklab, var(--accent) 40%, var(--border))',
+    boxShadow: '0 18px 34px rgba(0,0,0,0.24)',
+  },
+  sealTitle: {
+    fontSize: 14,
+    fontWeight: 700,
+    letterSpacing: '0.18em',
+    textTransform: 'uppercase',
+    color: 'var(--text)',
+    textAlign: 'center',
+  },
+  sealSubtitle: {
+    fontSize: 11,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: 'var(--text-muted)',
+    opacity: 0.85,
+    textAlign: 'center',
   },
 };

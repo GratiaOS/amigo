@@ -27,7 +27,7 @@
   "home.ttl": "TTL (opcional)",
   "home.ttl.hint": "Ejemplo: 7d, 24h, 30m",
   "home.generate.link": "Generar enlace",
-  "home.generate.petal": "Generar pétalo",
+  "home.generate.petal": "SELLA Y TRANSMITE",
   "home.generating": "Generando...",
   "home.hint.petal": "🌸 se quema tras la primera lectura",
   "home.hint.link": "🔗 va al enlace",
@@ -46,6 +46,9 @@
   "room.burn.cta": "Quemar",
   "room.reply.cta": "Responder",
   "room.reply.hint": "Responder quemará el mensaje original.",
+  "room.seal.title": "Transmisión entrante",
+  "room.seal.subtitle": "Paquete seguro • una sola lectura",
+  "room.seal.cta": "Romper sello",
 
   "room.gone.title": "El rastro se borró.",
   "room.gone.body1": "Los enlaces aquí son como palabras dichas sobre piedra tibia.",
