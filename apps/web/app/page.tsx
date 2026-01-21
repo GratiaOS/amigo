@@ -56,6 +56,7 @@ export default function Home() {
   const replyValue = replyTo?.trim() ?? "";
   const emojiValue = firstGrapheme(emoji.trim());
   const activeSignet = hoveredSignet || emojiValue;
+  const displaySignet = activeSignet || "💖";
   const signetHintKey =
     (activeSignet && SIGNET_HINT_KEYS[activeSignet]) || "home.signet.hint";
   const isPetal = urlValue.length === 0;
@@ -126,106 +127,121 @@ export default function Home() {
   return (
     <main style={styles.main}>
       <div style={styles.container}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>{t("home.title")}</h1>
-          <p style={styles.subtitle}>{t("home.subtitle")}</p>
+        <div style={styles.telemetry}>
+          <span style={styles.telemetryLabel}>UNIT: CREATION_01</span>
+          <span style={styles.telemetryStatus}>
+            STATUS: {loading ? "TRANSMITTING" : "IDLE"}
+          </span>
+          <span style={styles.telemetrySignet} aria-hidden>
+            {displaySignet}
+          </span>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ ...styles.form, position: "relative" }}>
-          <LangSwitch />
+        <div style={styles.device}>
+          <span style={{ ...styles.deviceScrew, left: 14 }} aria-hidden />
+          <span style={{ ...styles.deviceScrew, right: 14 }} aria-hidden />
 
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>{t("home.message")}</label>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder={t("home.message.primary")}
-              style={styles.textarea}
-              disabled={loading}
-              rows={4}
-            />
-            <p style={styles.hint}>{t("home.message.hint")}</p>
-          </div>
+          <form onSubmit={handleSubmit} style={styles.form}>
+            <LangSwitch />
 
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>{t("home.signet.label")}</label>
-            <div style={styles.signetRow}>
+            <div style={styles.fieldGroup}>
+              <label style={styles.label}>{t("home.message")}</label>
+              <div style={styles.textareaWrap}>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder={t("home.message.primary")}
+                  style={styles.textarea}
+                  disabled={loading}
+                  rows={6}
+                />
+                <div style={styles.signetOverlay} aria-hidden>
+                  {displaySignet}
+                </div>
+              </div>
+              <p style={styles.hint}>{t("home.message.hint")}</p>
+            </div>
+
+            <div style={styles.fieldGroup}>
+              <label style={styles.label}>{t("home.signet.label")}</label>
+              <div style={styles.signetRow}>
+                <input
+                  type="text"
+                  value={emoji}
+                  onChange={(e) => setEmoji(firstGrapheme(e.target.value))}
+                  placeholder={t("home.signet.placeholder")}
+                  style={styles.signetInput}
+                  disabled={loading}
+                />
+                <div style={styles.signetChoices}>
+                  {SIGNETS.map((signet) => (
+                    <button
+                      key={signet}
+                      type="button"
+                      onClick={() => setEmoji(signet)}
+                      onMouseEnter={() => setHoveredSignet(signet)}
+                      onMouseLeave={() => setHoveredSignet(null)}
+                      onFocus={() => setHoveredSignet(signet)}
+                      onBlur={() => setHoveredSignet(null)}
+                      style={{
+                        ...styles.signetBtn,
+                        opacity: emojiValue === signet ? 1 : 0.6,
+                      }}
+                    >
+                      {signet}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <p style={styles.signetHint}>{t(signetHintKey)}</p>
+            </div>
+
+            <div style={styles.fieldGroup}>
+              <label style={styles.label}>{t("home.url.optional")}</label>
               <input
-                type="text"
-                value={emoji}
-                onChange={(e) => setEmoji(firstGrapheme(e.target.value))}
-                placeholder={t("home.signet.placeholder")}
-                style={styles.signetInput}
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com"
+                style={styles.input}
                 disabled={loading}
               />
-              <div style={styles.signetChoices}>
-                {SIGNETS.map((signet) => (
-                  <button
-                    key={signet}
-                    type="button"
-                    onClick={() => setEmoji(signet)}
-                    onMouseEnter={() => setHoveredSignet(signet)}
-                    onMouseLeave={() => setHoveredSignet(null)}
-                    onFocus={() => setHoveredSignet(signet)}
-                    onBlur={() => setHoveredSignet(null)}
-                    style={{
-                      ...styles.signetBtn,
-                      opacity: emojiValue === signet ? 1 : 0.6,
-                    }}
-                  >
-                    {signet}
-                  </button>
-                ))}
-              </div>
             </div>
-            <p style={styles.signetHint}>{t(signetHintKey)}</p>
-          </div>
 
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>{t("home.url.optional")}</label>
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://example.com"
-              style={styles.input}
-              disabled={loading}
-            />
-          </div>
+            <p style={styles.modeHint}>
+              {isPetal ? t("home.hint.petal") : t("home.hint.link")}
+            </p>
 
-          <p style={styles.modeHint}>
-            {isPetal ? t("home.hint.petal") : t("home.hint.link")}
-          </p>
+            <div style={styles.fieldGroup}>
+              <label style={styles.label}>{t("home.ttl")}</label>
+              <input
+                type="text"
+                value={ttl}
+                onChange={(e) => setTtl(e.target.value)}
+                placeholder="7d"
+                style={styles.input}
+                disabled={loading}
+              />
+              <p style={styles.hint}>{t("home.ttl.hint")}</p>
+            </div>
 
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>{t("home.ttl")}</label>
-            <input
-              type="text"
-              value={ttl}
-              onChange={(e) => setTtl(e.target.value)}
-              placeholder="7d"
-              style={styles.input}
-              disabled={loading}
-            />
-            <p style={styles.hint}>{t("home.ttl.hint")}</p>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading || !canSubmit}
-            style={{
-              ...styles.btn,
-              opacity: loading || !canSubmit ? 0.5 : 1,
-              cursor: loading || !canSubmit ? "not-allowed" : "pointer",
-            }}
-          >
-            {loading
-              ? t("home.generating")
-              : isPetal
-              ? t("home.generate.petal")
-              : t("home.generate.link")}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading || !canSubmit}
+              style={{
+                ...styles.btn,
+                opacity: loading || !canSubmit ? 0.5 : 1,
+                cursor: loading || !canSubmit ? "not-allowed" : "pointer",
+              }}
+            >
+              {loading
+                ? t("home.generating")
+                : isPetal
+                ? t("home.generate.petal")
+                : t("home.generate.link")}
+            </button>
+          </form>
+        </div>
 
         {result && (
           <div style={styles.result}>
@@ -287,61 +303,98 @@ const styles: Record<string, CSSProperties> = {
   },
   container: {
     width: "100%",
-    maxWidth: 520,
+    maxWidth: 560,
   },
-  header: {
-    textAlign: "center",
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 600,
-    marginBottom: 8,
-    color: "var(--text)",
-  },
-  subtitle: {
-    fontSize: 15,
+  telemetry: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    fontSize: 11,
+    textTransform: "uppercase",
+    letterSpacing: "0.16em",
     color: "var(--text-muted)",
-    opacity: 0.85,
+    marginBottom: 14,
+    padding: "0 4px",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+  },
+  telemetryLabel: {
+    opacity: 0.8,
+  },
+  telemetryStatus: {
+    opacity: 0.9,
+  },
+  telemetrySignet: {
+    fontSize: 18,
+    lineHeight: 1,
+    opacity: 0.8,
+  },
+  device: {
+    position: "relative",
+    background: "var(--card-bg)",
+    border: "2px solid var(--border)",
+    borderRadius: 18,
+    padding: "28px 24px 26px",
+    boxShadow: "12px 12px 0 rgba(0,0,0,0.35)",
+  },
+  deviceScrew: {
+    position: "absolute",
+    top: 12,
+    width: 10,
+    height: 10,
+    borderRadius: "50%",
+    background: "rgba(0,0,0,0.4)",
   },
   form: {
-    background: "var(--card-bg)",
-    border: "var(--card-border)",
-    borderRadius: "var(--card-radius)",
-    padding: "var(--card-padding)",
-    boxShadow: "var(--card-shadow)",
+    position: "relative",
   },
   fieldGroup: {
     marginBottom: 18,
   },
   label: {
     display: "block",
-    fontSize: 14,
+    fontSize: 12,
     marginBottom: 6,
     color: "var(--text-muted)",
+    textTransform: "uppercase",
+    letterSpacing: "0.14em",
   },
   input: {
     width: "100%",
     fontSize: "var(--input-font-size)",
-    background: "var(--input-bg)",
-    border: "var(--input-border)",
-    borderRadius: "var(--input-radius)",
+    background: "#0f110c",
+    border: "2px solid #3d4035",
+    borderRadius: 12,
     color: "var(--text)",
-    fontFamily: "inherit",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
     outline: "none",
     transition: "border-color var(--duration-snug) var(--ease-soft)",
+    padding: "12px 14px",
+  },
+  textareaWrap: {
+    position: "relative",
   },
   textarea: {
     width: "100%",
     fontSize: "var(--input-font-size)",
-    background: "var(--input-bg)",
-    border: "var(--input-border)",
-    borderRadius: "var(--input-radius)",
+    background: "#0f110c",
+    border: "2px solid #3d4035",
+    borderRadius: 12,
     color: "var(--text)",
-    fontFamily: "inherit",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
     outline: "none",
     transition: "border-color var(--duration-snug) var(--ease-soft)",
-    resize: "vertical",
+    resize: "none",
+    padding: "16px",
+    minHeight: 180,
+  },
+  signetOverlay: {
+    position: "absolute",
+    right: 16,
+    bottom: 12,
+    fontSize: 24,
+    opacity: 0.4,
+    filter: "grayscale(1)",
   },
   signetRow: {
     display: "flex",
@@ -351,11 +404,11 @@ const styles: Record<string, CSSProperties> = {
   },
   signetInput: {
     width: 56,
-    height: 40,
+    height: 42,
     fontSize: 18,
-    background: "var(--input-bg)",
-    border: "var(--input-border)",
-    borderRadius: "var(--input-radius)",
+    background: "#0f110c",
+    border: "2px solid #3d4035",
+    borderRadius: 12,
     color: "var(--text)",
     fontFamily:
       "Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, Twemoji Mozilla, var(--font)",
@@ -369,11 +422,11 @@ const styles: Record<string, CSSProperties> = {
     flexWrap: "wrap",
   },
   signetBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: "var(--input-radius)",
-    border: "var(--input-border)",
-    background: "var(--input-bg)",
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    border: "2px solid #3d4035",
+    background: "#0f110c",
     cursor: "pointer",
     fontSize: 16,
     fontFamily:
@@ -392,6 +445,8 @@ const styles: Record<string, CSSProperties> = {
     marginTop: -6,
     marginBottom: 16,
     opacity: 0.7,
+    textTransform: "uppercase",
+    letterSpacing: "0.12em",
   },
   hint: {
     fontSize: 12,
@@ -401,25 +456,28 @@ const styles: Record<string, CSSProperties> = {
   },
   btn: {
     width: "100%",
-    padding: "12px 18px",
-    fontSize: 15,
-    background: "var(--accent)",
-    color: "var(--accent-on)",
-    border: "none",
-    borderRadius: 10,
+    padding: "16px 18px",
+    fontSize: 16,
+    background: "#556B2F",
+    color: "var(--text)",
+    border: "2px solid #2f3a1b",
+    borderRadius: 12,
     cursor: "pointer",
-    fontFamily: "inherit",
-    fontWeight: 500,
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    fontWeight: 700,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
     transition: "opacity var(--duration-snug) var(--ease-soft)",
-    marginTop: 6,
+    marginTop: 10,
+    boxShadow: "4px 4px 0 #1a1a18",
   },
   result: {
     marginTop: 24,
-    background: "var(--bg-overlay)",
-    border: "1px solid var(--border)",
+    background: "#0f110c",
+    border: "2px solid #3d4035",
     borderRadius: 12,
     padding: 20,
-    boxShadow: "var(--shadow-card)",
+    boxShadow: "12px 12px 0 rgba(0,0,0,0.3)",
   },
   resultHeader: {
     display: "flex",
@@ -444,7 +502,7 @@ const styles: Record<string, CSSProperties> = {
     transition: "border-color var(--duration-snug) var(--ease-soft), color var(--duration-snug) var(--ease-soft)",
   },
   linkBox: {
-    background: "var(--bg)",
+    background: "rgba(0,0,0,0.25)",
     border: "1px solid var(--border)",
     borderRadius: 8,
     padding: 12,
@@ -468,7 +526,7 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: 500,
   },
   cliCode: {
-    background: "var(--bg)",
+    background: "rgba(0,0,0,0.25)",
     border: "1px solid var(--border)",
     borderRadius: 6,
     padding: 10,
