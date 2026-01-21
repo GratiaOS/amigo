@@ -31,6 +31,8 @@
   --text: #fff8eb;
   --text-muted: #d9c9ab;
   --text-subtle: #b59f7c;
+  --ink-olive: #c7d2a6;
+  --ink-olive-muted: #9dad79;
   --accent: #6a7b3b;
   --accent-on: #12100d;
   --border: #3c3224;
@@ -134,6 +136,7 @@ button {
 input,
 textarea {
   caret-color: var(--signal);
+  color: var(--ink-olive);
   font-size: var(--input-font-size);
   line-height: 1.4;
   padding: var(--input-padding);
