@@ -749,6 +749,8 @@ const styles: Record<string, CSSProperties> = {
   },
   langWrap: {
     marginTop: 18,
+    paddingTop: 12,
+    borderTop: '1px solid color-mix(in oklab, var(--border) 55%, transparent)',
     display: 'flex',
     justifyContent: 'center',
     opacity: 0.8,

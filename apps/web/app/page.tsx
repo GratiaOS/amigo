@@ -144,8 +144,6 @@ export default function Home() {
             <span style={{ ...styles.deviceScrew, right: 14 }} aria-hidden />
 
             <form onSubmit={handleSubmit} style={styles.form}>
-              <LangSwitch />
-
             <div style={styles.fieldGroup}>
               <label style={styles.label}>{t("home.message")}</label>
               <div style={styles.textareaWrap}>
@@ -243,6 +241,10 @@ export default function Home() {
                   ? t("home.generate.petal")
                   : t("home.generate.link")}
               </button>
+
+              <div style={styles.langWrap}>
+                <LangSwitch />
+              </div>
             </form>
           </div>
         </div>
@@ -493,6 +495,14 @@ const styles: Record<string, CSSProperties> = {
   btnReady: {
     borderColor: "color-mix(in oklab, var(--signal) 55%, #2f3a1b)",
     boxShadow: "4px 4px 0 #1a1a18, 0 0 0 1px color-mix(in oklab, var(--signal) 35%, transparent)",
+  },
+  langWrap: {
+    marginTop: 16,
+    paddingTop: 12,
+    borderTop: "1px solid color-mix(in oklab, var(--border) 55%, transparent)",
+    display: "flex",
+    justifyContent: "center",
+    opacity: 0.8,
   },
   result: {
     marginTop: 24,
