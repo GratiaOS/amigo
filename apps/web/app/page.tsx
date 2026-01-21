@@ -137,12 +137,13 @@ export default function Home() {
           </span>
         </div>
 
-        <div style={styles.device}>
-          <span style={{ ...styles.deviceScrew, left: 14 }} aria-hidden />
-          <span style={{ ...styles.deviceScrew, right: 14 }} aria-hidden />
+        <div style={styles.woodPlate}>
+          <div style={styles.device}>
+            <span style={{ ...styles.deviceScrew, left: 14 }} aria-hidden />
+            <span style={{ ...styles.deviceScrew, right: 14 }} aria-hidden />
 
-          <form onSubmit={handleSubmit} style={styles.form}>
-            <LangSwitch />
+            <form onSubmit={handleSubmit} style={styles.form}>
+              <LangSwitch />
 
             <div style={styles.fieldGroup}>
               <label style={styles.label}>{t("home.message")}</label>
@@ -225,22 +226,23 @@ export default function Home() {
               <p style={styles.hint}>{t("home.ttl.hint")}</p>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading || !canSubmit}
-              style={{
-                ...styles.btn,
-                opacity: loading || !canSubmit ? 0.5 : 1,
-                cursor: loading || !canSubmit ? "not-allowed" : "pointer",
-              }}
-            >
-              {loading
-                ? t("home.generating")
-                : isPetal
-                ? t("home.generate.petal")
-                : t("home.generate.link")}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={loading || !canSubmit}
+                style={{
+                  ...styles.btn,
+                  opacity: loading || !canSubmit ? 0.5 : 1,
+                  cursor: loading || !canSubmit ? "not-allowed" : "pointer",
+                }}
+              >
+                {loading
+                  ? t("home.generating")
+                  : isPetal
+                  ? t("home.generate.petal")
+                  : t("home.generate.link")}
+              </button>
+            </form>
+          </div>
         </div>
 
         {result && (
@@ -329,11 +331,19 @@ const styles: Record<string, CSSProperties> = {
     lineHeight: 1,
     opacity: 0.8,
   },
+  woodPlate: {
+    padding: "18px",
+    borderRadius: 18,
+    background:
+      "linear-gradient(180deg, rgba(235, 201, 170, 0.9) 0%, rgba(200, 151, 108, 0.92) 55%, rgba(157, 104, 67, 0.92) 100%)",
+    boxShadow: "0 18px 28px rgba(0,0,0,0.25)",
+  },
   device: {
     position: "relative",
-    background: "var(--card-bg)",
-    border: "2px solid var(--border)",
-    borderRadius: 18,
+    background:
+      "linear-gradient(180deg, var(--metal-edge) 0%, var(--metal-base) 35%, var(--metal-deep) 100%)",
+    border: "2px solid var(--metal-deep)",
+    borderRadius: 16,
     padding: "28px 24px 26px",
     boxShadow: "12px 12px 0 rgba(0,0,0,0.35)",
   },
@@ -362,8 +372,8 @@ const styles: Record<string, CSSProperties> = {
   input: {
     width: "100%",
     fontSize: "var(--input-font-size)",
-    background: "#0f110c",
-    border: "2px solid #3d4035",
+    background: "var(--glass-bg)",
+    border: "2px solid var(--glass-border)",
     borderRadius: 12,
     color: "var(--text)",
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
@@ -377,8 +387,8 @@ const styles: Record<string, CSSProperties> = {
   textarea: {
     width: "100%",
     fontSize: "var(--input-font-size)",
-    background: "#0f110c",
-    border: "2px solid #3d4035",
+    background: "var(--glass-bg)",
+    border: "2px solid var(--glass-border)",
     borderRadius: 12,
     color: "var(--text)",
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
@@ -406,8 +416,8 @@ const styles: Record<string, CSSProperties> = {
     width: 56,
     height: 42,
     fontSize: 18,
-    background: "#0f110c",
-    border: "2px solid #3d4035",
+    background: "var(--glass-bg)",
+    border: "2px solid var(--glass-border)",
     borderRadius: 12,
     color: "var(--text)",
     fontFamily:
@@ -425,8 +435,8 @@ const styles: Record<string, CSSProperties> = {
     width: 34,
     height: 34,
     borderRadius: 10,
-    border: "2px solid #3d4035",
-    background: "#0f110c",
+    border: "2px solid var(--glass-border)",
+    background: "var(--glass-bg)",
     cursor: "pointer",
     fontSize: 16,
     fontFamily:
@@ -458,7 +468,7 @@ const styles: Record<string, CSSProperties> = {
     width: "100%",
     padding: "16px 18px",
     fontSize: 16,
-    background: "#556B2F",
+    background: "var(--accent)",
     color: "var(--text)",
     border: "2px solid #2f3a1b",
     borderRadius: 12,

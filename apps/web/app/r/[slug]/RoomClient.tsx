@@ -224,18 +224,20 @@ export default function RoomClient({ params }: Props) {
   if (status === 'gone') {
     return (
       <main style={styles.main}>
-        <div style={{ ...styles.card, position: 'relative' }}>
-          <LangSwitch />
+        <div style={styles.woodPlate}>
+          <div style={{ ...styles.card, position: 'relative' }}>
+            <LangSwitch />
 
-          <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.gone.title')}</p>
-          <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.gone.body1')}</p>
-          <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
-            {t('room.gone.body2')}
-          </p>
-          <div style={{ marginTop: 20, textAlign: 'center' }}>
-            <a href="/" style={styles.shellLink}>
-              {t('room.gone.cta')}
-            </a>
+            <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.gone.title')}</p>
+            <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.gone.body1')}</p>
+            <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
+              {t('room.gone.body2')}
+            </p>
+            <div style={{ marginTop: 20, textAlign: 'center' }}>
+              <a href="/" style={styles.shellLink}>
+                {t('room.gone.cta')}
+              </a>
+            </div>
           </div>
         </div>
       </main>
@@ -245,18 +247,20 @@ export default function RoomClient({ params }: Props) {
   if (status === 'burned') {
     return (
       <main style={styles.main}>
-        <div style={{ ...styles.card, position: 'relative' }}>
-          <LangSwitch />
+        <div style={styles.woodPlate}>
+          <div style={{ ...styles.card, position: 'relative' }}>
+            <LangSwitch />
 
-          <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.burned.title')}</p>
-          <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.burned.body1')}</p>
-          <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
-            {t('room.burned.body2')}
-          </p>
-          <div style={{ marginTop: 20, textAlign: 'center' }}>
-            <a href="/" style={styles.shellLink}>
-              {t('room.burned.cta')}
-            </a>
+            <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.burned.title')}</p>
+            <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.burned.body1')}</p>
+            <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
+              {t('room.burned.body2')}
+            </p>
+            <div style={{ marginTop: 20, textAlign: 'center' }}>
+              <a href="/" style={styles.shellLink}>
+                {t('room.burned.cta')}
+              </a>
+            </div>
           </div>
         </div>
       </main>
@@ -276,20 +280,21 @@ export default function RoomClient({ params }: Props) {
 
   return (
     <main style={styles.main}>
-      <div style={{ ...styles.card, position: 'relative' }}>
-        <LangSwitch />
+      <div style={styles.woodPlate}>
+        <div style={{ ...styles.card, position: 'relative' }}>
+          <LangSwitch />
 
-        {/* Diagnostics (low priority) */}
-        <p style={styles.senderCaption}>
-          <span style={styles.diagMono}>FREQ:</span> <span style={styles.diagValue}>{callsign}</span>
-          <span style={styles.diagSep}>•</span>
-          <span style={styles.diagMono}>CHANNEL:</span> <span style={styles.diagValue}>{params.slug.slice(0, 4).toUpperCase()}</span>
-          <span style={styles.diagSep}>•</span>
-          <span style={styles.diagMono}>STATUS:</span> <span style={styles.diagValue}>ONE-TIME</span>
-        </p>
+          {/* Diagnostics (low priority) */}
+          <p style={styles.senderCaption}>
+            <span style={styles.diagMono}>FREQ:</span> <span style={styles.diagValue}>{callsign}</span>
+            <span style={styles.diagSep}>•</span>
+            <span style={styles.diagMono}>CHANNEL:</span> <span style={styles.diagValue}>{params.slug.slice(0, 4).toUpperCase()}</span>
+            <span style={styles.diagSep}>•</span>
+            <span style={styles.diagMono}>STATUS:</span> <span style={styles.diagValue}>ONE-TIME</span>
+          </p>
 
-        {/* Message bubble (primary) */}
-        <div style={styles.msgBubble}>
+          {/* Message bubble (primary) */}
+          <div style={styles.msgBubble}>
           <div style={styles.msgHeader}>
             <span style={styles.msgSignet} aria-hidden>
               {markSignet}
@@ -382,7 +387,7 @@ export default function RoomClient({ params }: Props) {
           )}
         </div>
 
-        {view === 'open' && data?.url && (
+          {view === 'open' && data?.url && (
           <div style={styles.urlRow}>
             <span style={styles.urlLabel}>{t('room.link.label')}</span>
             <a href={data.url} style={styles.urlLink}>
@@ -391,13 +396,14 @@ export default function RoomClient({ params }: Props) {
           </div>
         )}
 
-        {showOgPreview && (
+          {showOgPreview && (
           <div style={{ marginTop: 18, textAlign: 'center' }}>
             <a href={ogPreviewUrl} style={styles.ogLink} target="_blank" rel="noreferrer">
               OG preview
             </a>
           </div>
         )}
+        </div>
       </div>
 
       <style>{`
@@ -459,13 +465,21 @@ const styles: Record<string, CSSProperties> = {
     padding: 'var(--page-padding)',
     overflowX: 'hidden',
   },
+  woodPlate: {
+    padding: 18,
+    borderRadius: 20,
+    background:
+      'linear-gradient(180deg, rgba(235, 201, 170, 0.9) 0%, rgba(200, 151, 108, 0.92) 55%, rgba(157, 104, 67, 0.92) 100%)',
+    boxShadow: '0 18px 28px rgba(0,0,0,0.25)',
+  },
   card: {
     width: 'min(420px, 100%)',
     padding: 'var(--card-padding)',
-    borderRadius: 'var(--card-radius)',
-    border: 'var(--card-border)',
-    background: 'var(--card-bg)',
-    boxShadow: 'var(--card-shadow)',
+    borderRadius: 16,
+    border: '2px solid var(--metal-deep)',
+    background:
+      'linear-gradient(180deg, var(--metal-edge) 0%, var(--metal-base) 35%, var(--metal-deep) 100%)',
+    boxShadow: '12px 12px 0 rgba(0,0,0,0.35)',
   },
   breathCore: {
     position: 'absolute',
@@ -734,11 +748,11 @@ const styles: Record<string, CSSProperties> = {
   },
   msgBubble: {
     marginTop: 6,
-    borderRadius: 18,
-    border: '1px solid color-mix(in oklab, var(--border) 70%, transparent)',
-    background: 'color-mix(in oklab, var(--card-bg) 70%, transparent)',
+    borderRadius: 16,
+    border: '2px solid var(--glass-border)',
+    background: 'var(--glass-bg)',
     padding: '16px 16px 18px',
-    boxShadow: '0 18px 40px rgba(0,0,0,0.16)',
+    boxShadow: 'inset 0 0 30px rgba(0,0,0,0.55)',
   },
   msgHeader: {
     display: 'flex',

@@ -5,35 +5,45 @@
    ──────────────────────────────────────────────────────────── */
 
 :root {
-  /* Vedere (postcard) */
-  --bg: #141210;
-  --bg-overlay: #1d1916;
-  --page-bg: #141210;
-  --text: #efe3cf;
-  --text-muted: #c4b493;
-  --text-subtle: #a69578;
-  --accent: #e2cfad;
+  /* Vedere (wood workshop) */
+  --wood-top: #e2c29a;
+  --wood-mid: #c29469;
+  --wood-bottom: #8d5f3b;
+  --wood-vein: rgba(0, 0, 0, 0.08);
+  --metal-edge: #4f513f;
+  --metal-base: #3a3b32;
+  --metal-deep: #2b2c24;
+  --glass-bg: #0f110c;
+  --glass-border: #3d4035;
+  --warm-gold: rgba(244, 215, 161, 0.12);
+  --bg: var(--glass-bg);
+  --bg-overlay: var(--metal-base);
+  --page-bg: var(--wood-mid);
+  --text: #f3ead9;
+  --text-muted: #c7b293;
+  --text-subtle: #a18a6c;
+  --accent: #6a7f3a;
   --accent-on: #1a1815;
-  --border: #a08158;
+  --border: #7a5b3e;
   --font: ui-monospace, 'JetBrains Mono', 'IBM Plex Mono', monospace;
   --input-font-size: 14px;
   --page-padding: 24px;
-  --card-bg: var(--bg-overlay);
-  --card-border: 1px solid var(--border);
+  --card-bg: var(--metal-base);
+  --card-border: 2px solid var(--metal-deep);
   --card-padding: 24px;
-  --card-radius: 16px;
+  --card-radius: 14px;
   --card-shadow: var(--shadow-card);
-  --input-bg: var(--bg);
-  --input-border: 1px solid var(--border);
-  --input-radius: 8px;
+  --input-bg: var(--glass-bg);
+  --input-border: 2px solid var(--glass-border);
+  --input-radius: 10px;
   --input-padding: 10px 12px;
 
   --positive: #8bc7a2;
   --warning: #e4b96a;
   --danger: #e07a5f;
 
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.2), 0 10px 24px -12px rgb(0 0 0 / 0.45);
-  --shadow-depth-1: 0 1px 2px rgb(0 0 0 / 0.12), 0 8px 18px -10px rgb(0 0 0 / 0.35);
+  --shadow-card: 10px 10px 0 rgb(0 0 0 / 0.35);
+  --shadow-depth-1: 0 2px 0 rgb(0 0 0 / 0.25);
 
   --ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
   --ease-deep: cubic-bezier(0.2, 0, 0, 1);
@@ -93,7 +103,15 @@ html {
 }
 
 body {
-  background: var(--page-bg);
+  background:
+    linear-gradient(180deg, var(--wood-top) 0%, var(--wood-mid) 45%, var(--wood-bottom) 100%),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 18px,
+      var(--wood-vein) 20px,
+      transparent 24px
+    );
   color: var(--text);
   font-family: var(--font);
   line-height: 1.5;
