@@ -23,12 +23,11 @@ export function LangSwitch() {
 
       <style jsx>{`
         .lang-switch-container {
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          display: flex;
+          position: static;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           gap: 6px;
-          z-index: 10;
         }
 
         .lang-switch-btn {
@@ -36,7 +35,7 @@ export function LangSwitch() {
           font-size: 12px;
           background: var(--bg-overlay);
           border: 1px solid var(--border);
-          borderRadius: 6px;
+          border-radius: 6px;
           color: var(--text-muted);
           cursor: pointer;
           font-family: inherit;
@@ -55,13 +54,6 @@ export function LangSwitch() {
         }
 
         @media (max-width: 640px) {
-          .lang-switch-container {
-            flex-direction: column;
-            gap: 4px;
-            top: 12px;
-            right: 12px;
-          }
-
           .lang-switch-btn {
             padding: 4px 8px;
             font-size: 11px;
