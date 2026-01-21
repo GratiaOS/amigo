@@ -6,25 +6,37 @@
 
 :root {
   /* Vedere (wood workshop) */
-  --wood-top: #e2c29a;
-  --wood-mid: #c29469;
-  --wood-bottom: #8d5f3b;
-  --wood-vein: rgba(0, 0, 0, 0.08);
-  --metal-edge: #4f513f;
-  --metal-base: #3a3b32;
-  --metal-deep: #2b2c24;
-  --glass-bg: #0f110c;
-  --glass-border: #3d4035;
-  --warm-gold: rgba(244, 215, 161, 0.12);
+  --wood-top: #1c1813;
+  --wood-mid: #16130f;
+  --wood-bottom: #120f0c;
+  --wood-vein: rgba(244, 211, 94, 0.06);
+  --metal-edge: #2b2c27;
+  --metal-base: #23241f;
+  --metal-deep: #171814;
+  --glass-bg: #0b0c0a;
+  --glass-border: #2c2e27;
+  --warm-gold: rgba(244, 211, 94, 0.12);
+  --plate-bg: linear-gradient(180deg, rgba(235, 201, 170, 0.92) 0%, rgba(200, 151, 108, 0.94) 55%, rgba(157, 104, 67, 0.94) 100%);
+  --plate-shadow: 0 18px 28px rgba(0, 0, 0, 0.25);
+  --plate-radius: 18px;
+  --plate-padding: 18px;
+  --device-bg: linear-gradient(180deg, var(--metal-edge) 0%, var(--metal-base) 35%, var(--metal-deep) 100%);
+  --device-border: 2px solid var(--metal-deep);
+  --device-shadow: 12px 12px 0 rgba(0, 0, 0, 0.35);
+  --device-radius: 16px;
+  --device-screw-opacity: 0.45;
   --bg: var(--glass-bg);
   --bg-overlay: var(--metal-base);
   --page-bg: var(--wood-mid);
-  --text: #f3ead9;
-  --text-muted: #c7b293;
-  --text-subtle: #a18a6c;
-  --accent: #6a7f3a;
-  --accent-on: #1a1815;
-  --border: #7a5b3e;
+  --text: #fff8eb;
+  --text-muted: #d9c9ab;
+  --text-subtle: #b59f7c;
+  --accent: #6a7b3b;
+  --accent-on: #12100d;
+  --border: #3c3224;
+  --signal: #f4d35e;
+  --signal-deep: #e6c229;
+  --signal-glow: rgba(244, 211, 94, 0.28);
   --font: ui-monospace, 'JetBrains Mono', 'IBM Plex Mono', monospace;
   --input-font-size: 14px;
   --page-padding: 24px;
@@ -53,35 +65,21 @@
 
 @media (max-width: 768px) {
   :root {
-    /* MS-DOS */
-    --bg: #020403;
-    --bg-overlay: #050807;
-    --page-bg: #020403;
-    --text: #28ff5a;
-    --text-muted: #14b84a;
-    --text-subtle: #0a7a2d;
-    --accent: #ffcc6b;
-    --accent-on: #020403;
-    --border: #08301a;
+    /* Wood workshop (mobile = device) */
+    --page-bg: var(--wood-mid);
     --font: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
     --input-font-size: 16px;
-    --page-padding: 12px;
-    --card-bg: transparent;
-    --card-border: none;
-    --card-padding: 0px;
-    --card-radius: 0px;
-    --card-shadow: none;
-    --input-bg: var(--bg);
-    --input-border: none;
-    --input-radius: 0px;
-    --input-padding: 6px 0px;
-
-    --positive: #28ff5a;
-    --warning: #ffcc6b;
-    --danger: #ff5d5d;
-
-    --shadow-card: none;
-    --shadow-depth-1: none;
+    --page-padding: 14px;
+    --card-padding: 18px;
+    --plate-bg: transparent;
+    --plate-shadow: none;
+    --plate-radius: 0px;
+    --plate-padding: 0px;
+    --device-bg: transparent;
+    --device-border: none;
+    --device-shadow: none;
+    --device-radius: 0px;
+    --device-screw-opacity: 0;
   }
 }
 
@@ -120,16 +118,6 @@ body {
   transition: background var(--duration-slow) var(--ease-soft), color var(--duration-slow) var(--ease-soft);
 }
 
-/* MS-DOS vibra: CRT phosphor + scanlines (mobile) */
-@media (max-width: 768px) {
-  body {
-    background: linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)),
-      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 2px, rgba(0, 0, 0, 0.18) 3px, rgba(0, 0, 0, 0.18) 4px),
-      radial-gradient(circle at 50% 0%, rgba(255, 204, 107, 0.1) 0%, rgba(0, 0, 0, 0) 55%), var(--page-bg);
-    text-shadow: 0 0 10px rgba(40, 255, 90, 0.14);
-  }
-}
-
 a {
   color: inherit;
   text-decoration: none;
@@ -145,7 +133,7 @@ button {
 
 input,
 textarea {
-  caret-color: var(--text);
+  caret-color: var(--signal);
   font-size: var(--input-font-size);
   line-height: 1.4;
   padding: var(--input-padding);
@@ -153,6 +141,14 @@ textarea {
   border: var(--input-border);
   border-radius: var(--input-radius);
   outline-color: var(--accent);
+}
+
+input:focus,
+textarea:focus {
+  border-color: color-mix(in oklab, var(--signal) 55%, var(--glass-border));
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--signal) 35%, transparent),
+    0 0 18px var(--signal-glow);
 }
 
 @media (max-width: 768px) {
@@ -169,6 +165,16 @@ textarea {
 
   button:hover {
     text-decoration: underline;
+  }
+}
+
+@keyframes ledBreath {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
   }
 }
 

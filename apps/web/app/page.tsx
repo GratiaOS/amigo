@@ -132,6 +132,7 @@ export default function Home() {
           <span style={styles.telemetryStatus}>
             STATUS: {loading ? "TRANSMITTING" : "IDLE"}
           </span>
+          <span style={styles.telemetryLed} aria-hidden />
           <span style={styles.telemetrySignet} aria-hidden>
             {displaySignet}
           </span>
@@ -231,6 +232,7 @@ export default function Home() {
                 disabled={loading || !canSubmit}
                 style={{
                   ...styles.btn,
+                  ...(canSubmit && !loading ? styles.btnReady : null),
                   opacity: loading || !canSubmit ? 0.5 : 1,
                   cursor: loading || !canSubmit ? "not-allowed" : "pointer",
                 }}
@@ -326,26 +328,32 @@ const styles: Record<string, CSSProperties> = {
   telemetryStatus: {
     opacity: 0.9,
   },
+  telemetryLed: {
+    width: 8,
+    height: 8,
+    borderRadius: 999,
+    background: "var(--signal)",
+    boxShadow: "0 0 6px var(--signal-glow), 0 0 16px var(--signal-glow)",
+    animation: "ledBreath 3.8s ease-in-out infinite",
+  },
   telemetrySignet: {
     fontSize: 18,
     lineHeight: 1,
     opacity: 0.8,
   },
   woodPlate: {
-    padding: "18px",
-    borderRadius: 18,
-    background:
-      "linear-gradient(180deg, rgba(235, 201, 170, 0.9) 0%, rgba(200, 151, 108, 0.92) 55%, rgba(157, 104, 67, 0.92) 100%)",
-    boxShadow: "0 18px 28px rgba(0,0,0,0.25)",
+    padding: "var(--plate-padding)",
+    borderRadius: "var(--plate-radius)",
+    background: "var(--plate-bg)",
+    boxShadow: "var(--plate-shadow)",
   },
   device: {
     position: "relative",
-    background:
-      "linear-gradient(180deg, var(--metal-edge) 0%, var(--metal-base) 35%, var(--metal-deep) 100%)",
-    border: "2px solid var(--metal-deep)",
-    borderRadius: 16,
+    background: "var(--device-bg)",
+    border: "var(--device-border)",
+    borderRadius: "var(--device-radius)",
     padding: "28px 24px 26px",
-    boxShadow: "12px 12px 0 rgba(0,0,0,0.35)",
+    boxShadow: "var(--device-shadow)",
   },
   deviceScrew: {
     position: "absolute",
@@ -354,6 +362,7 @@ const styles: Record<string, CSSProperties> = {
     height: 10,
     borderRadius: "50%",
     background: "rgba(0,0,0,0.4)",
+    opacity: "var(--device-screw-opacity)",
   },
   form: {
     position: "relative",
@@ -480,6 +489,10 @@ const styles: Record<string, CSSProperties> = {
     transition: "opacity var(--duration-snug) var(--ease-soft)",
     marginTop: 10,
     boxShadow: "4px 4px 0 #1a1a18",
+  },
+  btnReady: {
+    borderColor: "color-mix(in oklab, var(--signal) 55%, #2f3a1b)",
+    boxShadow: "4px 4px 0 #1a1a18, 0 0 0 1px color-mix(in oklab, var(--signal) 35%, transparent)",
   },
   result: {
     marginTop: 24,

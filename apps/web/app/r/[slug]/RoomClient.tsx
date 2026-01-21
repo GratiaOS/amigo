@@ -226,8 +226,6 @@ export default function RoomClient({ params }: Props) {
       <main style={styles.main}>
         <div style={styles.woodPlate}>
           <div style={{ ...styles.card, position: 'relative' }}>
-            <LangSwitch />
-
             <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.gone.title')}</p>
             <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.gone.body1')}</p>
             <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
@@ -237,6 +235,9 @@ export default function RoomClient({ params }: Props) {
               <a href="/" style={styles.shellLink}>
                 {t('room.gone.cta')}
               </a>
+            </div>
+            <div style={styles.langWrap}>
+              <LangSwitch />
             </div>
           </div>
         </div>
@@ -249,8 +250,6 @@ export default function RoomClient({ params }: Props) {
       <main style={styles.main}>
         <div style={styles.woodPlate}>
           <div style={{ ...styles.card, position: 'relative' }}>
-            <LangSwitch />
-
             <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.burned.title')}</p>
             <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.burned.body1')}</p>
             <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
@@ -260,6 +259,9 @@ export default function RoomClient({ params }: Props) {
               <a href="/" style={styles.shellLink}>
                 {t('room.burned.cta')}
               </a>
+            </div>
+            <div style={styles.langWrap}>
+              <LangSwitch />
             </div>
           </div>
         </div>
@@ -282,8 +284,6 @@ export default function RoomClient({ params }: Props) {
     <main style={styles.main}>
       <div style={styles.woodPlate}>
         <div style={{ ...styles.card, position: 'relative' }}>
-          <LangSwitch />
-
           {/* Diagnostics (low priority) */}
           <p style={styles.senderCaption}>
             <span style={styles.diagMono}>FREQ:</span> <span style={styles.diagValue}>{callsign}</span>
@@ -339,21 +339,21 @@ export default function RoomClient({ params }: Props) {
                 {view === 'sealed' ? (
                   <button style={styles.pttBtn} onClick={openSeal} aria-label={t('room.seal.cta')} data-wt="1">
                     <span style={styles.pttIcon} aria-hidden>
-                      ✴️
+                      🔓
                     </span>
                     <span style={styles.pttLabel}>{t('room.seal.cta')}</span>
                   </button>
                 ) : data?.url ? (
                   <button style={styles.pttBtn} onClick={commitAndGo} aria-label={t('room.open')} data-wt="1">
                     <span style={styles.pttIcon} aria-hidden>
-                      ⭕
+                      ↗
                     </span>
                     <span style={styles.pttLabel}>{t('room.open')}</span>
                   </button>
                 ) : (
                   <button style={styles.pttBtn} onClick={replyNow} aria-label={t('room.reply.cta')} data-wt="1">
                     <span style={styles.pttIcon} aria-hidden>
-                      🎙️
+                      ↩
                     </span>
                     <span style={styles.pttLabel}>{t('room.reply.cta')}</span>
                   </button>
@@ -403,6 +403,9 @@ export default function RoomClient({ params }: Props) {
             </a>
           </div>
         )}
+          <div style={styles.langWrap}>
+            <LangSwitch />
+          </div>
         </div>
       </div>
 
@@ -466,20 +469,18 @@ const styles: Record<string, CSSProperties> = {
     overflowX: 'hidden',
   },
   woodPlate: {
-    padding: 18,
-    borderRadius: 20,
-    background:
-      'linear-gradient(180deg, rgba(235, 201, 170, 0.9) 0%, rgba(200, 151, 108, 0.92) 55%, rgba(157, 104, 67, 0.92) 100%)',
-    boxShadow: '0 18px 28px rgba(0,0,0,0.25)',
+    padding: 'var(--plate-padding)',
+    borderRadius: 'var(--plate-radius)',
+    background: 'var(--plate-bg)',
+    boxShadow: 'var(--plate-shadow)',
   },
   card: {
     width: 'min(420px, 100%)',
     padding: 'var(--card-padding)',
-    borderRadius: 16,
-    border: '2px solid var(--metal-deep)',
-    background:
-      'linear-gradient(180deg, var(--metal-edge) 0%, var(--metal-base) 35%, var(--metal-deep) 100%)',
-    boxShadow: '12px 12px 0 rgba(0,0,0,0.35)',
+    borderRadius: 'var(--device-radius)',
+    border: 'var(--device-border)',
+    background: 'var(--device-bg)',
+    boxShadow: 'var(--device-shadow)',
   },
   breathCore: {
     position: 'absolute',
@@ -488,9 +489,9 @@ const styles: Record<string, CSSProperties> = {
     width: 16,
     height: 16,
     borderRadius: '50%',
-    backgroundColor: 'var(--accent)',
+    backgroundColor: 'var(--signal)',
     transform: 'translate(-50%, -50%)',
-    boxShadow: '0 0 12px var(--accent)',
+    boxShadow: '0 0 12px var(--signal-glow)',
   },
   breathRing: {
     position: 'absolute',
@@ -499,7 +500,7 @@ const styles: Record<string, CSSProperties> = {
     width: 16,
     height: 16,
     borderRadius: '50%',
-    border: '2px solid var(--accent)',
+    border: '2px solid var(--signal)',
     transform: 'translate(-50%, -50%) scale(1)',
     pointerEvents: 'none',
     opacity: 0,
@@ -565,18 +566,18 @@ const styles: Record<string, CSSProperties> = {
     width: 7,
     height: 7,
     borderRadius: 999,
-    background: 'color-mix(in oklab, var(--accent) 70%, white)',
-    boxShadow: '0 0 0 3px rgba(255,255,255,0.45), 0 10px 22px rgba(0,0,0,0.22)',
+    background: 'color-mix(in oklab, var(--signal) 70%, white)',
+    boxShadow: '0 0 0 3px rgba(255,255,255,0.45), 0 0 12px var(--signal-glow)',
     animation: 'wtDot 900ms ease-in-out infinite',
   },
   wtBeepBar: {
     width: 4,
     height: 14,
     borderRadius: 99,
-    background: 'color-mix(in oklab, var(--accent) 55%, white)',
+    background: 'color-mix(in oklab, var(--signal) 55%, white)',
     transformOrigin: 'bottom',
     animation: 'wtBeep 720ms ease-in-out infinite',
-    boxShadow: '0 10px 18px rgba(0,0,0,0.18)',
+    boxShadow: '0 6px 14px rgba(0,0,0,0.18)',
   },
   msgDivider: {
     marginTop: 14,
@@ -620,9 +621,9 @@ const styles: Record<string, CSSProperties> = {
     width: 34,
     height: 34,
     borderRadius: 999,
-    background: 'rgba(255,255,255,0.10)',
-    border: '1px solid rgba(255,255,255,0.22)',
-    boxShadow: '0 10px 22px rgba(0,0,0,0.18)',
+    background: 'transparent',
+    border: 'none',
+    boxShadow: 'none',
     fontSize: 16,
   },
   pttLabel: {
@@ -746,6 +747,12 @@ const styles: Record<string, CSSProperties> = {
     margin: '0 10px',
     opacity: 0.35,
   },
+  langWrap: {
+    marginTop: 18,
+    display: 'flex',
+    justifyContent: 'center',
+    opacity: 0.8,
+  },
   msgBubble: {
     marginTop: 6,
     borderRadius: 16,
@@ -794,9 +801,9 @@ const styles: Record<string, CSSProperties> = {
     width: 6,
     height: 6,
     borderRadius: '50%',
-    backgroundColor: 'var(--accent)',
+    backgroundColor: 'var(--signal)',
     transform: 'translate(-50%, -50%)',
-    boxShadow: '0 0 10px var(--accent)',
+    boxShadow: '0 0 10px var(--signal-glow)',
   },
   breathRingSmall: {
     position: 'absolute',
@@ -805,7 +812,7 @@ const styles: Record<string, CSSProperties> = {
     width: 6,
     height: 6,
     borderRadius: '50%',
-    border: '2px solid var(--accent)',
+    border: '2px solid var(--signal)',
     transform: 'translate(-50%, -50%) scale(1)',
     pointerEvents: 'none',
     opacity: 0,
