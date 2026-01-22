@@ -35,7 +35,7 @@ function firstGrapheme(input: string): string {
 }
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const base = (process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3000").replace(
     /\/$/,
     ""
@@ -50,6 +50,9 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DispatchResponse | null>(null);
   const [copied, setCopied] = useState(false);
+  const [ogReady, setOgReady] = useState(false);
+  const [shareBusy, setShareBusy] = useState(false);
+  const [canShare, setCanShare] = useState(false);
 
   const urlValue = url.trim();
   const noteValue = note.trim();
@@ -80,6 +83,10 @@ export default function Home() {
     if (v) {
       setReplyTo(v);
     }
+  }, []);
+
+  useEffect(() => {
+    setCanShare(typeof navigator !== "undefined" && !!navigator.share);
   }, []);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -123,6 +130,67 @@ export default function Home() {
   const bashOneLiner = result
     ? `curl -sS "${result.short}${result.original ? "?auto=1" : ""}"`
     : "";
+  const ogUrl = result
+    ? `/api/og/${lang}/${encodeURIComponent(emojiValue || "💖")}`
+    : "";
+
+  useEffect(() => {
+    if (!result) {
+      setOgReady(false);
+      return;
+    }
+
+    let active = true;
+    setOgReady(false);
+
+    const warm = async () => {
+      if (!ogUrl) {
+        if (active) setOgReady(true);
+        return;
+      }
+      try {
+        const res = await fetch(ogUrl, { cache: "no-store" });
+        if (!res.ok) throw new Error("og");
+      } catch {
+        // Even if prewarm fails, allow share after a short attempt.
+      } finally {
+        if (active) setOgReady(true);
+      }
+    };
+
+    warm();
+    return () => {
+      active = false;
+    };
+  }, [result?.short, ogUrl]);
+
+  const handleShare = async () => {
+    if (!result || !ogReady) return;
+    const shareUrl = result.short;
+    try {
+      setShareBusy(true);
+      if (navigator.share) {
+        await navigator.share({
+          title: t("home.title"),
+          text: t("home.subtitle"),
+          url: shareUrl,
+        });
+        return;
+      }
+    } catch {
+      // fall through to clipboard
+    } finally {
+      setShareBusy(false);
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Share fallback failed:", err);
+    }
+  };
 
   return (
     <main style={styles.main}>
@@ -251,8 +319,26 @@ export default function Home() {
 
         {result && (
           <div style={styles.result}>
-            <div style={styles.resultHeader}>
-              <span style={styles.resultLabel}>{t("home.result.label")}</span>
+          <div style={styles.resultHeader}>
+            <span style={styles.resultLabel}>{t("home.result.label")}</span>
+            <div style={styles.resultActions}>
+              {canShare ? (
+                <button
+                  onClick={handleShare}
+                  style={{
+                    ...styles.shareBtn,
+                    opacity: !ogReady || shareBusy ? 0.5 : 1,
+                    cursor: !ogReady || shareBusy ? "not-allowed" : "pointer",
+                  }}
+                  disabled={!ogReady || shareBusy}
+                >
+                  {shareBusy
+                    ? t("home.sharing")
+                    : ogReady
+                    ? t("home.share")
+                    : t("home.previewing")}
+                </button>
+              ) : null}
               <button
                 onClick={handleCopy}
                 style={styles.copyBtn}
@@ -268,6 +354,7 @@ export default function Home() {
                 {copied ? t("home.copied") : t("home.copy")}
               </button>
             </div>
+          </div>
             <div style={styles.linkBox}>
               <code style={styles.linkText}>{result.short}</code>
             </div>
@@ -518,10 +605,25 @@ const styles: Record<string, CSSProperties> = {
     justifyContent: "space-between",
     marginBottom: 10,
   },
+  resultActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+  },
   resultLabel: {
     fontSize: 13,
     color: "var(--text-muted)",
     fontWeight: 500,
+  },
+  shareBtn: {
+    padding: "6px 12px",
+    fontSize: 13,
+    background: "color-mix(in oklab, var(--signal) 12%, transparent)",
+    border: "1px solid color-mix(in oklab, var(--signal) 55%, var(--border))",
+    borderRadius: 6,
+    color: "var(--text)",
+    fontFamily: "inherit",
+    transition: "border-color var(--duration-snug) var(--ease-soft), color var(--duration-snug) var(--ease-soft)",
   },
   copyBtn: {
     padding: "6px 12px",

@@ -33,6 +33,9 @@
   "home.hint.link": "🔗 goes to the link",
   "home.copy": "Copy",
   "home.copied": "✓ Copied",
+  "home.share": "Share",
+  "home.sharing": "Sharing...",
+  "home.previewing": "Preparing preview...",
   "home.result.label": "Generated link:",
   "home.result.cli": "CLI (ritual mode):",
 

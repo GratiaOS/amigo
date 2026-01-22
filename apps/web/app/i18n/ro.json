@@ -33,6 +33,9 @@
   "home.hint.link": "🔗 va duce către link",
   "home.copy": "Copiază",
   "home.copied": "✓ Copiat",
+  "home.share": "Trimite",
+  "home.sharing": "Trimit...",
+  "home.previewing": "Pregătesc preview...",
   "home.result.label": "Link generat:",
   "home.result.cli": "CLI (ritual mode):",
 
