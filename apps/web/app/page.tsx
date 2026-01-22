@@ -172,7 +172,7 @@ export default function Home() {
       if (navigator.share) {
         await navigator.share({
           title: t("home.title"),
-          text: t("home.subtitle"),
+          text: t("home.share.text"),
           url: shareUrl,
         });
         return;
