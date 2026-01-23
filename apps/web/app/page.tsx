@@ -116,15 +116,21 @@ export default function Home() {
     }
   };
 
-  const handleCopy = async () => {
-    if (!result) return;
+  const copyToClipboard = async (text: string, errorLabel = "Copy failed:") => {
     try {
-      await navigator.clipboard.writeText(result.short);
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      return true;
     } catch (err) {
-      console.error("Copy failed:", err);
+      console.error(errorLabel, err);
+      return false;
     }
+  };
+
+  const handleCopy = async () => {
+    if (!result) return;
+    await copyToClipboard(result.short);
   };
 
   const bashOneLiner = result
@@ -177,19 +183,16 @@ export default function Home() {
         });
         return;
       }
-    } catch {
-      // fall through to clipboard
+    } catch (err) {
+      const name = typeof err === "object" && err ? (err as { name?: string }).name : "";
+      if (name === "AbortError") {
+        return;
+      }
     } finally {
       setShareBusy(false);
     }
 
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Share fallback failed:", err);
-    }
+    await copyToClipboard(shareUrl, "Share fallback failed:");
   };
 
   return (
