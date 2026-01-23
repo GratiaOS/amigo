@@ -109,8 +109,8 @@ export default function RoomClient({ params }: Props) {
   const burnNow = async () => {
     if (!data) return;
     try {
-      const res = await fetch(`${base}/api/commence/${params.slug}`, {
-        method: 'POST',
+      const res = await fetch(`${base}/api/burn/${params.slug}`, {
+        method: 'DELETE',
         keepalive: true,
       });
       if (!res.ok) {
