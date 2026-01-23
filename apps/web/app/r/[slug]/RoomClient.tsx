@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
+import { SignalLost } from '../../components/SignalLost';
+import { useBurn } from '../../hooks/useBurn';
 import { useTranslation } from '../../i18n/useTranslation';
 import { LangSwitch } from '../../i18n/LangSwitch';
 
@@ -41,6 +43,7 @@ export default function RoomClient({ params }: Props) {
   const [displayContent, setDisplayContent] = useState('');
   const frameRef = useRef(0);
   const charArrayRef = useRef<string[]>([]);
+  const { status: burnStatus, triggerBurn } = useBurn(params.slug, base);
 
   const ms = 3600; // Breathing cycle (mai somatic)
   const redirectTo = data?.url ?? null;
@@ -104,25 +107,6 @@ export default function RoomClient({ params }: Props) {
 
     // Journey begins
     window.location.href = data.url;
-  };
-
-  const burnNow = async () => {
-    if (!data) return;
-    try {
-      const res = await fetch(`${base}/api/commence/${params.slug}`, {
-        method: 'POST',
-        keepalive: true,
-      });
-      if (!res.ok) {
-        setStatus('gone');
-        return;
-      }
-    } catch (e) {
-      console.error('Burn failed:', e);
-      setStatus('gone');
-      return;
-    }
-    setStatus('burned');
   };
 
   const copyLink = async () => {
@@ -245,24 +229,16 @@ export default function RoomClient({ params }: Props) {
     );
   }
 
-  if (status === 'burned') {
+  if (burnStatus === 'BURNED' || status === 'burned') {
+    return <SignalLost />;
+  }
+
+  if (status === 'loading') {
     return (
       <main style={styles.main}>
         <div style={styles.woodPlate}>
           <div style={{ ...styles.card, position: 'relative' }}>
-            <p style={{ opacity: 0.85, marginBottom: 14, fontSize: 16, textAlign: 'center' }}>{t('room.burned.title')}</p>
-            <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, textAlign: 'center', color: 'var(--text-muted)' }}>{t('room.burned.body1')}</p>
-            <p style={{ opacity: 0.65, lineHeight: 1.6, fontSize: 14, marginTop: 10, textAlign: 'center', color: 'var(--text-muted)' }}>
-              {t('room.burned.body2')}
-            </p>
-            <div style={{ marginTop: 20, textAlign: 'center' }}>
-              <a href="/" style={styles.shellLink}>
-                {t('room.burned.cta')}
-              </a>
-            </div>
-            <div style={styles.langWrap}>
-              <LangSwitch />
-            </div>
+            <p style={styles.senderCaption}>{t('room.loading')}</p>
           </div>
         </div>
       </main>
@@ -371,7 +347,17 @@ export default function RoomClient({ params }: Props) {
                         </button>
                       ) : null}
 
-                      <button style={styles.miniBtnDanger} onClick={burnNow} aria-label={t('room.burn.cta')} data-wt="1">
+                      <button
+                        style={{
+                          ...styles.miniBtnDanger,
+                          opacity: burnStatus === 'BURNING' ? 0.6 : 1,
+                          cursor: burnStatus === 'BURNING' ? 'not-allowed' : 'pointer',
+                        }}
+                        onClick={triggerBurn}
+                        aria-label={t('room.burn.cta')}
+                        data-wt="1"
+                        disabled={burnStatus === 'BURNING'}
+                      >
                         <span style={styles.wtIcon} aria-hidden>
                           🔥
                         </span>

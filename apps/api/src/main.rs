@@ -2,7 +2,7 @@ use axum::{
     extract::{Path, State},
     http::{header, HeaderMap, HeaderValue, Method, StatusCode},
     response::{IntoResponse, Redirect},
-    routing::{get, post},
+    routing::{delete, get, post},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -230,7 +230,7 @@ fn cors_layer() -> CorsLayer {
 
     CorsLayer::new()
         .allow_origin(allow_origin)
-        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+        .allow_methods([Method::GET, Method::POST, Method::DELETE, Method::OPTIONS])
         .allow_headers([header::CONTENT_TYPE, header::ACCEPT, header::AUTHORIZATION])
 }
 
@@ -457,6 +457,17 @@ async fn commence_handler(
     }
 }
 
+// Absolute burn: hard delete regardless of type.
+async fn burn_handler(
+    State(state): State<Arc<AppState>>,
+    Path(slug): Path<String>,
+) -> impl IntoResponse {
+    match db::burn_link(&state.pool, &slug).await {
+        Ok(_) => (StatusCode::OK, "ok\n").into_response(),
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, "burn failed\n").into_response(),
+    }
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::registry()
@@ -480,6 +491,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/resolve/:slug", get(resolve_json))
         .route("/api/peek/:slug", get(peek_link))
         .route("/api/commence/:slug", post(commence_handler))
+        .route("/api/burn/:slug", delete(burn_handler))
         .route("/:slug", get(resolve_slug))
         .layer(TraceLayer::new_for_http())
         .layer(cors)

@@ -300,3 +300,12 @@ pub async fn commence_journey(pool: &SqlitePool, slug: &str, now: i64) -> Result
 
     Ok(true)
 }
+
+// Absolute burn: hard delete regardless of url/max_views.
+pub async fn burn_link(pool: &SqlitePool, slug: &str) -> Result<bool> {
+    let res = sqlx::query("DELETE FROM links WHERE slug = ?1")
+        .bind(slug)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected() > 0)
+}
