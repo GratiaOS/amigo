@@ -110,10 +110,33 @@ paths:
                   gone:
                     type: boolean
                   emoji:
-                    type: string
-                    nullable: true
-                  has_url:
-                    type: boolean
+                type: string
+                nullable: true
+              has_url:
+                type: boolean
+  /api/burn/{slug}:
+    delete:
+      summary: Burn a room explicitly
+      description: >
+        The Nuclear Option. Destroys the room and all content immediately,
+        regardless of remaining views or time.
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          description: The unique identifier of the room to burn
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Room incinerated successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ok
+        "500":
+          description: Server error during burn sequence
   /{slug}:
     get:
       summary: Resolve + redirect
