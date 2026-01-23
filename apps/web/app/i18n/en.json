@@ -43,6 +43,7 @@
   "room.sender.generic": "A friend sent you this.",
   "room.sender.with_signet": "Someone left a sign {signet}.",
   "room.sender.bear": "The Bear sent you this.",
+  "room.loading": "TUNING...",
   "room.silence": "(silence)",
   "room.breath": "(one breath)",
   "room.open": "Open",

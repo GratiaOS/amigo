@@ -43,6 +43,7 @@
   "room.sender.generic": "Un amigo te envió esto.",
   "room.sender.with_signet": "Alguien dejó una señal {signet}.",
   "room.sender.bear": "El Oso te envió esto.",
+  "room.loading": "SINTONIZANDO...",
   "room.silence": "(silencio)",
   "room.breath": "(una respiración)",
   "room.open": "Abrir",

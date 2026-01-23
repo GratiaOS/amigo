@@ -269,6 +269,18 @@ export default function RoomClient({ params }: Props) {
     );
   }
 
+  if (status === 'loading') {
+    return (
+      <main style={styles.main}>
+        <div style={styles.woodPlate}>
+          <div style={{ ...styles.card, position: 'relative' }}>
+            <p style={styles.senderCaption}>{t('room.loading')}</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   const defaultSignet = '💖';
   const signet = firstGrapheme(data?.emoji) || defaultSignet;
   const markSignet = signet;

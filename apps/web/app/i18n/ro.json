@@ -43,6 +43,7 @@
   "room.sender.generic": "Un prieten ți-a trimis asta.",
   "room.sender.with_signet": "Cineva ți-a lăsat un semn {signet}.",
   "room.sender.bear": "Ursul ți-a trimis asta.",
+  "room.loading": "ACORDEZ...",
   "room.silence": "(liniște)",
   "room.breath": "(o respirație)",
   "room.open": "Deschide",
