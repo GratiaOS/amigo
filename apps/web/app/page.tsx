@@ -339,18 +339,18 @@ export default function Home() {
                     : t("home.previewing")}
                 </button>
               ) : null}
-              <button
-                onClick={handleCopy}
-                style={styles.copyBtn}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--accent)";
-                  e.currentTarget.style.color = "var(--accent)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "var(--border)";
-                  e.currentTarget.style.color = "var(--text-muted)";
-                }}
-              >
+                <button
+                  onClick={handleCopy}
+                  style={styles.copyBtn}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.border = "1px solid var(--accent)";
+                    e.currentTarget.style.color = "var(--accent)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.border = "1px solid var(--border)";
+                    e.currentTarget.style.color = "var(--text-muted)";
+                  }}
+                >
                 {copied ? t("home.copied") : t("home.copy")}
               </button>
             </div>
