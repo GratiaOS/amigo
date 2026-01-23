@@ -110,10 +110,10 @@ paths:
                   gone:
                     type: boolean
                   emoji:
-                type: string
-                nullable: true
-              has_url:
-                type: boolean
+                    type: string
+                    nullable: true
+                  has_url:
+                    type: boolean
   /api/burn/{slug}:
     delete:
       summary: Burn a room explicitly

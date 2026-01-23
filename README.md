@@ -75,6 +75,14 @@ curl -sS -X POST http://localhost:3000/api/dispatch \
   -d '{"url":"https://example.com","note":"Cand ai 5 minute de liniste.","ttl":"7d"}'
 ```
 
+### Field testing (E2E)
+
+```bash
+pnpm -C apps/web exec playwright install
+pnpm -C apps/web test:e2e
+pnpm -C apps/web test:e2e --ui
+```
+
 ## Bash function (for .zshrc)
 
 ```bash
@@ -131,6 +139,8 @@ amigo() {
     msg_burn_fail="Burn failed."
   fi
 
+  local api_base="${AMIGO_API_BASE:-http://localhost:3000}"
+
   while getopts ":al:e:t:" opt; do
     case "$opt" in
       a) auto_mode=1 ;;
@@ -155,7 +165,6 @@ amigo() {
       echo "$msg_usage_burn"
       return 1
     fi
-    local api_base="${AMIGO_API_BASE:-http://localhost:3000}"
     if ! curl -sS -X DELETE "${api_base}/api/burn/${slug}" >/dev/null; then
       echo "$msg_burn_fail" >&2
       return 1
@@ -199,7 +208,7 @@ PY
   )
 
   local short
-  short=$(curl -sS -X POST "http://localhost:3000/api/dispatch" \
+  short=$(curl -sS -X POST "${api_base}/api/dispatch" \
     -H 'Content-Type: application/json' \
     -H 'Accept: text/plain' \
     -A 'amigo-cli' \
