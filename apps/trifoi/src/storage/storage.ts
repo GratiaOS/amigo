@@ -1,6 +1,17 @@
 import type { ModeId } from "../app/modes";
 
 const KEY = "trifoi:mode";
+const CHANNEL = "trifoi:mode:sync";
+let channel: BroadcastChannel | null = null;
+
+function getChannel() {
+  if (typeof window === "undefined") return null;
+  if (typeof BroadcastChannel === "undefined") return null;
+  if (!channel) {
+    channel = new BroadcastChannel(CHANNEL);
+  }
+  return channel;
+}
 
 export function readMode(): ModeId | null {
   if (typeof window === "undefined") return null;
@@ -14,9 +25,11 @@ export function writeMode(next: ModeId | null) {
   if (typeof window === "undefined") return;
   if (!next) {
     window.localStorage.removeItem(KEY);
+    getChannel()?.postMessage(null);
     return;
   }
   window.localStorage.setItem(KEY, next);
+  getChannel()?.postMessage(next);
 }
 
 export function subscribeMode(handler: () => void) {
@@ -25,6 +38,14 @@ export function subscribeMode(handler: () => void) {
     if (event.key !== KEY) return;
     handler();
   };
+  const onChannel = () => {
+    handler();
+  };
   window.addEventListener("storage", onStorage);
-  return () => window.removeEventListener("storage", onStorage);
+  const liveChannel = getChannel();
+  liveChannel?.addEventListener("message", onChannel);
+  return () => {
+    window.removeEventListener("storage", onStorage);
+    liveChannel?.removeEventListener("message", onChannel);
+  };
 }
