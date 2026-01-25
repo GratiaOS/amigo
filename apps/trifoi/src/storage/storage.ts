@@ -2,6 +2,7 @@ import type { ModeId } from "../app/modes";
 
 const KEY = "trifoi:mode";
 const CHANNEL = "trifoi:mode:sync";
+const LOCAL_EVENT = "trifoi:mode";
 let channel: BroadcastChannel | null = null;
 
 function getChannel() {
@@ -26,10 +27,12 @@ export function writeMode(next: ModeId | null) {
   if (!next) {
     window.localStorage.removeItem(KEY);
     getChannel()?.postMessage(null);
+    window.dispatchEvent(new Event(LOCAL_EVENT));
     return;
   }
   window.localStorage.setItem(KEY, next);
   getChannel()?.postMessage(next);
+  window.dispatchEvent(new Event(LOCAL_EVENT));
 }
 
 export function subscribeMode(handler: () => void) {
@@ -41,11 +44,16 @@ export function subscribeMode(handler: () => void) {
   const onChannel = () => {
     handler();
   };
+  const onLocal = () => {
+    handler();
+  };
   window.addEventListener("storage", onStorage);
+  window.addEventListener(LOCAL_EVENT, onLocal);
   const liveChannel = getChannel();
   liveChannel?.addEventListener("message", onChannel);
   return () => {
     window.removeEventListener("storage", onStorage);
+    window.removeEventListener(LOCAL_EVENT, onLocal);
     liveChannel?.removeEventListener("message", onChannel);
   };
 }
