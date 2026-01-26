@@ -90,6 +90,26 @@ docker compose up --build
 - API: http://localhost:3000
 - Web: http://localhost:3001
 
+## Run
+
+Nu "pornim un server". Deschidem un spatiu.
+
+Local first. Offline by default.
+Fara infrastructuri invizibile. Fara priviri straine.
+
+```bash
+docker compose up --build
+```
+
+- API: http://localhost:3000
+- Web: http://localhost:3001
+
+Trifoi (local / rapid):
+
+```bash
+pnpm -C apps/trifoi dev -- --host
+```
+
 ### Env
 
 API

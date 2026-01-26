@@ -12,7 +12,7 @@ export default function App() {
       <ModePill mode={mode} />
       <div className="mx-auto flex max-w-md flex-col gap-8">
         <header className="flex items-center text-xs uppercase tracking-[0.3em] text-white/60">
-          <span>TRIFOI</span>
+          <span>TRIFOI ☘️ 🍄</span>
         </header>
 
         <section className="rounded-3xl border border-white/10 bg-white/5 px-6 py-7">
