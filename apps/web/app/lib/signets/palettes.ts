@@ -78,10 +78,10 @@ const CANON: Record<string, GratiaPalette> = {
   },
 
   /**
-   * 🎵 Muzica / Flow
+   * 📻 Muzica / Flow
    * Noapte, vibratie, stare.
    */
-  "🎵": {
+  "📻": {
     bg: "#F0F8FF",
     paper: "#E6E6FA",
     glow: "#00BFFF",

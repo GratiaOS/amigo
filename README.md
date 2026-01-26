@@ -63,7 +63,7 @@ Local, offline, fără priviri străine, fără infrastructuri invizibile.
 - 🫧 = The Bubbles (Biluțe, Joacă, Aer)
 - 💖 = The Gratia (Grijă, Inimă, Blândețe)
 - 👍 = The Yes (Da, Merge, Confirmare)
-- 🎵 = The Song (Muzică, Ritm, Drum)
+- 📻 = The Song (Muzică, Ritm, Drum)
 
 ## Trifoi ☘️ (Phase 1)
 

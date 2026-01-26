@@ -145,7 +145,7 @@ fn detect_vibe(url: &str) -> String {
         || u.contains("soundcloud")
         || u.contains("bandcamp")
     {
-        return "🎵".to_string();
+        return "📻".to_string();
     }
 
     if u.contains("maps")

@@ -7,12 +7,12 @@ import { LangSwitch } from "./i18n/LangSwitch";
 
 type DispatchResponse = { short: string; original?: string | null; note?: string | null };
 
-// TODO: Extend Musical Notes Code for 🎵 signet (align with the 13-month energy calendar).
-const SIGNETS = ["💖", "👍", "🎵", "🚬", "🐺", "🐸", "🌸", "🦅", "🐻", "🛰️", "⚓", "🫧"];
+// TODO: Extend Musical Notes Code for 📻 signet (align with the 13-month energy calendar).
+const SIGNETS = ["💖", "👍", "📻", "🚬", "🐺", "🐸", "🌸", "🦅", "🐻", "🛰️", "⚓", "🫧"];
 const SIGNET_HINT_KEYS: Record<string, string> = {
   "💖": "home.signet.desc.gratia",
   "👍": "home.signet.desc.yes",
-  "🎵": "home.signet.desc.song",
+  "📻": "home.signet.desc.song",
   "🚬": "home.signet.desc.ground",
   "🐺": "home.signet.desc.pack",
   "🐸": "home.signet.desc.signal",
