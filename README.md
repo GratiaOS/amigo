@@ -9,6 +9,7 @@ amigo.sh — Transport de intentie.
 Un URL e util. Un URL + o nota e uman.
 
 Amigo iti lasa:
+
 - sa generezi rapid un link din web sau din terminal (CLI),
 - sa atasezi o nota scurta ("pentru tine", "uita-te la asta", "respira"),
 - sa deschizi linkul intr-o "Room" calma, inainte de redirect.
@@ -16,6 +17,7 @@ Amigo iti lasa:
 Bonus (Petal Mode): mesaje/nota cu deschidere unica — dupa ce a fost citit, urma se sterge.
 
 CLI vibe:
+
 - amigo <url> "nota mea"
 - echo "nota mea" | amigo <url>
 - amigo burn <slug>
@@ -26,10 +28,27 @@ Quiet tech, warm UX.
 
 AGPL-3.0-only.
 
+## Maintenance
+
+This codebase is a living system.
+It is not "updated." It is tended.
+
+We follow a simple rule:
+fix where it hurts, then bring it home.
+
+- Bugs are fixed in main first.
+- Critical fixes are carried back into supported release branches.
+- No silent drift. No forgotten lines.
+
+How we care for the code is documented here:
+→ docs/MAINTENANCE.md
+
 ## Philosophy
 
 Signets are presence stamps. They declare tone without narrative.
 Sigiliul nu spune o poveste. Deschide o stare.
+
+Local, offline, fără priviri străine, fără infrastructuri invizibile.
 
 ## Protocol Set
 
@@ -46,6 +65,22 @@ Sigiliul nu spune o poveste. Deschide o stare.
 - 👍 = The Yes (Da, Merge, Confirmare)
 - 🎵 = The Song (Muzică, Ritm, Drum)
 
+## Trifoi ☘️ (Phase 1)
+
+Trifoi este vasul rapid (offline-first). Trei moduri. Zero net.
+
+**Run (America approved 🗽):**
+
+```bash
+pnpm -C apps/trifoi dev -- --host
+```
+
+Build:
+
+```bash
+pnpm -C apps/trifoi build
+```
+
 ## Local
 
 ```bash
@@ -58,12 +93,14 @@ docker compose up --build
 ### Env
 
 API
+
 - DATABASE_URL=sqlite:/app/data/amigo.db
 - BASE_URL=http://localhost:3000
 - WEB_BASE_URL=http://localhost:3001
 - CORS_ALLOW_ORIGINS=https://amigo.sh,http://localhost:3001,http://localhost:3000
 
 Web
+
 - NEXT_PUBLIC_API_BASE=http://localhost:3000
 
 ### CLI

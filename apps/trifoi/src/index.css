@@ -18,3 +18,89 @@ body {
 #root {
   min-height: 100vh;
 }
+
+/* --- Trifoi: orbital micro-motion (planets, not sliders) --- */
+@keyframes trifoi-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes trifoi-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+.trifoi-orbit {
+  position: relative;
+  width: 14px;
+  height: 14px;
+}
+
+.trifoi-orbit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.trifoi-orbit__ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  opacity: 0.9;
+}
+
+.trifoi-orbit__spinner {
+  position: absolute;
+  inset: -6px;
+  animation: trifoi-orbit 2.8s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+.trifoi-orbit__planet {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  transform: translate(10px, -50%);
+  box-shadow: 0 0 0 2px rgba(11, 11, 10, 0.9);
+}
+
+.trifoi-orbit--calm .trifoi-orbit__planet {
+  background: #22c55e;
+  animation: trifoi-breathe 1.8s ease-in-out infinite;
+}
+
+.trifoi-orbit--low .trifoi-orbit__planet {
+  background: #f59e0b;
+  animation: trifoi-breathe 1.4s ease-in-out infinite;
+}
+
+.trifoi-orbit--panic .trifoi-orbit__planet {
+  background: #ef4444;
+  animation: trifoi-breathe 0.9s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trifoi-orbit__spinner {
+    animation: none;
+  }
+  .trifoi-orbit__planet {
+    animation: none;
+  }
+}
