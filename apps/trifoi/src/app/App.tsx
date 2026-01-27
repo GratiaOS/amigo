@@ -1,6 +1,8 @@
 import { ModeSelector } from "../components/ModeSelector";
 import { ModePill } from "../components/ModePill";
 import { PresenceStrip } from "../components/PresenceStrip";
+import { CrucibleRecorder } from "../components/CrucibleRecorder";
+import { SignalScope } from "../components/SignalScope";
 import { MODES } from "./modes";
 import { useMode } from "./useMode";
 
@@ -8,7 +10,7 @@ export default function App() {
   const { mode, modeId, setMode } = useMode();
 
   return (
-    <div className="min-h-screen bg-[#0b0b0a] px-5 py-8 text-[#f2eee6]">
+    <div className="relative min-h-screen bg-[#0b0b0a] px-5 py-8 text-[#f2eee6]">
       <ModePill mode={mode} />
       <div className="mx-auto flex max-w-md flex-col gap-8">
         <header className="flex items-center text-xs uppercase tracking-[0.3em] text-white/60">
@@ -27,12 +29,15 @@ export default function App() {
           </div>
         </section>
 
+        <SignalScope modeId={modeId} />
+
         <PresenceStrip />
 
         <footer className="text-center text-[10px] uppercase tracking-[0.3em] text-white/40">
           Trifoi • local mode only
         </footer>
       </div>
+      <CrucibleRecorder />
     </div>
   );
 }
