@@ -50,6 +50,16 @@ Sigiliul nu spune o poveste. Deschide o stare.
 
 Local, offline, fără priviri străine, fără infrastructuri invizibile.
 
+## Signal Engine (Canonical)
+
+Gratia / Trifoi are la bază un „Signal Engine” — un strat de motor care traduce
+stare → parametri → experiență audio-vizuală.
+
+Nu e feature. Nu e UI.  
+E fizica internă a sistemului.
+
+→ Canonical doc: `docs/signal-engine.md`
+
 ## Protocol Set
 
 - 🚬 = The Ground (Pauză, Adevăr, Sediment)
