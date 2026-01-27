@@ -22,10 +22,15 @@ function smooth(prev: number, next: number, a = 0.15) {
 export function useCrucibleRecorder() {
   const [state, setState] = useState<CrucibleState>("IDLE");
   const [energy, setEnergy] = useState(0);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [canRecord, setCanRecord] = useState(true);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<BlobPart[]>([]);
+  const audioUrlRef = useRef<string | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastEnergyRef = useRef(0);
 
@@ -40,8 +45,19 @@ export function useCrucibleRecorder() {
     rafRef.current = null;
   }, []);
 
+  const setAudioUrlSafe = useCallback((next: string | null) => {
+    if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+    audioUrlRef.current = next;
+    setAudioUrl(next);
+  }, []);
+
   const teardownAudio = useCallback(() => {
     stopLoop();
+    if (recorderRef.current && recorderRef.current.state !== "inactive") {
+      recorderRef.current.stop();
+    }
+    recorderRef.current = null;
+    chunksRef.current = [];
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
@@ -58,6 +74,7 @@ export function useCrucibleRecorder() {
 
     setState("ARMED");
     haptic(20);
+    setAudioUrlSafe(null);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -69,6 +86,36 @@ export function useCrucibleRecorder() {
       });
 
       streamRef.current = stream;
+
+      if (typeof MediaRecorder === "undefined") {
+        setCanRecord(false);
+      } else {
+        setCanRecord(true);
+        const preferredTypes = [
+          "audio/webm;codecs=opus",
+          "audio/webm",
+          "audio/ogg;codecs=opus",
+          "audio/ogg",
+        ];
+        const mimeType = preferredTypes.find((type) =>
+          MediaRecorder.isTypeSupported(type)
+        );
+        const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+        recorderRef.current = recorder;
+        chunksRef.current = [];
+        recorder.addEventListener("dataavailable", (event) => {
+          if (event.data && event.data.size > 0) chunksRef.current.push(event.data);
+        });
+        recorder.addEventListener("stop", () => {
+          const blob = new Blob(chunksRef.current, {
+            type: recorder.mimeType || "audio/webm",
+          });
+          if (blob.size > 0) {
+            setAudioUrlSafe(URL.createObjectURL(blob));
+          }
+        });
+        recorder.start();
+      }
 
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       audioCtxRef.current = ctx;
@@ -105,7 +152,7 @@ export function useCrucibleRecorder() {
     } catch {
       setState("IDLE");
     }
-  }, [haptic, state]);
+  }, [haptic, setAudioUrlSafe, state]);
 
   const stop = useCallback(() => {
     if (state !== "RECORDING") return;
@@ -116,6 +163,10 @@ export function useCrucibleRecorder() {
     const frozen = lastEnergyRef.current;
     setEnergy(frozen);
 
+    if (recorderRef.current && recorderRef.current.state !== "inactive") {
+      recorderRef.current.stop();
+    }
+
     setTimeout(() => {
       teardownAudio();
     }, 300);
@@ -125,20 +176,30 @@ export function useCrucibleRecorder() {
     haptic([30, 40, 30]);
     setState("BURNED");
     setEnergy(0);
-  }, [haptic]);
+    setAudioUrlSafe(null);
+  }, [haptic, setAudioUrlSafe]);
 
   const reset = useCallback(() => {
     setState("IDLE");
     setEnergy(0);
-  }, []);
+    setAudioUrlSafe(null);
+  }, [setAudioUrlSafe]);
 
   useEffect(() => {
     return () => teardownAudio();
   }, [teardownAudio]);
 
+  useEffect(() => {
+    return () => {
+      if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+    };
+  }, []);
+
   return {
     state,
     energy,
+    audioUrl,
+    canRecord,
     start,
     stop,
     burn,
