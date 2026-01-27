@@ -1,7 +1,10 @@
+import { useRef } from "react";
 import { useCrucibleRecorder } from "../app/useCrucibleRecorder";
 
 export function CrucibleRecorder() {
-  const { state, energy, start, stop, burn, reset } = useCrucibleRecorder();
+  const { state, energy, start, stop, burn, reset, audioUrl, canRecord } =
+    useCrucibleRecorder();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const inc = Math.pow(energy, 1.6);
   const scale = 1 + energy * 0.35;
@@ -50,9 +53,10 @@ export function CrucibleRecorder() {
         {state === "RECORDED" && (
           <div className="mt-5 flex gap-3">
             <button
-              className="h-12 flex-1 rounded-xl bg-white/10 font-mono uppercase tracking-widest text-white/90"
+              className="h-12 flex-1 rounded-xl bg-white/10 font-mono uppercase tracking-widest text-white/90 disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={!audioUrl}
               onClick={() => {
-                // TODO: playback v0
+                audioRef.current?.play().catch(() => {});
               }}
             >
               ASCULTA
@@ -76,6 +80,14 @@ export function CrucibleRecorder() {
             </button>
           </div>
         )}
+
+        {!canRecord && (
+          <p className="mt-4 text-center text-[10px] uppercase tracking-[0.3em] text-white/30">
+            MICROFON NEACCEPTAT
+          </p>
+        )}
+
+        <audio ref={audioRef} src={audioUrl ?? undefined} preload="auto" />
       </div>
     </div>
   );
