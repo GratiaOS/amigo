@@ -11,6 +11,8 @@ export default function RootLayout({
       <head>
         <title>amigo.sh</title>
         <meta name="description" content="Transport de intentie. CLI + Room." />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body>
         <ClientProviders>{children}</ClientProviders>
