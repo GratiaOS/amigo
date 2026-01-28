@@ -373,12 +373,15 @@ export default function Home() {
 
         <div style={styles.footer}>
           <a
-            href="https://github.com/GratiaOS/amigo"
+            href="https://github.com/GratiaOS"
             target="_blank"
             rel="noopener noreferrer"
             style={styles.footerLink}
           >
-            github.com/GratiaOS/amigo
+            github.com/GratiaOS
+          </a>
+          <a href="mailto:contact@gratia.space" style={styles.footerLink}>
+            contact@gratia.space
           </a>
         </div>
       </div>
@@ -676,6 +679,10 @@ const styles: Record<string, CSSProperties> = {
   },
   footer: {
     marginTop: 32,
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    alignItems: "center",
     textAlign: "center",
   },
   footerLink: {
