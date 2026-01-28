@@ -136,6 +136,7 @@ button {
 input,
 textarea {
   caret-color: var(--signal);
+  caret-shape: block;
   color: var(--ink-olive);
   font-size: var(--input-font-size);
   line-height: 1.4;
@@ -152,13 +153,6 @@ textarea:focus {
   box-shadow:
     0 0 0 1px color-mix(in oklab, var(--signal) 35%, transparent),
     0 0 18px var(--signal-glow);
-}
-
-@media (max-width: 768px) {
-  input,
-  textarea {
-    caret-shape: block;
-  }
 }
 
 @media (max-width: 768px) {
