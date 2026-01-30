@@ -131,7 +131,8 @@
       if (legacyParam) setLegacy(true);
       else setLegacy(legacyStored === "1");
 
-      legacyToggle?.addEventListener("pointerdown", () => {
+      legacyToggle?.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
         legacyHold = window.setTimeout(() => {
           setLegacy(true);
         }, 450);
