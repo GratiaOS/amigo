@@ -91,6 +91,12 @@ Build:
 pnpm -C apps/trifoi build
 ```
 
+## Sawsan Portal
+
+Portal personal: `sawsan.amigo.sh`
+
+![Sawsan portal](docs/marks/sawsan-portal.png)
+
 ## Local
 
 ```bash
