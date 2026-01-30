@@ -7,35 +7,36 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta property="og:title" content="sawsan.sao | Arhitecta Legăturii ⚜️" />
-    <meta property="og:description" content="Țin legătura vie. Țin direcția." />
+    <meta property="og:title" content="sawsan.sao | Arhitecta Vínculo-ului ⚜️" />
+    <meta property="og:description" content="Țin Vínculo-ul viu 💖 · Țin ADN-ul curat 🧬 · Țin forța în corp 🏋️" />
     <meta property="og:image" content="/og.png" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <title>sawsan.sao | Arhitecta Legăturii ⚜️</title>
+    <title>sawsan.sao | Arhitecta Vínculo-ului ⚜️</title>
     <link rel="stylesheet" href="/style.css" />
   </head>
+
   <body>
     <div class="background-overlay"></div>
 
     <main class="content">
       <header>
         <h1 class="glow-text">sawsan.sao</h1>
-        <p class="subtitle" data-i18n="subtitle">Arhitecta Legăturii ⚜️</p>
+        <p class="subtitle" data-i18n="subtitle">Arhitecta Vínculo-ului ⚜️</p>
       </header>
 
       <section class="motto">
-        <p data-i18n="motto">„Țin legătura vie. Țin direcția.”</p>
+        <p data-i18n="motto">„Țin Vínculo-ul viu 💖 · Țin ADN-ul curat 🧬 · Țin forța în corp 🏋️”</p>
       </section>
 
       <nav class="links">
-        <a href="mailto:contact@gratia.space" class="btn" data-i18n="cta.signal">Semnal Urgență 📡</a>
+        <a href="mailto:contact@gratia.space" class="btn" data-i18n="cta.signal">Semnal de urgență 📡</a>
         <a href="https://gratia.space" class="btn secondary" data-i18n="cta.gratia">Asociația Gratia</a>
         <a href="https://amigo.sh" class="btn secondary" data-i18n="cta.amigo">Ecosistem Amigo</a>
       </nav>
 
       <footer>
-        <p class="status" data-i18n="status">Status: Vínculo Protejat 🔗</p>
+        <p class="status" data-i18n="status">Status: Vínculo protejat 🔗</p>
         <p class="offline-note" data-i18n="offline">Creat să reziste. Chiar și fără net. ⚓</p>
         <div class="lang-switch" aria-label="Language switcher">
           <button type="button" data-lang="ro">RO</button>
@@ -48,30 +49,30 @@
     <script>
       const translations = {
         ro: {
-          subtitle: "Arhitecta Legăturii ⚜️",
-          motto: "„Țin legătura vie. Țin direcția.”",
-          "cta.signal": "Semnal Urgență 📡",
+          subtitle: "Arhitecta Vínculo-ului ⚜️",
+          motto: "„Țin Vínculo-ul viu 💖 · Țin ADN-ul curat 🧬 · Țin forța în corp 🏋️”",
+          "cta.signal": "Semnal de urgență 📡",
           "cta.gratia": "Asociația Gratia",
           "cta.amigo": "Ecosistem Amigo",
-          status: "Status: Vínculo Protejat 🔗",
+          status: "Status: Vínculo protejat 🔗",
           offline: "Creat să reziste. Chiar și fără net. ⚓"
         },
         en: {
           subtitle: "Architect of the Bond ⚜️",
-          motto: "“I keep the bond alive. I keep the direction.”",
-          "cta.signal": "Emergency Signal 📡",
+          motto: "“I keep the bond alive 💖 · I keep the DNA clean 🧬 · I keep strength in the body 🏋️”",
+          "cta.signal": "Emergency signal 📡",
           "cta.gratia": "Gratia Association",
           "cta.amigo": "Amigo Ecosystem",
-          status: "Status: Protected Bond 🔗",
+          status: "Status: Protected bond 🔗",
           offline: "Built to endure. Even without signal. ⚓"
         },
         es: {
           subtitle: "Arquitecta del Vínculo ⚜️",
-          motto: "“Mantengo vivo el vínculo. Mantengo la dirección.”",
-          "cta.signal": "Señal de Urgencia 📡",
+          motto: "“Mantengo vivo el vínculo 💖 · Mantengo limpio el ADN 🧬 · Mantengo la fuerza en el cuerpo 🏋️”",
+          "cta.signal": "Señal de urgencia 📡",
           "cta.gratia": "Asociación Gratia",
           "cta.amigo": "Ecosistema Amigo",
-          status: "Estado: Vínculo Protegido 🔗",
+          status: "Estado: Vínculo protegido 🔗",
           offline: "Creado para resistir. Incluso sin señal. ⚓"
         }
       };
@@ -83,10 +84,10 @@
       const initial = supported.includes(params.get("lang"))
         ? params.get("lang")
         : supported.includes(stored)
-        ? stored
-        : supported.includes(browser)
-        ? browser
-        : "ro";
+          ? stored
+          : supported.includes(browser)
+            ? browser
+            : "ro";
 
       function applyLang(lang) {
         const table = translations[lang] || translations.ro;
@@ -111,4 +112,5 @@
       });
     </script>
   </body>
+
 </html>
