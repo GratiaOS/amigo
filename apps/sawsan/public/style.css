@@ -65,12 +65,12 @@ body {
   z-index: 1;
 }
 
-body[data-legacy="true"] .background-overlay {
+body[data-legacy] .background-overlay {
   opacity: 0;
 }
 
-body[data-legacy="true"] .legacy-overlay,
-body[data-legacy="true"] .legacy-window {
+body[data-legacy] .legacy-overlay,
+body[data-legacy] .legacy-window {
   opacity: 1;
 }
 
