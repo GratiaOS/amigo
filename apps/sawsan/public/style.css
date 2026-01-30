@@ -76,12 +76,15 @@ body[data-legacy] .legacy-window {
 
 .content {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   padding: 24px;
+  padding-top: calc(24px + env(safe-area-inset-top));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
 .glow-text {
@@ -222,5 +225,12 @@ body[data-legacy] .legacy-window {
 
   .btn {
     width: 100%;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .background-overlay,
+  .legacy-overlay {
+    background-attachment: scroll;
   }
 }

@@ -120,6 +120,8 @@
       const legacyKey = "sawsan:legacy";
       const legacyStored = localStorage.getItem(legacyKey);
       const legacyParam = params.get("legacy") === "1";
+      const legacyToggle = document.querySelector("[data-legacy-toggle]");
+      let legacyHold;
 
       function setLegacy(on) {
         document.body.toggleAttribute("data-legacy", on);
@@ -129,20 +131,16 @@
       if (legacyParam) setLegacy(true);
       else setLegacy(legacyStored === "1");
 
-      const legacyToggle = document.querySelector("[data-legacy-toggle]");
-      let legacyHold;
       legacyToggle?.addEventListener("pointerdown", () => {
         legacyHold = window.setTimeout(() => {
-          setLegacy(!document.body.hasAttribute("data-legacy"));
-        }, 900);
+          setLegacy(true);
+        }, 450);
       });
       ["pointerup", "pointerleave", "pointercancel"].forEach((evt) => {
         legacyToggle?.addEventListener(evt, () => {
           if (legacyHold) window.clearTimeout(legacyHold);
+          setLegacy(false);
         });
-      });
-      legacyToggle?.addEventListener("dblclick", () => {
-        setLegacy(!document.body.hasAttribute("data-legacy"));
       });
 
       document.querySelectorAll(".lang-switch button").forEach((btn) => {
