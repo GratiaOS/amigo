@@ -45,12 +45,14 @@ body {
   text-transform: lowercase;
   text-shadow: 0 0 24px rgba(255, 238, 210, 0.5);
   margin: 0;
+  animation: signal-flicker 3s infinite alternate;
 }
 
 .subtitle {
   font-size: clamp(1rem, 2.5vw, 1.3rem);
   opacity: 0.8;
   margin-top: 8px;
+  animation: subtle-pulse 5s infinite alternate;
 }
 
 .motto {
@@ -104,6 +106,68 @@ body {
   margin-top: 8px;
   font-size: 0.8rem;
   opacity: 0.55;
+}
+
+.lang-switch {
+  margin-top: 16px;
+  display: inline-flex;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+}
+
+.lang-switch button {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.lang-switch button.active {
+  color: #ffffff;
+}
+
+@keyframes signal-flicker {
+  0%,
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    opacity: 0.8;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+  70% {
+    opacity: 0.9;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  }
+  80% {
+    opacity: 0.6;
+    text-shadow: none;
+  }
+}
+
+@keyframes subtle-pulse {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-text,
+  .subtitle {
+    animation: none;
+  }
 }
 
 @media (max-width: 640px) {

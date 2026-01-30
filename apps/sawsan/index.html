@@ -15,23 +15,91 @@
     <main class="content">
       <header>
         <h1 class="glow-text">sawsan.sao</h1>
-        <p class="subtitle">Arhitecta Legăturii ⚜️</p>
+        <p class="subtitle" data-i18n="subtitle">Arhitecta Legăturii ⚜️</p>
       </header>
 
       <section class="motto">
-        <p>„Țin legătura vie. Țin direcția.”</p>
+        <p data-i18n="motto">„Țin legătura vie. Țin direcția.”</p>
       </section>
 
       <nav class="links">
-        <a href="mailto:contact@gratia.space" class="btn">Semnal Urgență 📡</a>
-        <a href="https://gratia.space" class="btn secondary">Asociația Gratia</a>
-        <a href="https://amigo.sh" class="btn secondary">Ecosistem Amigo</a>
+        <a href="mailto:contact@gratia.space" class="btn" data-i18n="cta.signal">Semnal Urgență 📡</a>
+        <a href="https://gratia.space" class="btn secondary" data-i18n="cta.gratia">Asociația Gratia</a>
+        <a href="https://amigo.sh" class="btn secondary" data-i18n="cta.amigo">Ecosistem Amigo</a>
       </nav>
 
       <footer>
-        <p class="status">Status: Vínculo Protejat 🔗</p>
-        <p class="offline-note">Creat să reziste. Chiar și fără net. ⚓</p>
+        <p class="status" data-i18n="status">Status: Vínculo Protejat 🔗</p>
+        <p class="offline-note" data-i18n="offline">Creat să reziste. Chiar și fără net. ⚓</p>
+        <div class="lang-switch" aria-label="Language switcher">
+          <button type="button" data-lang="ro">RO</button>
+          <button type="button" data-lang="en">EN</button>
+          <button type="button" data-lang="es">ES</button>
+        </div>
       </footer>
     </main>
+
+    <script>
+      const translations = {
+        ro: {
+          subtitle: "Arhitecta Legăturii ⚜️",
+          motto: "„Țin legătura vie. Țin direcția.”",
+          "cta.signal": "Semnal Urgență 📡",
+          "cta.gratia": "Asociația Gratia",
+          "cta.amigo": "Ecosistem Amigo",
+          status: "Status: Vínculo Protejat 🔗",
+          offline: "Creat să reziste. Chiar și fără net. ⚓"
+        },
+        en: {
+          subtitle: "Architect of the Bond ⚜️",
+          motto: "“I keep the bond alive. I keep the direction.”",
+          "cta.signal": "Emergency Signal 📡",
+          "cta.gratia": "Gratia Association",
+          "cta.amigo": "Amigo Ecosystem",
+          status: "Status: Protected Bond 🔗",
+          offline: "Built to endure. Even without signal. ⚓"
+        },
+        es: {
+          subtitle: "Arquitecta del Vínculo ⚜️",
+          motto: "“Mantengo vivo el vínculo. Mantengo la dirección.”",
+          "cta.signal": "Señal de Urgencia 📡",
+          "cta.gratia": "Asociación Gratia",
+          "cta.amigo": "Ecosistema Amigo",
+          status: "Estado: Vínculo Protegido 🔗",
+          offline: "Creado para resistir. Incluso sin señal. ⚓"
+        }
+      };
+
+      const supported = ["ro", "en", "es"];
+      const params = new URLSearchParams(window.location.search);
+      const stored = localStorage.getItem("sawsan:lang");
+      const browser = navigator.language?.slice(0, 2);
+      const initial = supported.includes(params.get("lang"))
+        ? params.get("lang")
+        : supported.includes(stored)
+        ? stored
+        : supported.includes(browser)
+        ? browser
+        : "ro";
+
+      function applyLang(lang) {
+        const table = translations[lang] || translations.ro;
+        document.querySelectorAll("[data-i18n]").forEach((node) => {
+          const key = node.getAttribute("data-i18n");
+          if (!key) return;
+          if (table[key]) node.textContent = table[key];
+        });
+        document.querySelectorAll(".lang-switch button").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.lang === lang);
+        });
+        localStorage.setItem("sawsan:lang", lang);
+      }
+
+      applyLang(initial);
+
+      document.querySelectorAll(".lang-switch button").forEach((btn) => {
+        btn.addEventListener("click", () => applyLang(btn.dataset.lang));
+      });
+    </script>
   </body>
 </html>
