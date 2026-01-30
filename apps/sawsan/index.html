@@ -26,6 +26,8 @@
 
   <body>
     <div class="background-overlay"></div>
+    <div class="legacy-overlay" aria-hidden="true"></div>
+    <div class="legacy-window" aria-hidden="true"></div>
 
     <main class="content">
       <header>
@@ -44,7 +46,7 @@
       </nav>
 
       <footer>
-        <p class="status" data-i18n="status">Status: Vínculo protejat 🔗</p>
+        <p class="status" data-i18n="status" data-legacy-toggle>Status: Vínculo protejat 🔗</p>
         <p class="offline-note" data-i18n="offline">Creat să reziste. Chiar și fără net. ⚓</p>
         <div class="lang-switch" aria-label="Language switcher">
           <button type="button" data-lang="ro">RO</button>
@@ -114,6 +116,34 @@
       }
 
       applyLang(initial);
+
+      const legacyKey = "sawsan:legacy";
+      const legacyStored = localStorage.getItem(legacyKey);
+      const legacyParam = params.get("legacy") === "1";
+
+      function setLegacy(on) {
+        document.body.toggleAttribute("data-legacy", on);
+        localStorage.setItem(legacyKey, on ? "1" : "0");
+      }
+
+      if (legacyParam) setLegacy(true);
+      else setLegacy(legacyStored === "1");
+
+      const legacyToggle = document.querySelector("[data-legacy-toggle]");
+      let legacyHold;
+      legacyToggle?.addEventListener("pointerdown", () => {
+        legacyHold = window.setTimeout(() => {
+          setLegacy(!document.body.hasAttribute("data-legacy"));
+        }, 900);
+      });
+      ["pointerup", "pointerleave", "pointercancel"].forEach((evt) => {
+        legacyToggle?.addEventListener(evt, () => {
+          if (legacyHold) window.clearTimeout(legacyHold);
+        });
+      });
+      legacyToggle?.addEventListener("dblclick", () => {
+        setLegacy(!document.body.hasAttribute("data-legacy"));
+      });
 
       document.querySelectorAll(".lang-switch button").forEach((btn) => {
         btn.addEventListener("click", () => applyLang(btn.dataset.lang));

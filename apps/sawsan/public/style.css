@@ -17,6 +17,7 @@ body {
   font-family: "Fraunces", "Times New Roman", serif;
   color: #f5f1ea;
   background: #0b0b0a;
+  position: relative;
 }
 
 .background-overlay {
@@ -26,7 +27,51 @@ body {
     url("/assets/sunset-lights.png") no-repeat center center fixed;
   background-size: cover;
   filter: saturate(1.05) brightness(0.75);
-  z-index: -1;
+  z-index: 0;
+}
+
+.legacy-overlay,
+.legacy-window {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+}
+
+.legacy-overlay {
+  background: linear-gradient(180deg, rgba(10, 12, 18, 0.55), rgba(10, 12, 18, 0.88)),
+    url("/assets/yard-night.jpg") no-repeat center center fixed;
+  background-size: cover;
+  filter: saturate(0.9) brightness(0.85);
+}
+
+.legacy-window {
+  width: min(720px, 92vw);
+  height: auto;
+  aspect-ratio: 576 / 412;
+  margin: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: url("/assets/vypress-chat.png") no-repeat center center;
+  background-size: contain;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+body[data-legacy="true"] .background-overlay {
+  opacity: 0;
+}
+
+body[data-legacy="true"] .legacy-overlay,
+body[data-legacy="true"] .legacy-window {
+  opacity: 1;
 }
 
 .content {
