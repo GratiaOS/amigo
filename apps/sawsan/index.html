@@ -92,6 +92,9 @@
         document.querySelectorAll(".lang-switch button").forEach((btn) => {
           btn.classList.toggle("active", btn.dataset.lang === lang);
         });
+        const url = new URL(window.location.href);
+        url.searchParams.set("lang", lang);
+        window.history.replaceState({}, "", url.toString());
         localStorage.setItem("sawsan:lang", lang);
       }
 
