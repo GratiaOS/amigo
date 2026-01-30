@@ -83,9 +83,10 @@ body {
 }
 
 .btn:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.9);
-  color: #1a1a16;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  text-shadow: none !important;
+  transform: translateY(-2px);
 }
 
 .btn.secondary {
