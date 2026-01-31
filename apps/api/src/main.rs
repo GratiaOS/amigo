@@ -614,6 +614,7 @@ async fn joint_burn(
 }
 
 async fn joint_ws_handler(
+    ws: WebSocketUpgrade,
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
     Query(params): Query<HashMap<String, String>>,
@@ -630,7 +631,7 @@ async fn joint_ws_handler(
         .filter(|v| !v.is_empty())
         .unwrap_or_else(|| "Guest".to_string());
 
-    WebSocketUpgrade::default().on_upgrade(move |socket| joint_ws(socket, room, name))
+    ws.on_upgrade(move |socket| joint_ws(socket, room, name))
 }
 
 async fn joint_ws(socket: WebSocket, room: Arc<JointRoom>, name: String) {
