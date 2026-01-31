@@ -10,6 +10,8 @@ export default function JointLanding() {
   const [creating, setCreating] = useState(false);
   const [joinId, setJoinId] = useState('');
   const [error, setError] = useState('');
+  const [agree, setAgree] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
 
   const createRoom = async () => {
     if (creating) return;
@@ -56,21 +58,64 @@ export default function JointLanding() {
           „Vreți democrație? Nicio problemă, o facem tot noi. - Ion Iliescu”
         </p>
 
-        <button style={styles.primaryBtn} onClick={createRoom} disabled={creating}>
-          {creating ? 'Creating…' : 'Create Channel'}
-        </button>
+        <p style={styles.note}>
+          În 1971, după turneul asiatic și Tezele din iulie, România intră într-o fază de
+          reideologizare și cult al personalității. Asta e pragul pe care îl cartografiem
+          aici: sistem intern, influențe externe, mituri populare.
+        </p>
 
-        <div style={styles.joinRow}>
-          <input
-            style={styles.input}
-            placeholder="Join by code"
-            value={joinId}
-            onChange={(e) => setJoinId(e.target.value)}
-          />
-          <button style={styles.secondaryBtn} onClick={joinRoom}>
-            Join
-          </button>
-        </div>
+        {!confirmed ? (
+          <div style={styles.confirmCard}>
+            <label style={styles.confirmLabel}>
+              <input
+                type="checkbox"
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+              />
+              <span>
+                Declar că sunt de acord cu Covenantul Grădinii,{' '}
+                <a
+                  href="/covenant"
+                  style={styles.confirmLink}
+                  title="/Users/raz/Sites/m3/COVENANT.md"
+                >
+                  click aici dacă vrei să-l citești
+                </a>
+                .
+              </span>
+            </label>
+            <button
+              style={{
+                ...styles.secondaryBtn,
+                ...styles.confirmBtn,
+                opacity: agree ? 1 : 0.5,
+                cursor: agree ? 'pointer' : 'not-allowed',
+              }}
+              onClick={() => setConfirmed(true)}
+              disabled={!agree}
+            >
+              CONFIRM
+            </button>
+          </div>
+        ) : (
+          <>
+            <button style={styles.primaryBtn} onClick={createRoom} disabled={creating}>
+              {creating ? 'Creating…' : 'Create Channel'}
+            </button>
+
+            <div style={styles.joinRow}>
+              <input
+                style={styles.input}
+                placeholder="Join by code"
+                value={joinId}
+                onChange={(e) => setJoinId(e.target.value)}
+              />
+              <button style={styles.secondaryBtn} onClick={joinRoom}>
+                Join
+              </button>
+            </div>
+          </>
+        )}
 
         <p style={styles.statusLine}>Status: Vínculo protejat 🔗</p>
         <p style={styles.offlineNote}>Creat să reziste. Chiar și fără net. ⚓</p>
@@ -168,6 +213,12 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'color-mix(in oklab, var(--text) 85%, var(--text-muted))',
     lineHeight: 1.6,
   },
+  note: {
+    margin: 0,
+    fontSize: 12,
+    color: 'var(--text-muted)',
+    lineHeight: 1.6,
+  },
   primaryBtn: {
     padding: '14px 16px',
     borderRadius: 16,
@@ -206,6 +257,32 @@ const styles: Record<string, React.CSSProperties> = {
     textTransform: 'uppercase',
     letterSpacing: '0.1em',
     cursor: 'pointer',
+  },
+  confirmCard: {
+    display: 'grid',
+    gap: 12,
+    padding: 14,
+    borderRadius: 14,
+    border: '1px solid color-mix(in oklab, var(--border) 70%, transparent)',
+    background: 'rgba(0,0,0,0.25)',
+  },
+  confirmLabel: {
+    display: 'flex',
+    gap: 10,
+    alignItems: 'flex-start',
+    fontSize: 12,
+    color: 'var(--text-muted)',
+    lineHeight: 1.5,
+  },
+  confirmLink: {
+    color: 'var(--text)',
+    textDecoration: 'underline',
+  },
+  confirmBtn: {
+    justifySelf: 'start',
+    minHeight: 44,
+    minWidth: 140,
+    fontWeight: 700,
   },
   statusLine: {
     margin: 0,
