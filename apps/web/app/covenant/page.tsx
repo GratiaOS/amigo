@@ -3,16 +3,14 @@ export default function CovenantPage() {
     <main style={styles.shell}>
       <section style={styles.card}>
         <p style={styles.kicker}>COVENANT</p>
-        <h1 style={styles.title}>Grădina</h1>
+        <h1 style={styles.title}>Pactul de Gratie ✨</h1>
         <ol style={styles.list}>
-          <li>Prezență reală, nu performanță.</li>
-          <li>Fără scor — dăm pentru că suntem.</li>
-          <li>Ardem ce nu mai ține, fără vină.</li>
-          <li>Respect pentru Miez (Low Energy, Survival Mode).</li>
-          <li>„Sunt aici”, nu „Totul va fi bine”.</li>
+          <li>Integritatea Semnalului: Aici nu există zgomot, doar prezență. Dacă intri, lasă algoritmii la ușă.</li>
+          <li>Protecția Vínculo-ului: Legătura dintre noi este singura monedă reală. O păzim cu prețul liniștii noastre.</li>
+          <li>Adevărul Brut: Nu optimizăm realitatea. Spunem „Hello!” și rămânem „Ready” pentru orice.</li>
+          <li>Responsabilitatea Miezului: „O facem tot noi” nu e doar un motto, e un jurământ de independență.</li>
         </ol>
-        <p style={styles.note}>Confirmă dacă ești de acord.</p>
-        <p style={styles.note}>Dacă nu — e ok, dar nu e locul tău.</p>
+        <p style={styles.note}>Apasă CONFIRM doar dacă ești pregătit să ții lumina aprinsă.</p>
         <a href="/joint" style={styles.back}>
           Înapoi la /joint
         </a>

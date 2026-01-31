@@ -137,7 +137,7 @@ button {
 
 input,
 textarea {
-  caret-color: var(--signal);
+  caret-color: var(--accent);
   caret-shape: block;
   color: var(--ink-olive);
   font-size: var(--input-font-size);
