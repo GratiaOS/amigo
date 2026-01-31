@@ -39,6 +39,11 @@ export default function JointLanding() {
 
   return (
     <main style={styles.shell}>
+      <div style={styles.radar}>
+        <span style={{ ...styles.radarRing, animationDelay: '0s' }} />
+        <span style={{ ...styles.radarRing, animationDelay: '1.2s' }} />
+        <span style={{ ...styles.radarRing, animationDelay: '2.4s' }} />
+      </div>
       <div style={styles.card}>
         <div style={styles.header}>
           <span style={styles.kicker}>JOINT</span>
@@ -66,6 +71,21 @@ export default function JointLanding() {
 
         {error ? <p style={styles.error}>{error}</p> : null}
       </div>
+      <style jsx global>{`
+        @keyframes jointRadarPulse {
+          0% {
+            transform: scale(0.3);
+            opacity: 0;
+          }
+          40% {
+            opacity: 0.12;
+          }
+          100% {
+            transform: scale(3.4);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </main>
   );
 }
@@ -75,20 +95,44 @@ const styles: Record<string, React.CSSProperties> = {
     minHeight: '100vh',
     display: 'grid',
     placeItems: 'center',
-    background: 'var(--page-bg)',
+    background:
+      'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.05), transparent 45%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.03), transparent 40%), #0b0b0a',
     color: 'var(--text)',
     padding: 24,
     fontFamily: 'inherit',
+    position: 'relative',
+    overflow: 'hidden',
+    isolation: 'isolate',
+  },
+  radar: {
+    position: 'absolute',
+    inset: 0,
+    display: 'grid',
+    placeItems: 'center',
+    pointerEvents: 'none',
+    zIndex: 0,
+  },
+  radarRing: {
+    position: 'absolute',
+    width: 180,
+    height: 180,
+    borderRadius: '999px',
+    border: '1px dashed rgba(255,255,255,0.12)',
+    animation: 'jointRadarPulse 3.6s ease-out infinite',
+    boxShadow: '0 0 24px rgba(255,255,255,0.06)',
   },
   card: {
     width: 'min(480px, 100%)',
     padding: 24,
     borderRadius: 22,
     border: '1px solid color-mix(in oklab, var(--border) 70%, transparent)',
-    background: 'var(--card-bg)',
-    boxShadow: '0 24px 48px rgba(0,0,0,0.25)',
+    background: 'rgba(15,15,14,0.72)',
+    backdropFilter: 'blur(14px)',
+    boxShadow: '0 32px 60px rgba(0,0,0,0.35)',
     display: 'grid',
     gap: 16,
+    position: 'relative',
+    zIndex: 1,
   },
   header: {
     display: 'flex',

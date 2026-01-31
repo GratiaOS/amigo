@@ -447,7 +447,7 @@ const styles: Record<string, CSSProperties> = {
     background: "var(--device-bg)",
     border: "var(--device-border)",
     borderRadius: "var(--device-radius)",
-    padding: "28px 24px 26px",
+    padding: "var(--device-padding)",
     boxShadow: "var(--device-shadow)",
   },
   deviceScrew: {
