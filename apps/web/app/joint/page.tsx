@@ -46,7 +46,7 @@ export default function JointLanding() {
       </div>
       <div style={styles.card}>
         <div style={styles.header}>
-          <span style={styles.kicker}>JOINT</span>
+          <span style={styles.kicker}>🌲 🛤️ ✨</span>
           <span style={styles.status}>READY</span>
         </div>
 
