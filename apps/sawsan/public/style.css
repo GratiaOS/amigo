@@ -110,6 +110,15 @@ body[data-legacy] .legacy-window {
   font-style: italic;
 }
 
+.topic {
+  margin-top: -12px;
+  margin-bottom: 18px;
+  font-size: 0.8rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
 .links {
   display: flex;
   flex-direction: column;

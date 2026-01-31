@@ -50,8 +50,11 @@ export default function JointLanding() {
           <span style={styles.status}>READY</span>
         </div>
 
-        <h1 style={styles.title}>Live Channel</h1>
-        <p style={styles.subtle}>Text-only. Burn când se termină.</p>
+        <h1 style={styles.title}>Dosarele / Files</h1>
+        <p style={styles.subtle}>RDM_Kybalion · StreetFighter ✨</p>
+        <p style={styles.quote}>
+          „Vreți democrație? Nicio problemă, o facem tot noi. - Ion Iliescu”
+        </p>
 
         <button style={styles.primaryBtn} onClick={createRoom} disabled={creating}>
           {creating ? 'Creating…' : 'Create Channel'}
@@ -68,6 +71,9 @@ export default function JointLanding() {
             Join
           </button>
         </div>
+
+        <p style={styles.statusLine}>Status: Vínculo protejat 🔗</p>
+        <p style={styles.offlineNote}>Creat să reziste. Chiar și fără net. ⚓</p>
 
         {error ? <p style={styles.error}>{error}</p> : null}
       </div>
@@ -155,6 +161,13 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 13,
     color: 'var(--text-muted)',
   },
+  quote: {
+    margin: 0,
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: 'color-mix(in oklab, var(--text) 85%, var(--text-muted))',
+    lineHeight: 1.6,
+  },
   primaryBtn: {
     padding: '14px 16px',
     borderRadius: 16,
@@ -193,6 +206,19 @@ const styles: Record<string, React.CSSProperties> = {
     textTransform: 'uppercase',
     letterSpacing: '0.1em',
     cursor: 'pointer',
+  },
+  statusLine: {
+    margin: 0,
+    fontSize: 12,
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase',
+    color: 'var(--text-muted)',
+  },
+  offlineNote: {
+    margin: 0,
+    fontSize: 12,
+    color: 'var(--text-muted)',
+    opacity: 0.7,
   },
   error: {
     margin: 0,
