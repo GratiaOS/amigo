@@ -8,6 +8,7 @@ type JointEvent =
   | { type: 'burn'; ts: number };
 
 type JointClientEvent = { type: 'chat'; text: string } | { type: 'ping' };
+type LocalJointEvent = JointEvent & { localId: string; ghostUntil?: number };
 
 const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
 
@@ -19,10 +20,13 @@ function toWsUrl(base: string) {
 
 export default function JointClient({ id }: { id: string }) {
   const [status, setStatus] = useState<'connecting' | 'ready' | 'burned' | 'closed'>('connecting');
-  const [messages, setMessages] = useState<JointEvent[]>([]);
+  const [messages, setMessages] = useState<LocalJointEvent[]>([]);
   const [text, setText] = useState('');
   const [name, setName] = useState('');
+  const [ghostMode, setGhostMode] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
+  const ghostRef = useRef(ghostMode);
+  const timersRef = useRef<Map<string, number>>(new Map());
 
   const [roomUrl, setRoomUrl] = useState('');
   const wsUrl = useMemo(() => {
@@ -65,7 +69,17 @@ export default function JointClient({ id }: { id: string }) {
           setStatus('burned');
           ws.close();
         }
-        setMessages((prev) => prev.concat(msg));
+        const localId = `${msg.type}:${msg.ts}:${Math.random().toString(36).slice(2, 8)}`;
+        const isGhost = ghostRef.current && msg.type === 'chat' && msg.name === name;
+        const ghostUntil = isGhost ? Date.now() + 60_000 : undefined;
+        if (ghostUntil) {
+          const timer = window.setTimeout(() => {
+            setMessages((prev) => prev.filter((m) => m.localId !== localId));
+            timersRef.current.delete(localId);
+          }, 60_000);
+          timersRef.current.set(localId, timer);
+        }
+        setMessages((prev) => prev.concat({ ...msg, localId, ghostUntil }));
       } catch {
         // ignore
       }
@@ -80,6 +94,17 @@ export default function JointClient({ id }: { id: string }) {
       wsRef.current = null;
     };
   }, [name, wsUrl]);
+
+  useEffect(() => {
+    ghostRef.current = ghostMode;
+  }, [ghostMode]);
+
+  useEffect(() => {
+    return () => {
+      timersRef.current.forEach((timer) => window.clearTimeout(timer));
+      timersRef.current.clear();
+    };
+  }, []);
 
   const sendMessage = () => {
     const trimmed = text.trim();
@@ -121,8 +146,8 @@ export default function JointClient({ id }: { id: string }) {
         />
 
         <div style={styles.log}>
-          {messages.map((m, idx) => (
-            <div key={idx} style={styles.logRow}>
+          {messages.map((m) => (
+            <div key={m.localId} style={styles.logRow}>
               {m.type === 'chat' ? (
                 <span>
                   <strong>{m.name}:</strong> {m.text}
@@ -149,6 +174,12 @@ export default function JointClient({ id }: { id: string }) {
         </div>
 
         <div style={styles.actionRow}>
+          <button
+            style={ghostMode ? styles.ghostBtnActive : styles.ghostBtn}
+            onClick={() => setGhostMode((prev) => !prev)}
+          >
+            Ghost 60s
+          </button>
           <button style={styles.pttBtn} disabled>
             PTT (soon)
           </button>
@@ -290,8 +321,30 @@ const styles: Record<string, React.CSSProperties> = {
   },
   actionRow: {
     display: 'grid',
-    gridTemplateColumns: '1fr auto',
+    gridTemplateColumns: '1fr 1fr auto',
     gap: 12,
+  },
+  ghostBtn: {
+    padding: '12px 16px',
+    borderRadius: 12,
+    border: '1px solid color-mix(in oklab, var(--border) 70%, transparent)',
+    background: 'rgba(255,255,255,0.04)',
+    color: 'var(--text-muted)',
+    fontSize: 12,
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    cursor: 'pointer',
+  },
+  ghostBtnActive: {
+    padding: '12px 16px',
+    borderRadius: 12,
+    border: '1px solid color-mix(in oklab, var(--accent) 70%, var(--border))',
+    background: 'color-mix(in oklab, var(--accent) 18%, rgba(0,0,0,0.22))',
+    color: 'var(--text)',
+    fontSize: 12,
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    cursor: 'pointer',
   },
   pttBtn: {
     padding: '12px 16px',
