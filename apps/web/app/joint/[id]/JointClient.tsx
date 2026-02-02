@@ -59,7 +59,11 @@ export default function JointClient({ id }: { id: string }) {
 
     ws.onopen = () => {
       setStatus('ready');
-      setMessages((prev) => prev.concat({ type: 'system', text: 'READY', ts: Date.now() }));
+      const ts = Date.now();
+      const localId = `system:${ts}:${Math.random().toString(36).slice(2, 8)}`;
+      setMessages((prev) =>
+        prev.concat({ type: 'system', text: 'READY', ts, localId }),
+      );
     };
 
     ws.onmessage = (event) => {
