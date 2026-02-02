@@ -122,9 +122,27 @@ export default function JointClient({ id }: { id: string }) {
   return (
     <main style={styles.shell}>
       <div style={styles.radar}>
-        <span style={{ ...styles.radarRing, animationDelay: '0s' }} />
-        <span style={{ ...styles.radarRing, animationDelay: '1.2s' }} />
-        <span style={{ ...styles.radarRing, animationDelay: '2.4s' }} />
+        <span
+          style={{
+            ...styles.radarRing,
+            ...(ghostMode ? styles.radarRingGhost : null),
+            animationDelay: '0s',
+          }}
+        />
+        <span
+          style={{
+            ...styles.radarRing,
+            ...(ghostMode ? styles.radarRingGhost : null),
+            animationDelay: '1.2s',
+          }}
+        />
+        <span
+          style={{
+            ...styles.radarRing,
+            ...(ghostMode ? styles.radarRingGhost : null),
+            animationDelay: '2.4s',
+          }}
+        />
       </div>
       <div style={styles.card}>
         <div style={styles.header}>
@@ -163,7 +181,7 @@ export default function JointClient({ id }: { id: string }) {
 
         <div style={styles.inputRow}>
           <input
-            style={styles.messageInput}
+            style={ghostMode ? styles.messageInputGhost : styles.messageInput}
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type…"
@@ -202,6 +220,15 @@ export default function JointClient({ id }: { id: string }) {
             opacity: 0;
           }
         }
+        @keyframes ghostCaretPulse {
+          0%,
+          100% {
+            caret-color: var(--ghost-caret);
+          }
+          50% {
+            caret-color: transparent;
+          }
+        }
       `}</style>
     </main>
   );
@@ -237,6 +264,10 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px dashed rgba(255,255,255,0.12)',
     animation: 'jointRadarPulse 3.6s ease-out infinite',
     boxShadow: '0 0 24px rgba(255,255,255,0.06)',
+  },
+  radarRingGhost: {
+    border: '1px dashed rgba(255,255,255,0.06)',
+    boxShadow: '0 0 16px rgba(255,255,255,0.04)',
   },
   card: {
     width: 'min(640px, 100%)',
@@ -307,6 +338,18 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '12px 14px',
     fontSize: 14,
     outline: 'none',
+  },
+  messageInputGhost: {
+    width: '100%',
+    borderRadius: 12,
+    border: '1px solid color-mix(in oklab, var(--border) 70%, transparent)',
+    background: 'rgba(0,0,0,0.2)',
+    color: 'var(--text)',
+    padding: '12px 14px',
+    fontSize: 14,
+    outline: 'none',
+    caretColor: 'var(--ghost-caret)',
+    animation: 'ghostCaretPulse 3.2s ease-in-out infinite',
   },
   secondaryBtn: {
     padding: '12px 16px',
