@@ -4,6 +4,12 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+const RESONANCE = {
+  yellow: { label: 'YELLOW · L3', color: '#FFD700' },
+  rose: { label: 'ROSE · L4', color: '#FF66CC' },
+  white: { label: 'WHITE · L7', color: '#FFFFFF' },
+} as const;
+type ResonanceKey = keyof typeof RESONANCE;
 
 export default function JointLanding() {
   const router = useRouter();
@@ -12,6 +18,8 @@ export default function JointLanding() {
   const [error, setError] = useState('');
   const [agree, setAgree] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [resonance, setResonance] = useState<ResonanceKey>('yellow');
+  const resonanceColor = RESONANCE[resonance].color;
 
   const createRoom = async () => {
     if (creating) return;
@@ -42,14 +50,30 @@ export default function JointLanding() {
   return (
     <main style={styles.shell}>
       <div style={styles.radar}>
-        <span style={{ ...styles.radarRing, animationDelay: '0s' }} />
-        <span style={{ ...styles.radarRing, animationDelay: '1.2s' }} />
-        <span style={{ ...styles.radarRing, animationDelay: '2.4s' }} />
+        <span style={{ ...styles.radarRing, ...radarStyle(resonanceColor), animationDelay: '0s' }} />
+        <span style={{ ...styles.radarRing, ...radarStyle(resonanceColor), animationDelay: '1.2s' }} />
+        <span style={{ ...styles.radarRing, ...radarStyle(resonanceColor), animationDelay: '2.4s' }} />
       </div>
       <div style={styles.card}>
         <div style={styles.header}>
           <span style={styles.kicker}>🪽 🛤️ ✨</span>
           <span style={styles.status}>READY</span>
+        </div>
+        <div style={styles.resonanceRow}>
+          {(Object.keys(RESONANCE) as ResonanceKey[]).map((key) => (
+            <button
+              key={key}
+              type="button"
+              style={{
+                ...styles.resonanceChip,
+                borderColor: key === resonance ? RESONANCE[key].color : 'rgba(255,255,255,0.18)',
+                color: key === resonance ? RESONANCE[key].color : 'var(--text-muted)',
+              }}
+              onClick={() => setResonance(key)}
+            >
+              {RESONANCE[key].label}
+            </button>
+          ))}
         </div>
 
         <h1 style={styles.title}>Dosarele / Files</h1>
@@ -118,7 +142,9 @@ export default function JointLanding() {
         )}
 
         <p style={styles.statusLine}>Status: Vínculo protejat 🔗</p>
-        <p style={styles.offlineNote}>Creat să reziste. Chiar și fără net. ⚓</p>
+        <p style={styles.offlineNote}>
+          Creat să reziste. Chiar și fără net. ⚓ · Rose/White rulează local-only + auto-burn.
+        </p>
 
         {error ? <p style={styles.error}>{error}</p> : null}
       </div>
@@ -139,6 +165,13 @@ export default function JointLanding() {
       `}</style>
     </main>
   );
+}
+
+function radarStyle(color: string): React.CSSProperties {
+  return {
+    border: `1px dashed color-mix(in oklab, ${color} 62%, transparent)`,
+    boxShadow: `0 0 24px color-mix(in oklab, ${color} 28%, transparent)`,
+  };
 }
 
 const styles: Record<string, React.CSSProperties> = {
@@ -168,9 +201,7 @@ const styles: Record<string, React.CSSProperties> = {
     width: 180,
     height: 180,
     borderRadius: '999px',
-    border: '1px dashed rgba(255,255,255,0.12)',
     animation: 'jointRadarPulse 3.6s ease-out infinite',
-    boxShadow: '0 0 24px rgba(255,255,255,0.06)',
   },
   card: {
     width: 'min(480px, 100%)',
@@ -195,6 +226,21 @@ const styles: Record<string, React.CSSProperties> = {
   },
   kicker: { opacity: 0.7 },
   status: { opacity: 0.9 },
+  resonanceRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  resonanceChip: {
+    borderRadius: 999,
+    border: '1px solid rgba(255,255,255,0.18)',
+    background: 'rgba(0,0,0,0.2)',
+    padding: '6px 10px',
+    fontSize: 10,
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+  },
   title: {
     margin: 0,
     fontSize: 28,
