@@ -4,6 +4,8 @@ node_modules
 npm-debug.log*
 playwright-report
 test-results
+*.tsbuildinfo
+
 
 /apps/api/target
 /apps/api/*.db
