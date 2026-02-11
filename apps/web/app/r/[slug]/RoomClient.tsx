@@ -817,6 +817,8 @@ const styles: Record<string, CSSProperties> = {
     color: 'var(--ink-olive)',
     fontStyle: 'italic',
     padding: '6px 6px 2px',
+    whiteSpace: 'pre-wrap',
+    overflowWrap: 'anywhere',
   },
   msgTextMuted: {
     marginTop: 4,
